@@ -25,3 +25,8 @@
 **Vulnerability:** Unhandled exceptions in the Hono API routes can leak internal application details, such as stack traces, to the client via default 500 error responses.
 **Learning:** Returning raw Error objects or relying on Hono's default error handling without a custom `onError` hook exposes potentially sensitive debugging information.
 **Prevention:** Always define a global `app.onError((err, c) => { ... })` handler in the main application file (e.g., `apps/api/src/index.ts`) to intercept all unhandled exceptions, log a sanitized version of the error internally, and return a safe, generic JSON response to the user.
+
+## 2024-06-25 - [Weak Randomness in ID Generation]
+**Vulnerability:** Weak PRNG (`Math.random()`) used for generating toast IDs.
+**Learning:** Generating IDs securely with `Math.random` is prone to collisions and predictable sequences, which although low-risk for simple UI elements, could be problematic if these IDs are ever utilized in more sensitive scenarios or across a broader application context. It also trips standard security linters.
+**Prevention:** Use standard Web Crypto APIs like `crypto.randomUUID()` for unique identifiers instead of pseudo-random generators.
