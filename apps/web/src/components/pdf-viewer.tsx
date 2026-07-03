@@ -464,6 +464,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             onClick={() => goToPage(activePage - 1)}
             disabled={!canPrev}
             title={!canPrev ? "最初のページです" : undefined}
+            aria-label="前のページ"
             className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
           >
             前へ
@@ -476,6 +477,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             onClick={() => goToPage(activePage + 1)}
             disabled={!canNext}
             title={!canNext ? "最後のページです" : undefined}
+            aria-label="次のページ"
             className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
           >
             次へ
