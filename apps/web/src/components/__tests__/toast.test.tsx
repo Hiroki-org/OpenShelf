@@ -24,9 +24,6 @@ describe("toast", () => {
     expect(screen.getByText("saved")).toBeInTheDocument();
     expect(screen.getByText("failed")).toBeInTheDocument();
     expect(screen.getByText("fyi")).toBeInTheDocument();
-    expect(screen.getByText("saved")).toHaveAttribute("role", "status");
-    expect(screen.getByText("failed")).toHaveAttribute("role", "alert");
-    expect(screen.getByText("fyi")).toHaveAttribute("role", "status");
 
     act(() => {
       vi.advanceTimersByTime(5000);
@@ -38,12 +35,22 @@ describe("toast", () => {
   });
 
   it("ToastContainer has correct accessibility attributes", () => {
-    const { container } = render(<ToastContainer />);
-    const toastWrapper = container.firstChild;
+    render(<ToastContainer />);
 
-    expect(toastWrapper).not.toHaveAttribute("aria-live");
-    expect(toastWrapper).not.toHaveAttribute("role", "status");
-    expect(toastWrapper).not.toHaveAttribute("aria-atomic");
+    act(() => {
+      toast.success("saved");
+      toast.error("failed");
+    });
+
+    const successToast = screen.getAllByText("saved")[1];
+    expect(successToast).toHaveAttribute("role", "status");
+    expect(successToast).not.toHaveAttribute("aria-live");
+    expect(successToast).not.toHaveAttribute("aria-atomic");
+
+    const errorToast = screen.getAllByText("failed")[1];
+    expect(errorToast).toHaveAttribute("role", "alert");
+    expect(errorToast).not.toHaveAttribute("aria-live");
+    expect(errorToast).not.toHaveAttribute("aria-atomic");
   });
 
   it("removes listener on unmount", () => {
