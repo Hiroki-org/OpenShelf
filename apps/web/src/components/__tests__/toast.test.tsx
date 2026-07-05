@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ToastContainer, toast } from "../toast";
 
@@ -9,7 +9,9 @@ describe("toast", () => {
 
   afterEach(() => {
     vi.runOnlyPendingTimers();
+    cleanup();
     vi.useRealTimers();
+    vi.unstubAllGlobals();
   });
 
   it("renders and auto-removes toast messages", () => {
@@ -42,15 +44,26 @@ describe("toast", () => {
       toast.error("failed");
     });
 
-    const successToast = screen.getAllByText("saved")[1];
+    const successToast = screen.getByText("saved");
     expect(successToast).toHaveAttribute("role", "status");
     expect(successToast).not.toHaveAttribute("aria-live");
     expect(successToast).not.toHaveAttribute("aria-atomic");
 
-    const errorToast = screen.getAllByText("failed")[1];
+    const errorToast = screen.getByText("failed");
     expect(errorToast).toHaveAttribute("role", "alert");
     expect(errorToast).not.toHaveAttribute("aria-live");
     expect(errorToast).not.toHaveAttribute("aria-atomic");
+  });
+
+  it("renders when crypto.randomUUID is unavailable", () => {
+    vi.stubGlobal("crypto", {});
+    render(<ToastContainer />);
+
+    act(() => {
+      toast.info("fallback id");
+    });
+
+    expect(screen.getByText("fallback id")).toHaveAttribute("role", "status");
   });
 
   it("removes listener on unmount", () => {

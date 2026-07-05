@@ -12,6 +12,7 @@ interface Toast {
 
 let toastListeners: ((toasts: Toast[]) => void)[] = [];
 let toasts: Toast[] = [];
+let fallbackToastId = 0;
 
 export const toast = {
   success: (message: string) => addToast(message, "success"),
@@ -20,11 +21,18 @@ export const toast = {
 };
 
 function addToast(message: string, type: ToastType) {
-  const id = crypto.randomUUID();
+  const id = createToastId();
   const newToast = { id, message, type };
   toasts = [...toasts, newToast];
   notify();
   setTimeout(() => removeToast(id), 5000);
+}
+
+function createToastId() {
+  return (
+    globalThis.crypto?.randomUUID?.() ??
+    `toast-${Date.now()}-${fallbackToastId++}`
+  );
 }
 
 function removeToast(id: string) {
