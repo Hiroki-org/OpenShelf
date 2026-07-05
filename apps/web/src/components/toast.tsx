@@ -20,7 +20,7 @@ export const toast = {
 };
 
 function addToast(message: string, type: ToastType) {
-  // Security: Avoid weak pseudo-random number generators like Math.random() for IDs.
+  // 🛡️ Security: Avoid weak pseudo-random number generators like Math.random() for IDs.
   // Use the standard Web Crypto API crypto.randomUUID() instead.
   const id = crypto.randomUUID();
   const newToast = { id, message, type };

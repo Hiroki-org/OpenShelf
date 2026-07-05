@@ -26,7 +26,7 @@
 **Learning:** Returning raw Error objects or relying on Hono's default error handling without a custom `onError` hook exposes potentially sensitive debugging information.
 **Prevention:** Always define a global `app.onError((err, c) => { ... })` handler in the main application file (e.g., `apps/api/src/index.ts`) to intercept all unhandled exceptions, log a sanitized version of the error internally, and return a safe, generic JSON response to the user.
 
-## 2026-07-04 - Weak PRNG for DOM Element IDs
+## 2024-05-28 - Weak PRNG for DOM Element IDs
 **Vulnerability:** The client-side toast notifications feature used `Math.random()` to generate IDs.
 **Learning:** `Math.random()` is not cryptographically secure and could lead to predictable ID generation. While its usage in UI components like toasts may not result in an immediate severe exploit, using predictable pseudo-random number generators is an anti-pattern. If copied to more sensitive parts of the application, it could result in real vulnerabilities.
 **Prevention:** Always use the standard Web Crypto API `crypto.randomUUID()` when generating unique IDs, avoiding weak pseudo-random number generators.
