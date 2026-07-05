@@ -192,9 +192,11 @@ export function TagAutocompleteInput({
             applySuggestion(selectedSuggestion);
           }
         }}
+        role="combobox"
+        aria-haspopup="listbox"
         aria-autocomplete="list"
         aria-expanded={open}
-        aria-controls={listId}
+        aria-controls={open && suggestions.length > 0 ? listId : undefined}
         aria-activedescendant={activeDescendantId}
         className={className}
         placeholder={placeholder}

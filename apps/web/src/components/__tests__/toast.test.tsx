@@ -46,13 +46,13 @@ describe("toast", () => {
 
     const successToast = screen.getByText("saved");
     expect(successToast).toHaveAttribute("role", "status");
-    expect(successToast).not.toHaveAttribute("aria-live");
-    expect(successToast).not.toHaveAttribute("aria-atomic");
+    expect(successToast).toHaveAttribute("aria-live", "polite");
+    expect(successToast).toHaveAttribute("aria-atomic", "true");
 
     const errorToast = screen.getByText("failed");
     expect(errorToast).toHaveAttribute("role", "alert");
-    expect(errorToast).not.toHaveAttribute("aria-live");
-    expect(errorToast).not.toHaveAttribute("aria-atomic");
+    expect(errorToast).toHaveAttribute("aria-live", "assertive");
+    expect(errorToast).toHaveAttribute("aria-atomic", "true");
   });
 
   it("renders when crypto.randomUUID is unavailable", () => {
