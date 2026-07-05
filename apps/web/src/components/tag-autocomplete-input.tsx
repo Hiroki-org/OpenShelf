@@ -145,6 +145,7 @@ export function TagAutocompleteInput({
         id={id}
         type="text"
         role="combobox"
+        aria-haspopup="listbox"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onFocus={() => {

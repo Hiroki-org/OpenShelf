@@ -80,6 +80,7 @@ describe("TagAutocompleteInput", () => {
     );
 
     const input = screen.getByRole("combobox");
+    expect(input).toHaveAttribute("aria-haspopup", "listbox");
     fireEvent.focus(input);
     expect(
       await screen.findByRole("option", { name: "Machine Learning" }),
