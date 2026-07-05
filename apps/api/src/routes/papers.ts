@@ -813,13 +813,15 @@ papersRoute.post("/", authMiddleware, async (c) => {
         : new Error(String(firstError) || "An unknown upload error occurred.");
     }
 
-    const batchQueries: any[] = [
+    const baseBatchQueries = [
       db.insert(papers).values(paperValues),
       db.insert(paperAuthors).values({ paperId, userId, role: "uploader" }),
-    ];
+    ] as const;
+
+    const extraQueries: (typeof baseBatchQueries)[number][] = [];
 
     if (meta.visibility === "org_only" && meta.orgId) {
-      batchQueries.push(
+      extraQueries.push(
         db.insert(paperOrgs).values({ paperId, orgId: meta.orgId }),
       );
     }
@@ -836,10 +838,15 @@ papersRoute.post("/", authMiddleware, async (c) => {
     }));
 
     if (fileInserts.length > 0) {
-      batchQueries.push(db.insert(paperFiles).values(fileInserts));
+      extraQueries.push(db.insert(paperFiles).values(fileInserts));
     }
 
-    await db.batch(batchQueries as any);
+    const batchQueries = [...baseBatchQueries, ...extraQueries] as [
+      (typeof baseBatchQueries)[0],
+      ...(typeof baseBatchQueries)[number][],
+    ];
+
+    await db.batch(batchQueries);
   } catch (error) {
     try {
       await deleteKeysInBatches(c.env.BUCKET, uploadedKeys, (info) => {
