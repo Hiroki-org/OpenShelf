@@ -461,7 +461,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            aria-label="前へ（前のページ）"
+            aria-label="前のページ"
             onClick={() => goToPage(activePage - 1)}
             disabled={!canPrev}
             title={!canPrev ? "最初のページです" : undefined}
@@ -474,7 +474,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
           </span>
           <button
             type="button"
-            aria-label="次へ（次のページ）"
+            aria-label="次のページ"
             onClick={() => goToPage(activePage + 1)}
             disabled={!canNext}
             title={!canNext ? "最後のページです" : undefined}
