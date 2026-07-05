@@ -284,7 +284,7 @@ describe("PdfViewer", () => {
       expect(screen.getByText("1 / 2")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "次の一致" }));
+    fireEvent.click(screen.getByRole("button", { name: /次の一致/ }));
 
     await waitFor(() => {
       expect(screen.getByText("2 / 2")).toBeInTheDocument();
@@ -294,13 +294,13 @@ describe("PdfViewer", () => {
       expect(renderedPages).toContain(3);
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "前の一致" }));
+    fireEvent.click(screen.getByRole("button", { name: /前の一致/ }));
 
     await waitFor(() => {
       expect(screen.getByText("1 / 2")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "次の一致" }));
+    fireEvent.click(screen.getByRole("button", { name: /次の一致/ }));
     await waitFor(() => {
       expect(screen.getByText("2 / 2")).toBeInTheDocument();
     });
@@ -362,14 +362,14 @@ describe("PdfViewer", () => {
     fireEvent.click(screen.getByRole("button", { name: "ズームアウト" }));
     expect(zoomSelect.value).toBe("1.75");
 
-    fireEvent.click(screen.getByRole("button", { name: "次へ" }));
-    fireEvent.click(screen.getByRole("button", { name: "前へ" }));
+    fireEvent.click(screen.getByRole("button", { name: /次へ/ }));
+    fireEvent.click(screen.getByRole("button", { name: /前へ/ }));
     fireEvent.click(screen.getByRole("button", { name: "連続スクロール" }));
 
     // Mock requestFullscreen
     const container = screen.getByTestId("pdf-viewer-surface");
     container.requestFullscreen = vi.fn().mockResolvedValue(undefined);
-    fireEvent.click(screen.getByRole("button", { name: "全画面" }));
+    fireEvent.click(screen.getByRole("button", { name: /全画面/ }));
     expect(container.requestFullscreen).toHaveBeenCalled();
   });
 

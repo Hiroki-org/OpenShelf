@@ -465,6 +465,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             disabled={!canPrev}
             title={!canPrev ? "最初のページです" : undefined}
             className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
+            aria-label="前へ: 前のページへ"
           >
             前へ
           </button>
@@ -477,6 +478,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             disabled={!canNext}
             title={!canNext ? "最後のページです" : undefined}
             className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
+            aria-label="次へ: 次のページへ"
           >
             次へ
           </button>
@@ -530,6 +532,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             type="button"
             onClick={toggleFullScreen}
             className="rounded bg-gray-800 px-2 py-1 text-xs text-white hover:bg-gray-700 dark:bg-gray-200 dark:text-gray-900"
+            aria-label="全画面: 全画面表示の切り替え"
           >
             全画面
           </button>
@@ -563,6 +566,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             searchMatches.length === 0 ? "検索結果がありません" : undefined
           }
           className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
+          aria-label="前の一致: 前の検索結果へ"
         >
           前の一致
         </button>
@@ -574,6 +578,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             searchMatches.length === 0 ? "検索結果がありません" : undefined
           }
           className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
+          aria-label="次の一致: 次の検索結果へ"
         >
           次の一致
         </button>
