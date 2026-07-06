@@ -39,8 +39,22 @@ describe("toast", () => {
     const toastWrapper = container.firstChild;
 
     expect(toastWrapper).toHaveAttribute("aria-live", "polite");
-    expect(toastWrapper).not.toHaveAttribute("role", "status");
     expect(toastWrapper).not.toHaveAttribute("aria-atomic");
+  });
+
+  it("toasts have correct roles based on type", () => {
+    render(<ToastContainer />);
+
+    act(() => {
+      toast.success("success message");
+      toast.error("error message");
+    });
+
+    const successToast = screen.getAllByText("success message")[0];
+    const errorToast = screen.getAllByText("error message")[0];
+
+    expect(successToast).toHaveAttribute("role", "status");
+    expect(errorToast).toHaveAttribute("role", "alert");
   });
 
   it("removes listener on unmount", () => {
