@@ -730,7 +730,9 @@ describe("papers routes", () => {
         values: vi.fn().mockRejectedValue(dbError),
       }));
 
-    const mockDeleteWhere = vi.fn().mockRejectedValue(new Error("DB cleanup failed"));
+    const mockDeleteWhere = vi
+      .fn()
+      .mockRejectedValue(new Error("DB cleanup failed"));
     mockDb.delete = vi.fn(() => ({ where: mockDeleteWhere }));
 
     const app = await createTestApp();
@@ -1347,6 +1349,7 @@ describe("papers routes", () => {
   });
 
   it("POST /api/papers/:id/track accepts view event", async () => {
+    const token = await createTestJWT({ sub: "user-1" });
     const dedupRun = vi.fn(async () => ({ meta: { changes: 1 } }));
     const dailyRun = vi.fn(async () => ({ meta: { changes: 1 } }));
     const totalRun = vi.fn(async () => ({ meta: { changes: 1 } }));
@@ -1382,6 +1385,7 @@ describe("papers routes", () => {
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Origin: "http://localhost:3000",
           "User-Agent": "Vitest",
@@ -1402,6 +1406,7 @@ describe("papers routes", () => {
   });
 
   it("POST /api/papers/:id/track requires a tracking hash secret", async () => {
+    const token = await createTestJWT({ sub: "user-1" });
     mockDb.select = vi
       .fn()
       .mockImplementationOnce(() =>
@@ -1418,6 +1423,7 @@ describe("papers routes", () => {
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Origin: "http://localhost:3000",
           "User-Agent": "Vitest",
@@ -1432,6 +1438,7 @@ describe("papers routes", () => {
   });
 
   it("POST /api/papers/:id/track ignores bots", async () => {
+    const token = await createTestJWT({ sub: "user-1" });
     mockDb.select = vi
       .fn()
       .mockImplementationOnce(() =>
@@ -1445,6 +1452,7 @@ describe("papers routes", () => {
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Origin: "http://localhost:3000",
           "User-Agent": "googlebot",
@@ -1459,6 +1467,7 @@ describe("papers routes", () => {
   });
 
   it("POST /api/papers/:id/track logs sanitized error on failure (Error instance)", async () => {
+    const token = await createTestJWT({ sub: "user-1" });
     mockDb.select = vi
       .fn()
       .mockImplementationOnce(() =>
@@ -1481,6 +1490,7 @@ describe("papers routes", () => {
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Origin: "http://localhost:3000",
           "User-Agent": "Vitest",
@@ -1504,6 +1514,7 @@ describe("papers routes", () => {
   });
 
   it("POST /api/papers/:id/track logs sanitized error on failure (string error)", async () => {
+    const token = await createTestJWT({ sub: "user-1" });
     mockDb.select = vi
       .fn()
       .mockImplementationOnce(() =>
@@ -1524,6 +1535,7 @@ describe("papers routes", () => {
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Origin: "http://localhost:3000",
           "User-Agent": "Vitest",
@@ -1547,6 +1559,7 @@ describe("papers routes", () => {
   });
 
   it("POST /api/papers/:id/track handles duplicate dedup rows", async () => {
+    const token = await createTestJWT({ sub: "user-1" });
     const dedupRun = vi.fn(async () => ({ meta: { changes: 0 } }));
     const dailyRun = vi.fn(async () => ({ meta: { changes: 0 } }));
     const totalRun = vi.fn(async () => ({ meta: { changes: 0 } }));
@@ -1581,6 +1594,7 @@ describe("papers routes", () => {
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Origin: "http://localhost:3000",
           "User-Agent": "Vitest",
@@ -1632,6 +1646,7 @@ describe("papers routes", () => {
   });
 
   it("POST /api/papers/:id/track returns 404 when paper does not exist", async () => {
+    const token = await createTestJWT({ sub: "user-1" });
     mockDb.select = vi
       .fn()
       .mockImplementationOnce(() => makeQuery({ getResult: null }));
@@ -1643,6 +1658,7 @@ describe("papers routes", () => {
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Origin: "http://localhost:3000",
           "User-Agent": "Vitest",
@@ -2390,13 +2406,11 @@ describe("papers routes", () => {
     });
     const set = vi.fn().mockReturnThis();
     const where = vi.fn().mockReturnThis();
-    mockDb.select = vi
-      .fn()
-      .mockImplementation(() =>
-        makeQuery({
-          getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementation(() =>
+      makeQuery({
+        getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
+      }),
+    );
     mockDb.update = vi.fn().mockImplementation(() => ({ set, where }) as any);
 
     const app = await createTestApp();
@@ -2440,13 +2454,11 @@ describe("papers routes", () => {
       githubId: "123",
       name: "Uploader",
     });
-    mockDb.select = vi
-      .fn()
-      .mockImplementation(() =>
-        makeQuery({
-          getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementation(() =>
+      makeQuery({
+        getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
+      }),
+    );
 
     const app = await createTestApp();
     const env = createTestEnv();
@@ -2600,13 +2612,11 @@ describe("papers routes", () => {
     });
     const set = vi.fn().mockReturnThis();
     const where = vi.fn().mockReturnThis();
-    mockDb.select = vi
-      .fn()
-      .mockImplementation(() =>
-        makeQuery({
-          getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementation(() =>
+      makeQuery({
+        getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
+      }),
+    );
     mockDb.update = vi.fn().mockImplementation(() => ({ set, where }) as any);
 
     const app = await createTestApp();
@@ -2652,13 +2662,11 @@ describe("papers routes", () => {
     });
     const set = vi.fn().mockReturnThis();
     const where = vi.fn().mockReturnThis();
-    mockDb.select = vi
-      .fn()
-      .mockImplementation(() =>
-        makeQuery({
-          getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementation(() =>
+      makeQuery({
+        getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
+      }),
+    );
     mockDb.update = vi.fn().mockImplementation(() => ({ set, where }) as any);
 
     const app = await createTestApp();
@@ -2694,13 +2702,11 @@ describe("papers routes", () => {
     });
     const set = vi.fn().mockReturnThis();
     const where = vi.fn().mockReturnThis();
-    mockDb.select = vi
-      .fn()
-      .mockImplementation(() =>
-        makeQuery({
-          getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementation(() =>
+      makeQuery({
+        getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
+      }),
+    );
     mockDb.update = vi.fn().mockImplementation(() => ({ set, where }) as any);
 
     const app = await createTestApp();
@@ -2734,13 +2740,11 @@ describe("papers routes", () => {
       githubId: "123",
       name: "Uploader",
     });
-    mockDb.select = vi
-      .fn()
-      .mockImplementation(() =>
-        makeQuery({
-          getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementation(() =>
+      makeQuery({
+        getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
+      }),
+    );
 
     const app = await createTestApp();
     const env = createTestEnv();
@@ -2770,13 +2774,11 @@ describe("papers routes", () => {
     });
     const set = vi.fn().mockReturnThis();
     const where = vi.fn().mockReturnThis();
-    mockDb.select = vi
-      .fn()
-      .mockImplementation(() =>
-        makeQuery({
-          getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementation(() =>
+      makeQuery({
+        getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
+      }),
+    );
     mockDb.update = vi.fn().mockImplementation(() => ({ set, where }) as any);
 
     const app = await createTestApp();
@@ -2812,13 +2814,11 @@ describe("papers routes", () => {
     });
     const set = vi.fn().mockReturnThis();
     const where = vi.fn().mockReturnThis();
-    mockDb.select = vi
-      .fn()
-      .mockImplementation(() =>
-        makeQuery({
-          getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementation(() =>
+      makeQuery({
+        getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
+      }),
+    );
     mockDb.update = vi.fn().mockImplementation(() => ({ set, where }) as any);
 
     const app = await createTestApp();
@@ -2856,13 +2856,11 @@ describe("papers routes", () => {
     });
     const set = vi.fn().mockReturnThis();
     const where = vi.fn().mockReturnThis();
-    mockDb.select = vi
-      .fn()
-      .mockImplementation(() =>
-        makeQuery({
-          getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementation(() =>
+      makeQuery({
+        getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
+      }),
+    );
     mockDb.update = vi.fn().mockImplementation(() => ({ set, where }) as any);
 
     const app = await createTestApp();
@@ -2898,13 +2896,11 @@ describe("papers routes", () => {
     });
     const set = vi.fn().mockReturnThis();
     const where = vi.fn().mockReturnThis();
-    mockDb.select = vi
-      .fn()
-      .mockImplementation(() =>
-        makeQuery({
-          getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementation(() =>
+      makeQuery({
+        getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
+      }),
+    );
     mockDb.update = vi.fn().mockImplementation(() => ({ set, where }) as any);
 
     const app = await createTestApp();
@@ -2940,13 +2936,11 @@ describe("papers routes", () => {
     });
     const set = vi.fn().mockReturnThis();
     const where = vi.fn().mockReturnThis();
-    mockDb.select = vi
-      .fn()
-      .mockImplementation(() =>
-        makeQuery({
-          getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementation(() =>
+      makeQuery({
+        getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
+      }),
+    );
     mockDb.update = vi.fn().mockImplementation(() => ({ set, where }) as any);
 
     const app = await createTestApp();
@@ -2990,13 +2984,11 @@ describe("papers routes", () => {
       githubId: "123",
       name: "Uploader",
     });
-    mockDb.select = vi
-      .fn()
-      .mockImplementation(() =>
-        makeQuery({
-          getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementation(() =>
+      makeQuery({
+        getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
+      }),
+    );
 
     const app = await createTestApp();
     const env = createTestEnv();
@@ -3150,13 +3142,11 @@ describe("papers routes", () => {
     });
     const set = vi.fn().mockReturnThis();
     const where = vi.fn().mockReturnThis();
-    mockDb.select = vi
-      .fn()
-      .mockImplementation(() =>
-        makeQuery({
-          getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementation(() =>
+      makeQuery({
+        getResult: { paperId: "paper-1", userId: "user-1", role: "uploader" },
+      }),
+    );
     mockDb.update = vi.fn().mockImplementation(() => ({ set, where }) as any);
 
     const app = await createTestApp();
@@ -3195,13 +3185,11 @@ describe("papers routes", () => {
   });
 
   it("GET /api/papers/:id returns 401 for private paper without Bearer token", async () => {
-    mockDb.select = vi
-      .fn()
-      .mockImplementationOnce(() =>
-        makeQuery({
-          getResult: { id: "paper-1", title: "P1", visibility: "private" },
-        }),
-      );
+    mockDb.select = vi.fn().mockImplementationOnce(() =>
+      makeQuery({
+        getResult: { id: "paper-1", title: "P1", visibility: "private" },
+      }),
+    );
 
     const app = await createTestApp();
     const env = createTestEnv();
@@ -3624,7 +3612,9 @@ describe("papers routes", () => {
       );
 
       expect(customRes.status).toBe(400);
-      expect(await customRes.json()).toEqual({ error: "Cannot invite yourself" });
+      expect(await customRes.json()).toEqual({
+        error: "Cannot invite yourself",
+      });
     });
   });
 });
@@ -3718,7 +3708,9 @@ describe("Error handling and untested branches", () => {
       );
 
       expect(res.status).toBe(500);
-      await expect(res.json()).resolves.toEqual({ error: "Internal Server Error" });
+      await expect(res.json()).resolves.toEqual({
+        error: "Internal Server Error",
+      });
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         "File upload errors:",
         expect.objectContaining({
@@ -3937,7 +3929,7 @@ describe("Error handling and untested branches", () => {
     });
   });
 
-  it.each(["\"just a string\"", "42", "null"])(
+  it.each(['"just a string"', "42", "null"])(
     "POST /api/papers rejects upload when parsed metadata JSON is not an object: %s",
     async (metadata) => {
       const formData = new FormData();
@@ -4173,7 +4165,11 @@ describe("Error handling and untested branches", () => {
 
     mockDb.update = vi.fn().mockReturnValue({
       set: vi.fn().mockReturnValue({
-        where: vi.fn().mockRejectedValue(new Error("NOT NULL constraint failed: papers.title")),
+        where: vi
+          .fn()
+          .mockRejectedValue(
+            new Error("NOT NULL constraint failed: papers.title"),
+          ),
       }),
     });
 
@@ -4191,19 +4187,20 @@ describe("Error handling and untested branches", () => {
     );
 
     expect(res.status).toBe(500);
-    await expect(res.json()).resolves.toEqual({ error: "Internal Server Error" });
+    await expect(res.json()).resolves.toEqual({
+      error: "Internal Server Error",
+    });
   });
 
   it("POST /api/papers/:id/track handles missing json payload", async () => {
+    const token = await createTestJWT({ sub: "user-1" });
     const { makeQuery } = await import("../../test/helpers");
     mockDb = {
       run: vi.fn().mockResolvedValue({}),
-      prepare: vi
-        .fn()
-        .mockImplementation(() => ({
-          bind: vi.fn().mockReturnThis(),
-          all: vi.fn().mockResolvedValue([]),
-        })),
+      prepare: vi.fn().mockImplementation(() => ({
+        bind: vi.fn().mockReturnThis(),
+        all: vi.fn().mockResolvedValue([]),
+      })),
       select: vi
         .fn()
         .mockImplementationOnce(() =>
@@ -4217,6 +4214,7 @@ describe("Error handling and untested branches", () => {
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Origin: "http://localhost:3000",
         },
@@ -4229,15 +4227,14 @@ describe("Error handling and untested branches", () => {
   });
 
   it("POST /api/papers/:id/track handles non-object JSON body", async () => {
+    const token = await createTestJWT({ sub: "user-1" });
     const { makeQuery } = await import("../../test/helpers");
     mockDb = {
       run: vi.fn().mockResolvedValue({}),
-      prepare: vi
-        .fn()
-        .mockImplementation(() => ({
-          bind: vi.fn().mockReturnThis(),
-          all: vi.fn().mockResolvedValue([]),
-        })),
+      prepare: vi.fn().mockImplementation(() => ({
+        bind: vi.fn().mockReturnThis(),
+        all: vi.fn().mockResolvedValue([]),
+      })),
       select: vi
         .fn()
         .mockImplementationOnce(() =>
@@ -4251,6 +4248,7 @@ describe("Error handling and untested branches", () => {
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Origin: "http://localhost:3000",
         },
@@ -4263,6 +4261,7 @@ describe("Error handling and untested branches", () => {
   });
 
   it("POST /api/papers/:id/track captures parsing errors in promise", async () => {
+    const token = await createTestJWT({ sub: "user-1" });
     const { makeQuery } = await import("../../test/helpers");
     mockDb = {
       select: vi
@@ -4270,11 +4269,9 @@ describe("Error handling and untested branches", () => {
         .mockImplementationOnce(() =>
           makeQuery({ getResult: { id: "paper-1", visibility: "public" } }),
         ),
-      prepare: vi
-        .fn()
-        .mockImplementation(() => ({
-          bind: vi.fn().mockReturnThis(),
-          all: vi.fn().mockRejectedValue(new Error("Track DB failure")),
+      prepare: vi.fn().mockImplementation(() => ({
+        bind: vi.fn().mockReturnThis(),
+        all: vi.fn().mockRejectedValue(new Error("Track DB failure")),
       })),
       run: vi.fn().mockResolvedValue({}),
     };
@@ -4290,6 +4287,7 @@ describe("Error handling and untested branches", () => {
       {
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Origin: "http://localhost:3000",
         },

@@ -204,7 +204,9 @@ async function buildTrackSessionHash(
 
 function getTrackingHashSecret(env: Env): string {
   if (!env.TRACKING_HASH_SECRET) {
-    throw new Error("TRACKING_HASH_SECRET is required for paper stats tracking");
+    throw new Error(
+      "TRACKING_HASH_SECRET is required for paper stats tracking",
+    );
   }
   return env.TRACKING_HASH_SECRET;
 }
@@ -1024,7 +1026,7 @@ papersRoute.get("/:id/cite", async (c) => {
 });
 
 // POST /api/papers/:id/track — record daily stats events
-papersRoute.post("/:id/track", async (c) => {
+papersRoute.post("/:id/track", authMiddleware, async (c) => {
   const paperId = c.req.param("id");
   const db = drizzle(c.env.DB);
   await enableForeignKeys(db);
