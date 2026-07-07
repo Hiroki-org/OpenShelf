@@ -1,0 +1,85 @@
+--- apps/web/src/app/settings/page.tsx
++++ apps/web/src/app/settings/page.tsx
+@@ -1,75 +1,11 @@
+ "use client";
+
+ import { useAuth } from "@/components/auth-provider";
+-import { apiFetch } from "@/lib/api";
+-import { useEffect, useMemo, useState } from "react";
++import { useEffect } from "react";
+ import { useRouter } from "next/navigation";
+ import Link from "next/link";
++import { ProfileForm } from "./profile-form";
+
+ export default function SettingsPage() {
+   const { user, loading, refresh } = useAuth();
+   const router = useRouter();
+-  const [displayName, setDisplayName] = useState("");
+-  const [saving, setSaving] = useState(false);
+-  const [message, setMessage] = useState("");
+-  const [messageType, setMessageType] = useState<"success" | "error" | null>(
+-    null,
+-  );
+
+   useEffect(() => {
+     if (!loading && !user) router.push("/");
+   }, [loading, user, router]);
+
+-  useEffect(() => {
+-    if (user) setDisplayName(user.displayName ?? "");
+-  }, [user]);
+-
+-  const trimmedDisplayName = useMemo(() => displayName.trim(), [displayName]);
+-
+   if (loading || !user) return null;
+
+-  const handleSave = async () => {
+-    setSaving(true);
+-    setMessage("");
+-    setMessageType(null);
+-    try {
+-      const res = await apiFetch("/api/users/me", {
+-        method: "PATCH",
+-        headers: { "Content-Type": "application/json" },
+-        body: JSON.stringify({
+-          displayName:
+-            trimmedDisplayName.length > 0 ? trimmedDisplayName : null,
+-        }),
+-      });
+-
+-      if (res.ok) {
+-        setMessage("保存しました");
+-        setMessageType("success");
+-        await refresh();
+-        return;
+-      }
+-
+-      let errorMessage = "エラーが発生しました";
+-      try {
+-        const contentType = res.headers.get("content-type") ?? "";
+-        if (contentType.includes("application/json")) {
+-          const data = await res.json();
+-          if (data?.error && typeof data.error === "string") {
+-            errorMessage = data.error;
+-          }
+-        } else {
+-          const text = await res.text();
+-          if (text) errorMessage = text;
+-        }
+-      } catch {
+-        // Keep default fallback message.
+-      }
+-
+-      setMessage(errorMessage);
+-      setMessageType("error");
+-    } catch {
+-      setMessage("ネットワークエラーが発生しました");
+-      setMessageType("error");
+-    } finally {
+-      setSaving(false);
+-    }
+-  };
+-
+   return (
+     <div className="mx-auto max-w-3xl">
+       <div className="mb-6">
