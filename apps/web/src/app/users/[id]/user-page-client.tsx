@@ -27,17 +27,10 @@ type UserPageClientProps = {
   initialUser?: UserProfile | null;
 };
 
-export default function UserPageClient({
-  id,
-  initialUser = null,
-}: UserPageClientProps) {
-  const { user } = useAuth();
+function useUserPageData(id: string, initialUser: UserProfile | null) {
   const [profile, setProfile] = useState<UserProfile | null>(initialUser);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [error, setError] = useState("");
-
-  const isSelf = useMemo(() => user?.id === id, [user, id]);
-  const feedUrl = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787"}/feed/users/${id}/atom.xml`;
 
   useEffect(() => {
     let cancelled = false;
@@ -92,6 +85,54 @@ export default function UserPageClient({
     };
   }, [id, initialUser]);
 
+  return { profile, collections, error };
+}
+
+function CollectionsList({
+  collections,
+  userId,
+}: {
+  collections: Collection[];
+  userId: string;
+}) {
+  if (collections.length === 0) {
+    return <p className="text-sm text-gray-500">コレクションがありません</p>;
+  }
+
+  return (
+    <ul className="space-y-3">
+      {collections.map((c) => (
+        <li key={c.id}>
+          <Link
+            href={`/users/${userId}/c/${c.slug}`}
+            className="block rounded-md border p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h3 className="font-medium text-sm">{c.name}</h3>
+                {c.description && (
+                  <p className="text-xs text-gray-500 mt-1">{c.description}</p>
+                )}
+              </div>
+              <span className="text-xs text-gray-400">{c.visibility}</span>
+            </div>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export default function UserPageClient({
+  id,
+  initialUser = null,
+}: UserPageClientProps) {
+  const { user } = useAuth();
+  const { profile, collections, error } = useUserPageData(id, initialUser);
+
+  const isSelf = useMemo(() => user?.id === id, [user, id]);
+  const feedUrl = `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787"}/feed/users/${id}/atom.xml`;
+
   if (error)
     return <div className="text-center py-16 text-red-600">{error}</div>;
   if (!profile) return <div className="text-center py-16">読み込み中...</div>;
@@ -122,32 +163,7 @@ export default function UserPageClient({
         )}
       </div>
 
-      {collections.length === 0 ? (
-        <p className="text-sm text-gray-500">コレクションがありません</p>
-      ) : (
-        <ul className="space-y-3">
-          {collections.map((c) => (
-            <li key={c.id}>
-              <Link
-                href={`/users/${id}/c/${c.slug}`}
-                className="block rounded-md border p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h3 className="font-medium text-sm">{c.name}</h3>
-                    {c.description && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        {c.description}
-                      </p>
-                    )}
-                  </div>
-                  <span className="text-xs text-gray-400">{c.visibility}</span>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+      <CollectionsList collections={collections} userId={id} />
     </div>
   );
 }
