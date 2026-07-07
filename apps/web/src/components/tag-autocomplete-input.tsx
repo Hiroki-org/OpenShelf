@@ -34,28 +34,13 @@ function splitEditingState(value: string): {
   return { committed, currentRaw, currentTrimmed: currentRaw.trim() };
 }
 
-export function TagAutocompleteInput({
-  id,
-  value,
-  onChange,
-  placeholder,
-  orgSlug,
-  className,
-}: TagAutocompleteInputProps) {
+function useTagSuggestions(currentTrimmed: string, orgSlug?: string) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const cacheRef = useRef(new Map<string, string[]>());
-  const blurTimeoutRef = useRef<number | null>(null);
   const requestIdRef = useRef(0);
-
-  const { committed, currentTrimmed } = useMemo(
-    () => splitEditingState(value),
-    [value],
-  );
-
-  const displayChips = useMemo(() => splitTagInput(value), [value]);
 
   useEffect(() => {
     const requestId = ++requestIdRef.current;
@@ -116,6 +101,42 @@ export function TagAutocompleteInput({
 
     return () => clearTimeout(timer);
   }, [currentTrimmed, orgSlug]);
+
+  return {
+    suggestions,
+    highlightedIndex,
+    setHighlightedIndex,
+    open,
+    setOpen,
+    loading,
+  };
+}
+
+export function TagAutocompleteInput({
+  id,
+  value,
+  onChange,
+  placeholder,
+  orgSlug,
+  className,
+}: TagAutocompleteInputProps) {
+  const { committed, currentTrimmed } = useMemo(
+    () => splitEditingState(value),
+    [value],
+  );
+
+  const displayChips = useMemo(() => splitTagInput(value), [value]);
+
+  const {
+    suggestions,
+    highlightedIndex,
+    setHighlightedIndex,
+    open,
+    setOpen,
+    loading,
+  } = useTagSuggestions(currentTrimmed, orgSlug);
+
+  const blurTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
