@@ -2,8 +2,13 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import UserPageClient from "../user-page-client";
 import { apiFetch } from "@/lib/api";
+import type { useAuth } from "@/components/auth-provider";
 
-let authState: any;
+type MockAuthState = {
+  user: Pick<NonNullable<ReturnType<typeof useAuth>["user"]>, "id"> | null;
+};
+
+let authState: MockAuthState;
 
 vi.mock("@/components/auth-provider", () => ({
   useAuth: () => authState,
@@ -29,7 +34,7 @@ describe("UserPageClient", () => {
 
   afterEach(() => {
     cleanup();
-    vi.restoreAllMocks();
+    vi.resetAllMocks();
   });
 
   it("renders the user profile and collections when initialUser is provided", async () => {
@@ -130,6 +135,16 @@ describe("UserPageClient", () => {
   it("hides the 'new collection' link if the current user is not viewing their own profile", async () => {
     authState = { user: { id: "user-2" } };
 
+    vi.mocked(apiFetch).mockImplementation(async (url) => {
+      if (url === "/api/users/user-1/collections") {
+        return new Response(JSON.stringify({ collections: [] }), {
+          status: 200,
+        });
+      }
+
+      throw new Error(`Unexpected request: ${String(url)}`);
+    });
+
     render(
       <UserPageClient
         id="user-1"
@@ -144,6 +159,9 @@ describe("UserPageClient", () => {
     );
 
     expect(screen.getByText("Alice A.")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(apiFetch).toHaveBeenCalledWith("/api/users/user-1/collections");
+    });
     expect(
       screen.queryByRole("link", { name: "+ 新規作成" }),
     ).not.toBeInTheDocument();
@@ -332,9 +350,13 @@ describe("UserPageClient", () => {
   });
 
   it("handles unmount before parsing json", async () => {
-    let resolveJson: any;
-    const jsonPromise = new Promise((resolve) => {
-      resolveJson = resolve;
+    let resolveProfileJson: any;
+    let resolveCollectionsJson: any;
+    const profileJsonPromise = new Promise((resolve) => {
+      resolveProfileJson = resolve;
+    });
+    const collectionsJsonPromise = new Promise((resolve) => {
+      resolveCollectionsJson = resolve;
     });
 
     vi.mocked(apiFetch).mockImplementation(async (url) => {
@@ -342,14 +364,14 @@ describe("UserPageClient", () => {
         return {
           ok: true,
           status: 200,
-          json: () => jsonPromise,
+          json: () => profileJsonPromise,
         } as any;
       }
       if (url === "/api/users/user-2/collections") {
         return {
           ok: true,
           status: 200,
-          json: () => jsonPromise,
+          json: () => collectionsJsonPromise,
         } as any;
       }
       throw new Error(`Unexpected request: ${String(url)}`);
@@ -361,7 +383,7 @@ describe("UserPageClient", () => {
 
     unmount();
 
-    resolveJson({
+    resolveProfileJson({
       user: {
         id: "user-2",
         name: "Bob",
@@ -370,6 +392,7 @@ describe("UserPageClient", () => {
         githubId: "bob",
       },
     });
+    resolveCollectionsJson({ collections: [] });
 
     await new Promise((r) => setTimeout(r, 0));
   });
