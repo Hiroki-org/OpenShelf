@@ -57,4 +57,18 @@ describe("toast", () => {
 
     consoleSpy.mockRestore();
   });
+
+  it("renders with correct role attributes based on toast type", () => {
+    render(<ToastContainer />);
+
+    act(() => {
+      toast.success("unique-saved");
+      toast.error("unique-failed");
+      toast.info("unique-fyi");
+    });
+
+    expect(screen.getAllByText("unique-saved")[0]).toHaveAttribute("role", "status");
+    expect(screen.getAllByText("unique-failed")[0]).toHaveAttribute("role", "alert");
+    expect(screen.getAllByText("unique-fyi")[0]).toHaveAttribute("role", "status");
+  });
 });
