@@ -204,7 +204,9 @@ async function buildTrackSessionHash(
 
 function getTrackingHashSecret(env: Env): string {
   if (!env.TRACKING_HASH_SECRET) {
-    throw new Error("TRACKING_HASH_SECRET is required for paper stats tracking");
+    throw new Error(
+      "TRACKING_HASH_SECRET is required for paper stats tracking",
+    );
   }
   return env.TRACKING_HASH_SECRET;
 }
@@ -656,77 +658,96 @@ async function prepareUploadEntries(
   const uploads: UploadEntry[] = [];
 
   // Validate all file entries before any upload or DB mutation.
+  const fileEntries: { index: number; fileCandidate: any; ft: string }[] = [];
   for (let i = 0; body[`files_${i}`]; i++) {
-    const fileCandidate = body[`files_${i}`];
-
-    if (typeof fileCandidate === "string" || Array.isArray(fileCandidate)) {
-      console.error(`Field files_${i} is not a single file`);
-      return {
-        errorResponse: c.json(
-          { error: `Field files_${i} is not a valid file` },
-          400,
-        ),
-      };
-    }
-
-    const file = fileCandidate as File;
-    if (!(file instanceof File)) {
-      console.error(`Field files_${i} is not a valid file`);
-      return {
-        errorResponse: c.json(
-          { error: `Field files_${i} is not a valid file` },
-          400,
-        ),
-      };
-    }
-
-    if (file.size > MAX_FILE_SIZE)
-      return {
-        errorResponse: c.json(
-          { error: `File ${file.name} exceeds 50 MB limit` },
-          400,
-        ),
-      };
-    if (!ALLOWED_MIME_TYPES.includes(file.type))
-      return {
-        errorResponse: c.json(
-          {
-            error: `File ${file.name} has unsupported type: ${file.type || "unknown"}`,
-          },
-          400,
-        ),
-      };
-
-    const isValidContent = await validateMagicNumbers(file, file.type);
-    if (!isValidContent) {
-      console.error(
-        `Magic number validation failed for file ${file.name} (declared: ${file.type})`,
-      );
-      return {
-        errorResponse: c.json(
-          {
-            error: `File ${file.name} does not match expected format for ${file.type}`,
-          },
-          400,
-        ),
-      };
-    }
-
-    const ft = (body[`file_types_${i}`] as string) || "paper";
-    if (!VALID_FILE_TYPES.includes(ft))
-      return {
-        errorResponse: c.json({ error: `Invalid file_type: ${ft}` }, 400),
-      };
-
-    const safeFilename = sanitizeFilename(file.name);
-    const uniqueFilename = `${crypto.randomUUID()}-${safeFilename}`;
-
-    uploads.push({
-      file,
-      fileType: ft as UploadEntry["fileType"],
-      safeFilename,
-      r2Key: `papers/${paperId}/${ft}/${uniqueFilename}`,
+    fileEntries.push({
+      index: i,
+      fileCandidate: body[`files_${i}`],
+      ft: (body[`file_types_${i}`] as string) || "paper",
     });
+  }
+
+  const validationResults = await Promise.all(
+    fileEntries.map(async ({ index: i, fileCandidate, ft }) => {
+      if (typeof fileCandidate === "string" || Array.isArray(fileCandidate)) {
+        console.error(`Field files_${i} is not a single file`);
+        return {
+          errorResponse: c.json(
+            { error: `Field files_${i} is not a valid file` },
+            400,
+          ),
+        };
+      }
+
+      const file = fileCandidate as File;
+      if (!(file instanceof File)) {
+        console.error(`Field files_${i} is not a valid file`);
+        return {
+          errorResponse: c.json(
+            { error: `Field files_${i} is not a valid file` },
+            400,
+          ),
+        };
+      }
+
+      if (file.size > MAX_FILE_SIZE)
+        return {
+          errorResponse: c.json(
+            { error: `File ${file.name} exceeds 50 MB limit` },
+            400,
+          ),
+        };
+      if (!ALLOWED_MIME_TYPES.includes(file.type))
+        return {
+          errorResponse: c.json(
+            {
+              error: `File ${file.name} has unsupported type: ${file.type || "unknown"}`,
+            },
+            400,
+          ),
+        };
+
+      const isValidContent = await validateMagicNumbers(file, file.type);
+      if (!isValidContent) {
+        console.error(
+          `Magic number validation failed for file ${file.name} (declared: ${file.type})`,
+        );
+        return {
+          errorResponse: c.json(
+            {
+              error: `File ${file.name} does not match expected format for ${file.type}`,
+            },
+            400,
+          ),
+        };
+      }
+
+      if (!VALID_FILE_TYPES.includes(ft))
+        return {
+          errorResponse: c.json({ error: `Invalid file_type: ${ft}` }, 400),
+        };
+
+      const safeFilename = sanitizeFilename(file.name);
+      const uniqueFilename = `${crypto.randomUUID()}-${safeFilename}`;
+
+      return {
+        uploadEntry: {
+          file,
+          fileType: ft as UploadEntry["fileType"],
+          safeFilename,
+          r2Key: `papers/${paperId}/${ft}/${uniqueFilename}`,
+        },
+      };
+    }),
+  );
+
+  for (const result of validationResults) {
+    if (result.errorResponse) {
+      return { errorResponse: result.errorResponse };
+    }
+    if (result.uploadEntry) {
+      uploads.push(result.uploadEntry);
+    }
   }
 
   if (uploads.length === 0) {
