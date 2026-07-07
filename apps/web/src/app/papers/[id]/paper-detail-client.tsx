@@ -7,6 +7,7 @@ import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import pMap from "p-map";
 import { safePath } from "@/lib/sanitization";
 import {
   getVisibilityBadge,
@@ -390,8 +391,9 @@ export default function PaperDetailClient({
 
     const loadImages = async () => {
       const currentFailedIds: string[] = [];
-      const entries = await Promise.all(
-        imageFiles.map(async (img) => {
+      const entries = await pMap(
+        imageFiles,
+        async (img) => {
           try {
             const streamPath = `/api/papers/${safePath(paperId)}/files/${safePath(img.id)}/stream`;
             const res = await apiFetch(streamPath);
@@ -408,7 +410,8 @@ export default function PaperDetailClient({
             currentFailedIds.push(img.id);
             return [img.id, ""] as const;
           }
-        }),
+        },
+        { concurrency: 5 },
       );
 
       if (cancelled) {
