@@ -46,6 +46,41 @@ function sanitizeUrl(url: string): string {
   }
 }
 
+function SnippetBlock({ snippet }: { snippet: SnippetItem }) {
+  const copySnippet = async (value: string) => {
+    if (!navigator.clipboard?.writeText) {
+      toast.error("このブラウザではクリップボード機能を利用できません");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(value);
+      toast.success("コピーしました");
+    } catch {
+      toast.error("クリップボードへのコピーに失敗しました");
+    }
+  };
+
+  return (
+    <div className="rounded-md border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between border-b border-gray-200 px-3 py-2 text-xs text-gray-500 dark:border-gray-700 dark:text-gray-300">
+        <span>{snippet.label}</span>
+        <button
+          type="button"
+          aria-label={`Copy ${snippet.label}`}
+          className="rounded bg-blue-600 px-2 py-1 text-white hover:bg-blue-500"
+          onClick={() => copySnippet(snippet.value)}
+        >
+          Copy
+        </button>
+      </div>
+      <pre className="overflow-x-auto p-3 text-xs text-gray-700 dark:text-gray-200">
+        <code>{snippet.value}</code>
+      </pre>
+    </div>
+  );
+}
+
 export function BadgeSnippet({ paperId, title, siteBase }: BadgeSnippetProps) {
   const { snippets, badgePreviewUrl } = useMemo(() => {
     const normalizedSiteBase =
@@ -90,20 +125,6 @@ export function BadgeSnippet({ paperId, title, siteBase }: BadgeSnippetProps) {
     return { snippets: items, badgePreviewUrl: badgeSvgUrl };
   }, [paperId, title, siteBase]);
 
-  const copySnippet = async (value: string) => {
-    if (!navigator.clipboard?.writeText) {
-      toast.error("このブラウザではクリップボード機能を利用できません");
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(value);
-      toast.success("コピーしました");
-    } catch {
-      toast.error("クリップボードへのコピーに失敗しました");
-    }
-  };
-
   return (
     <section className="mb-6 rounded-xl border border-gray-200 p-4 dark:border-gray-700">
       <h2 className="mb-3 text-sm font-medium text-gray-500 dark:text-gray-300">
@@ -123,25 +144,7 @@ export function BadgeSnippet({ paperId, title, siteBase }: BadgeSnippetProps) {
 
       <div className="space-y-3">
         {snippets.map((snippet) => (
-          <div
-            key={snippet.key}
-            className="rounded-md border border-gray-200 dark:border-gray-700"
-          >
-            <div className="flex items-center justify-between border-b border-gray-200 px-3 py-2 text-xs text-gray-500 dark:border-gray-700 dark:text-gray-300">
-              <span>{snippet.label}</span>
-              <button
-                type="button"
-                aria-label={`Copy ${snippet.label}`}
-                className="rounded bg-blue-600 px-2 py-1 text-white hover:bg-blue-500"
-                onClick={() => copySnippet(snippet.value)}
-              >
-                Copy
-              </button>
-            </div>
-            <pre className="overflow-x-auto p-3 text-xs text-gray-700 dark:text-gray-200">
-              <code>{snippet.value}</code>
-            </pre>
-          </div>
+          <SnippetBlock key={snippet.key} snippet={snippet} />
         ))}
       </div>
     </section>
