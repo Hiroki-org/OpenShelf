@@ -37,7 +37,12 @@ describe("toast", () => {
   });
 
   it("ToastContainer has correct accessibility attributes", () => {
-    render(<ToastContainer />);
+    const { container } = render(<ToastContainer />);
+    const toastWrapper = container.firstChild;
+
+    expect(toastWrapper).not.toHaveAttribute("aria-live");
+    expect(toastWrapper).not.toHaveAttribute("role");
+    expect(toastWrapper).not.toHaveAttribute("aria-atomic");
 
     act(() => {
       toast.success("saved");
@@ -79,5 +84,19 @@ describe("toast", () => {
     expect(container.innerHTML).toBe("");
 
     consoleSpy.mockRestore();
+  });
+
+  it("renders with correct role attributes based on toast type", () => {
+    render(<ToastContainer />);
+
+    act(() => {
+      toast.success("unique-saved");
+      toast.error("unique-failed");
+      toast.info("unique-fyi");
+    });
+
+    expect(screen.getAllByText("unique-saved")[0]).toHaveAttribute("role", "status");
+    expect(screen.getAllByText("unique-failed")[0]).toHaveAttribute("role", "alert");
+    expect(screen.getAllByText("unique-fyi")[0]).toHaveAttribute("role", "status");
   });
 });
