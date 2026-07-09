@@ -216,4 +216,30 @@ describe("NewOrgPage", () => {
     expect(await screen.findByText("slug taken")).toBeInTheDocument();
     expect(push).not.toHaveBeenCalled();
   });
+
+  it("shows taken status for existing slug", async () => {
+    vi.useFakeTimers();
+    vi.mocked(apiFetch).mockImplementation(async (url) => {
+      if (url === "/api/orgs/research-lab") {
+        return new Response("{}", { status: 200 }); // slug exists
+      }
+      throw new Error(`Unexpected request: ${String(url)}`);
+    });
+
+    try {
+      render(<NewOrgPage />);
+      fireEvent.change(screen.getByLabelText(/組織名/i), {
+        target: { value: "Research Lab" },
+      });
+
+      await act(async () => {
+        vi.advanceTimersByTime(400);
+        await Promise.resolve();
+      });
+
+      expect(screen.getByText("使用済み")).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
