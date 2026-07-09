@@ -96,7 +96,7 @@ describe("NewOrgPage", () => {
       await Promise.resolve();
     });
 
-    expect(screen.getByText("✓ 使用可能")).toBeInTheDocument();
+    expect(screen.getByText("使用可能")).toBeInTheDocument();
 
     vi.useRealTimers();
     fireEvent.click(screen.getByRole("button", { name: "作成" }));
@@ -134,7 +134,7 @@ describe("NewOrgPage", () => {
       await Promise.resolve();
     });
 
-    expect(screen.getByText("✓ 使用可能")).toBeInTheDocument();
+    expect(screen.getByText("使用可能")).toBeInTheDocument();
 
     vi.useRealTimers();
     fireEvent.click(screen.getByRole("button", { name: "作成" }));
@@ -206,7 +206,7 @@ describe("NewOrgPage", () => {
         await Promise.resolve();
       });
 
-      expect(screen.getByText("✓ 使用可能")).toBeInTheDocument();
+      expect(screen.getByText("使用可能")).toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }
