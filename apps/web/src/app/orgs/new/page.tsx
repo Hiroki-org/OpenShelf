@@ -121,17 +121,21 @@ export default function NewOrgPage() {
   const slugStatusText = () => {
     switch (slugStatus) {
       case "checking":
-        return <span className="text-gray-400 text-xs">確認中...</span>;
+        return "確認中...";
       case "available":
-        return <span className="text-green-600 text-xs">✓ 使用可能</span>;
-      case "taken":
-        return <span className="text-red-600 text-xs">✗ 使用済み</span>;
-      case "invalid":
         return (
-          <span className="text-red-600 text-xs">
-            ※ 3〜40文字、英小文字・数字・ハイフンのみ
-          </span>
+          <>
+            <span aria-hidden="true">✓ </span>使用可能
+          </>
         );
+      case "taken":
+        return (
+          <>
+            <span aria-hidden="true">✗ </span>使用済み
+          </>
+        );
+      case "invalid":
+        return "※ 3〜40文字、英小文字・数字・ハイフンのみ";
       default:
         return null;
     }
@@ -183,11 +187,24 @@ export default function NewOrgPage() {
                   e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""),
                 );
               }}
+              aria-describedby="org-slug-status"
               className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-900"
               required
             />
           </div>
-          <div className="mt-1">{slugStatusText()}</div>
+          <p
+            id="org-slug-status"
+            aria-live="polite"
+            className={`mt-1 text-xs ${
+              slugStatus === "checking"
+                ? "text-gray-500"
+                : slugStatus === "available"
+                  ? "text-green-600"
+                  : "text-red-600"
+            }`}
+          >
+            {slugStatusText()}
+          </p>
         </div>
 
         <div>

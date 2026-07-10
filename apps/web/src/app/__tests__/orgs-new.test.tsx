@@ -67,6 +67,18 @@ describe("NewOrgPage", () => {
     expect(screen.getByText("500/500")).toHaveClass("text-red-600");
   });
 
+  const expectSlugStatus = (text: string, icon: string) => {
+    const status = screen.getByText(
+      (_content, element) =>
+        element?.id === "org-slug-status" && element.textContent === text,
+    );
+
+    expect(status).toBeInTheDocument();
+    expect(status.querySelector('[aria-hidden="true"]')).toHaveTextContent(
+      icon,
+    );
+  };
+
   it("checks slug availability and creates an org", async () => {
     vi.useFakeTimers();
     vi.mocked(apiFetch).mockImplementation(async (url, init) => {
@@ -96,7 +108,7 @@ describe("NewOrgPage", () => {
       await Promise.resolve();
     });
 
-    expect(screen.getByText("✓ 使用可能")).toBeInTheDocument();
+    expectSlugStatus("✓ 使用可能", "✓");
 
     vi.useRealTimers();
     fireEvent.click(screen.getByRole("button", { name: "作成" }));
@@ -104,6 +116,30 @@ describe("NewOrgPage", () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith("/orgs/research-lab");
     });
+  });
+
+  it("marks taken slug status with decorative icon hidden from assistive tech", async () => {
+    vi.useFakeTimers();
+    vi.mocked(apiFetch).mockImplementation(async (url) => {
+      if (url === "/api/orgs/research-lab") {
+        return new Response(JSON.stringify({}), { status: 200 });
+      }
+
+      throw new Error(`Unexpected request: ${String(url)}`);
+    });
+
+    render(<NewOrgPage />);
+
+    fireEvent.change(screen.getByLabelText(/組織名/i), {
+      target: { value: "Research Lab" },
+    });
+
+    await act(async () => {
+      vi.advanceTimersByTime(400);
+      await Promise.resolve();
+    });
+
+    expectSlugStatus("✗ 使用済み", "✗");
   });
 
   it("shows a spinner while creating an org", async () => {
@@ -134,7 +170,7 @@ describe("NewOrgPage", () => {
       await Promise.resolve();
     });
 
-    expect(screen.getByText("✓ 使用可能")).toBeInTheDocument();
+    expectSlugStatus("✓ 使用可能", "✓");
 
     vi.useRealTimers();
     fireEvent.click(screen.getByRole("button", { name: "作成" }));
@@ -206,7 +242,7 @@ describe("NewOrgPage", () => {
         await Promise.resolve();
       });
 
-      expect(screen.getByText("✓ 使用可能")).toBeInTheDocument();
+      expectSlugStatus("✓ 使用可能", "✓");
     } finally {
       vi.useRealTimers();
     }
