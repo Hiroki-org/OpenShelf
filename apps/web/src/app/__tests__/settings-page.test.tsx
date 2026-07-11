@@ -69,7 +69,8 @@ describe("SettingsPage", () => {
       );
     });
 
-    expect(await screen.findByText("保存しました")).toBeInTheDocument();
+    const successMsg = await screen.findByRole("status");
+    expect(successMsg).toHaveTextContent("保存しました");
     expect(refresh).toHaveBeenCalledTimes(1);
   });
 
@@ -94,7 +95,8 @@ describe("SettingsPage", () => {
 
     resolveSave(new Response("{}", { status: 200 }));
 
-    expect(await screen.findByText("保存しました")).toBeInTheDocument();
+    const successMsg = await screen.findByRole("status");
+    expect(successMsg).toHaveTextContent("保存しました");
   });
 
   it("shows non-JSON error responses", async () => {
@@ -106,7 +108,8 @@ describe("SettingsPage", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "保存" }));
 
-    expect(await screen.findByText("Plain text error")).toBeInTheDocument();
+    const errorMsg = await screen.findByRole("alert");
+    expect(errorMsg).toHaveTextContent("Plain text error");
   });
 
   it("shows JSON error responses", async () => {
@@ -120,7 +123,8 @@ describe("SettingsPage", () => {
     render(<SettingsPage />);
     fireEvent.click(screen.getByRole("button", { name: "保存" }));
 
-    expect(await screen.findByText("Validation failed")).toBeInTheDocument();
+    const errorMsg = await screen.findByRole("alert");
+    expect(errorMsg).toHaveTextContent("Validation failed");
   });
 
   it("shows network error message when request throws", async () => {
@@ -129,9 +133,8 @@ describe("SettingsPage", () => {
     render(<SettingsPage />);
     fireEvent.click(screen.getByRole("button", { name: "保存" }));
 
-    expect(
-      await screen.findByText("ネットワークエラーが発生しました"),
-    ).toBeInTheDocument();
+    const errorMsg = await screen.findByRole("alert");
+    expect(errorMsg).toHaveTextContent("ネットワークエラーが発生しました");
   });
 
   it("redirects to home when user is not authenticated", async () => {
@@ -176,7 +179,8 @@ describe("SettingsPage", () => {
     render(<SettingsPage />);
     fireEvent.click(screen.getByRole("button", { name: "保存" }));
 
-    expect(await screen.findByText("エラーが発生しました")).toBeInTheDocument();
+    const errorMsg = await screen.findByRole("alert");
+    expect(errorMsg).toHaveTextContent("エラーが発生しました");
   });
 
   it("shows fallback error when JSON parsing fails", async () => {
@@ -190,7 +194,8 @@ describe("SettingsPage", () => {
     render(<SettingsPage />);
     fireEvent.click(screen.getByRole("button", { name: "保存" }));
 
-    expect(await screen.findByText("エラーが発生しました")).toBeInTheDocument();
+    const errorMsg = await screen.findByRole("alert");
+    expect(errorMsg).toHaveTextContent("エラーが発生しました");
   });
 
   it("renders null while auth is loading", () => {
@@ -217,6 +222,7 @@ describe("SettingsPage", () => {
     render(<SettingsPage />);
     fireEvent.click(screen.getByRole("button", { name: "保存" }));
 
-    expect(await screen.findByText("エラーが発生しました")).toBeInTheDocument();
+    const errorMsg = await screen.findByRole("alert");
+    expect(errorMsg).toHaveTextContent("エラーが発生しました");
   });
 });
