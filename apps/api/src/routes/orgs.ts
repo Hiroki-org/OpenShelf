@@ -238,7 +238,8 @@ orgsRoute.get("/:slug/tags", async (c) => {
   const rawTagCounts = new Map<string, number>();
 
   for (const paper of orgPapers) {
-    const isAuthor = currentUserId !== null && paper.authorUserId === currentUserId;
+    const isAuthor =
+      currentUserId !== null && paper.authorUserId === currentUserId;
     const isVisible =
       paper.visibility === "public" ||
       (paper.visibility === "org_only" && (isMember || isAuthor)) ||
@@ -777,7 +778,7 @@ orgsRoute.get("/:slug/papers", async (c) => {
   const latestYearFilters = [...baseFilters];
   if (escapedVenueQuery) {
     latestYearFilters.push(
-      sql`${papers.venue} COLLATE NOCASE LIKE '%' || ${escapedVenueQuery} || '%' ESCAPE '\\'`,
+      sql`${papers.venue} COLLATE NOCASE LIKE ${"%" + escapedVenueQuery + "%"} ESCAPE '\\'`,
     );
   }
   if (categoryFilter) {
@@ -797,7 +798,7 @@ orgsRoute.get("/:slug/papers", async (c) => {
   const finalFilters = [...baseFilters];
   if (escapedVenueQuery) {
     finalFilters.push(
-      sql`${papers.venue} COLLATE NOCASE LIKE '%' || ${escapedVenueQuery} || '%' ESCAPE '\\'`,
+      sql`${papers.venue} COLLATE NOCASE LIKE ${"%" + escapedVenueQuery + "%"} ESCAPE '\\'`,
     );
   }
   if (categoryFilter) {
@@ -868,7 +869,7 @@ orgsRoute.get("/:slug/papers", async (c) => {
           and(
             ...baseFilters,
             escapedVenueQuery
-              ? sql`${papers.venue} COLLATE NOCASE LIKE '%' || ${escapedVenueQuery} || '%' ESCAPE '\\'`
+              ? sql`${papers.venue} COLLATE NOCASE LIKE ${"%" + escapedVenueQuery + "%"} ESCAPE '\\'`
               : undefined,
             categoryFilter ? eq(papers.category, categoryFilter) : undefined,
             isNotNull(papers.year),
@@ -909,7 +910,7 @@ orgsRoute.get("/:slug/papers", async (c) => {
             ...baseFilters,
             effectiveYear !== null ? eq(papers.year, effectiveYear) : undefined,
             escapedVenueQuery
-              ? sql`${papers.venue} COLLATE NOCASE LIKE '%' || ${escapedVenueQuery} || '%' ESCAPE '\\'`
+              ? sql`${papers.venue} COLLATE NOCASE LIKE ${"%" + escapedVenueQuery + "%"} ESCAPE '\\'`
               : undefined,
             isNotNull(papers.category),
           ),
