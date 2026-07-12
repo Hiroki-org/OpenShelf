@@ -202,6 +202,14 @@ orgsRoute.get("/:slug/tags", async (c) => {
     ? await isOrgMember(db, org.id, currentUserId)
     : false;
 
+  const escapedQuery = query ? escapeLikeLiteral(query) : null;
+  const dbFilters = [eq(paperOrgs.orgId, org.id)];
+  if (escapedQuery) {
+    dbFilters.push(
+      sql`${papers.tags} COLLATE NOCASE LIKE '%' || ${escapedQuery} || '%' ESCAPE '\\'`,
+    );
+  }
+
   const orgPapers = currentUserId
     ? await db
         .select({
@@ -219,7 +227,7 @@ orgsRoute.get("/:slug/tags", async (c) => {
             eq(paperAuthors.userId, currentUserId),
           ),
         )
-        .where(eq(paperOrgs.orgId, org.id))
+        .where(and(...dbFilters))
         .all()
     : await db
         .select({
@@ -230,7 +238,7 @@ orgsRoute.get("/:slug/tags", async (c) => {
         })
         .from(paperOrgs)
         .innerJoin(papers, eq(paperOrgs.paperId, papers.id))
-        .where(eq(paperOrgs.orgId, org.id))
+        .where(and(...dbFilters))
         .all();
   if (orgPapers.length === 0) return c.json({ tags: [] });
 
@@ -238,7 +246,8 @@ orgsRoute.get("/:slug/tags", async (c) => {
   const rawTagCounts = new Map<string, number>();
 
   for (const paper of orgPapers) {
-    const isAuthor = currentUserId !== null && paper.authorUserId === currentUserId;
+    const isAuthor =
+      currentUserId !== null && paper.authorUserId === currentUserId;
     const isVisible =
       paper.visibility === "public" ||
       (paper.visibility === "org_only" && (isMember || isAuthor)) ||
