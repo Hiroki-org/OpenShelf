@@ -226,7 +226,7 @@ describe("PaperEditPage", () => {
       await screen.findByRole("button", { name: "保存中..." }),
     ).toBeDisabled();
     expect(
-      container.querySelector('[aria-hidden="true"].animate-spin'),
+      container.querySelector(".motion-safe\\:animate-spin"),
     ).toBeInTheDocument();
 
     resolvePatch(new Response("{}", { status: 200 }));
@@ -629,6 +629,8 @@ describe("PaperEditPage", () => {
     authState = { user: null, loading: true };
 
     const { container } = render(<PaperEditPage />);
-    expect(container.querySelector(".animate-spin")).not.toBeNull();
+    expect(
+      container.querySelector(".motion-safe\\:animate-spin"),
+    ).not.toBeNull();
   });
 });

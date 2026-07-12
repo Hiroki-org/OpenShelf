@@ -41,7 +41,9 @@ describe("NewCollectionPage", () => {
     );
 
     expect(status).toBeInTheDocument();
-    expect(status.querySelector('[aria-hidden="true"]')).toHaveTextContent(icon);
+    expect(status.querySelector('[aria-hidden="true"]')).toHaveTextContent(
+      icon,
+    );
   };
 
   const expectSlugAvailable = () => expectSlugStatus("✓ 使用可能", "✓");
@@ -172,7 +174,7 @@ describe("NewCollectionPage", () => {
       await screen.findByRole("button", { name: "作成中..." }),
     ).toBeDisabled();
     expect(
-      container.querySelector('[aria-hidden="true"].animate-spin'),
+      container.querySelector(".motion-safe\\:animate-spin"),
     ).toBeInTheDocument();
 
     resolveCreate(

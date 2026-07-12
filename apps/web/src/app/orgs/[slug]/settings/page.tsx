@@ -6,6 +6,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Spinner } from "@/components/spinner";
 
 type Org = {
   id: string;
@@ -474,10 +475,7 @@ export default function OrgSettingsPage() {
           >
             {saving ? (
               <span className="flex items-center justify-center gap-2">
-                <span
-                  className="h-4 w-4 motion-safe:animate-spin rounded-full border-2 border-current border-t-transparent"
-                  aria-hidden="true"
-                />
+                <Spinner />
                 保存中...
               </span>
             ) : (
@@ -522,10 +520,7 @@ export default function OrgSettingsPage() {
                   >
                     {deleting ? (
                       <span className="flex items-center justify-center gap-2">
-                        <span
-                          className="h-4 w-4 motion-safe:animate-spin rounded-full border-2 border-current border-t-transparent"
-                          aria-hidden="true"
-                        />
+                        <Spinner />
                         削除中...
                       </span>
                     ) : (
@@ -592,10 +587,7 @@ export default function OrgSettingsPage() {
                     >
                       {inviting === u.id ? (
                         <span className="flex items-center justify-center gap-1">
-                          <span
-                            className="h-3 w-3 motion-safe:animate-spin rounded-full border-2 border-current border-t-transparent"
-                            aria-hidden="true"
-                          />
+                          <Spinner className="h-3 w-3" />
                           追加中...
                         </span>
                       ) : (
@@ -689,10 +681,7 @@ export default function OrgSettingsPage() {
                     >
                       {addingPaper === p.id ? (
                         <span className="flex items-center justify-center gap-1">
-                          <span
-                            className="h-3 w-3 motion-safe:animate-spin rounded-full border-2 border-current border-t-transparent"
-                            aria-hidden="true"
-                          />
+                          <Spinner className="h-3 w-3" />
                           追加中...
                         </span>
                       ) : (
