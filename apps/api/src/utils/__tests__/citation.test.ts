@@ -31,6 +31,36 @@ describe("buildCitation", () => {
         expect(result.citation).toContain("url = {https://openshelf.example/papers/paper-1}");
     });
 
+    it("handles title with tabs and newlines", () => {
+        const result = buildCitation(
+            { ...paperBase, title: "A\tStudy\nOn\rThe\fEffects" },
+            [{ name: "hiroki", displayName: "Hiroki Mukai" }],
+            "bibtex",
+            "https://openshelf.example",
+        );
+        expect(result.key).toContain("study");
+    });
+
+    it("handles title with only stop words", () => {
+        const result = buildCitation(
+            { ...paperBase, title: "the of and in for" },
+            [{ name: "hiroki", displayName: "Hiroki Mukai" }],
+            "bibtex",
+            "https://openshelf.example",
+        );
+        expect(result.key).toContain("the"); // First token as fallback
+    });
+
+    it("handles empty title string", () => {
+        const result = buildCitation(
+            { ...paperBase, title: "" },
+            [{ name: "hiroki", displayName: "Hiroki Mukai" }],
+            "bibtex",
+            "https://openshelf.example",
+        );
+        expect(result.key).toContain("paper"); // Hardcoded fallback
+    });
+
     describe("when doi exists", () => {
         const paperWithDoi = { ...paperBase, doi: "10.1145/xxxxxxx.xxxxxxx" };
         const authors = [{ name: "hiroki", displayName: "Hiroki Mukai" }];
