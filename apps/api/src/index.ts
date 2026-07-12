@@ -162,7 +162,9 @@ app.all("/api/test-auth/*", async (c) => {
   let executionCtx;
   try {
     executionCtx = c.executionCtx;
-  } catch {}
+  } catch {
+    // Ignore errors when executionCtx is not available
+  }
   return tempApp.fetch(c.req.raw, c.env, executionCtx);
 });
 

@@ -836,11 +836,13 @@ export default function PaperDetailClient({
                 className="rounded-md border border-gray-200 p-2 dark:border-gray-700"
               >
                 {imagePreviewUrls[img.id] ? (
-                  <img
+                  <Image
                     src={imagePreviewUrls[img.id]}
                     alt={img.filename}
                     className="h-auto w-full rounded"
-                    loading="lazy"
+                    width={120}
+                    height={20}
+                    unoptimized
                   />
                 ) : failedImageIds.includes(img.id) ? (
                   <div className="flex h-[180px] items-center justify-center rounded bg-red-50 text-xs text-red-600 dark:bg-red-950/20 dark:text-red-400">
