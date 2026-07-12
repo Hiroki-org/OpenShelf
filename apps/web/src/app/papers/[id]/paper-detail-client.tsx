@@ -22,6 +22,88 @@ const PdfViewer = dynamic(
   { ssr: false },
 );
 
+function LazyPaperImage({ paperId, img }: { paperId: string; img: PaperFile }) {
+  const [src, setSrc] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return;
+
+    let cancelled = false;
+    let objectUrl: string | null = null;
+    let observer: IntersectionObserver;
+
+    const fetchImage = async () => {
+      try {
+        const streamPath = `/api/papers/${safePath(paperId)}/files/${safePath(img.id)}/stream`;
+        const res = await apiFetch(streamPath);
+        if (!res.ok) {
+          if (!cancelled) setFailed(true);
+          return;
+        }
+        const blob = await res.blob();
+        if (cancelled) return;
+        objectUrl = URL.createObjectURL(blob);
+        setSrc(objectUrl);
+      } catch (err) {
+        console.error(`Error loading image ${img.id}:`, err);
+        if (!cancelled) setFailed(true);
+      }
+    };
+
+    observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect();
+          void fetchImage();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+
+    observer.observe(node);
+
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+      if (objectUrl) {
+        // Fallback for Safari / environments without requestIdleCallback
+        if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+          const urlToRevoke = objectUrl;
+          window.requestIdleCallback(() => URL.revokeObjectURL(urlToRevoke));
+        } else {
+          const urlToRevoke = objectUrl;
+          setTimeout(() => URL.revokeObjectURL(urlToRevoke), 0);
+        }
+      }
+    };
+  }, [paperId, img.id]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="rounded-md border border-gray-200 p-2 dark:border-gray-700"
+    >
+      {src ? (
+        <img
+          src={src}
+          alt={img.filename}
+          className="h-auto w-full rounded"
+          loading="lazy"
+        />
+      ) : failed ? (
+        <div className="flex h-[180px] items-center justify-center rounded bg-red-50 text-xs text-red-600 dark:bg-red-950/20 dark:text-red-400">
+          画像の読み込みに失敗しました
+        </div>
+      ) : (
+        <div className="h-[180px] animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
+      )}
+    </div>
+  );
+}
+
 type Paper = {
   id: string;
   title: string;
@@ -120,31 +202,6 @@ function formatCount(value: number | null | undefined): string {
   return new Intl.NumberFormat().format(value ?? 0);
 }
 
-function revokeUrlsIdle(urls: string[]) {
-  if (urls.length === 0) return;
-  const urlsToRevoke = [...urls];
-
-  if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-    const revokeChunk = (deadline: IdleDeadline) => {
-      while (urlsToRevoke.length > 0 && deadline.timeRemaining() > 0) {
-        const url = urlsToRevoke.pop();
-        if (url) URL.revokeObjectURL(url);
-      }
-      if (urlsToRevoke.length > 0) {
-        window.requestIdleCallback(revokeChunk);
-      }
-    };
-    window.requestIdleCallback(revokeChunk);
-  } else {
-    // Fallback for Safari / environments without requestIdleCallback
-    setTimeout(() => {
-      for (const url of urlsToRevoke) {
-        URL.revokeObjectURL(url);
-      }
-    }, 0);
-  }
-}
-
 export default function PaperDetailClient({
   paperId,
   siteBase,
@@ -160,15 +217,11 @@ export default function PaperDetailClient({
   const [stats, setStats] = useState<PaperStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(false);
   const [statsError, setStatsError] = useState("");
-  const [failedImageIds, setFailedImageIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [preview, setPreview] = useState<PreviewResponse | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState(false);
-  const [imagePreviewUrls, setImagePreviewUrls] = useState<
-    Record<string, string>
-  >({});
 
   // Invite dialog
   const [showInvite, setShowInvite] = useState(false);
@@ -378,69 +431,6 @@ export default function PaperDetailClient({
       }
     };
   }, [paperId, pdfFile, trackEvent]);
-
-  useEffect(() => {
-    if (imageFiles.length === 0) {
-      setImagePreviewUrls({});
-      return;
-    }
-
-    let cancelled = false;
-    const createdUrls: string[] = [];
-
-    const loadImages = async () => {
-      const currentFailedIds: string[] = [];
-      const entries = await Promise.all(
-        imageFiles.map(async (img) => {
-          try {
-            const streamPath = `/api/papers/${safePath(paperId)}/files/${safePath(img.id)}/stream`;
-            const res = await apiFetch(streamPath);
-            if (!res.ok) {
-              currentFailedIds.push(img.id);
-              return [img.id, ""] as const;
-            }
-            const blob = await res.blob();
-            const objectUrl = URL.createObjectURL(blob);
-            createdUrls.push(objectUrl);
-            return [img.id, objectUrl] as const;
-          } catch (err) {
-            console.error(`Error loading image ${img.id}:`, err);
-            currentFailedIds.push(img.id);
-            return [img.id, ""] as const;
-          }
-        }),
-      );
-
-      if (cancelled) {
-        revokeUrlsIdle(createdUrls);
-        return;
-      }
-
-      setImagePreviewUrls(Object.fromEntries(entries.filter(([, url]) => url)));
-      setFailedImageIds(currentFailedIds);
-
-      if (
-        entries.some(([, url]) => Boolean(url)) &&
-        trackedPreviewPaperIdRef.current !== paperId
-      ) {
-        trackedPreviewPaperIdRef.current = paperId;
-        trackEvent("preview");
-      }
-    };
-
-    loadImages().catch((err) => {
-      console.error("Critical error in loadImages:", err);
-      if (!cancelled) {
-        setImagePreviewUrls({});
-        setFailedImageIds(imageFiles.map((f) => f.id));
-      }
-    });
-
-    return () => {
-      cancelled = true;
-      revokeUrlsIdle(createdUrls);
-    };
-  }, [paperId, imageFiles, trackEvent]);
 
   const handleSearch = async (q: string) => {
     setSearchQuery(q);
@@ -831,25 +821,7 @@ export default function PaperDetailClient({
         {imageFiles.length > 0 && (
           <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
             {imageFiles.map((img) => (
-              <div
-                key={img.id}
-                className="rounded-md border border-gray-200 p-2 dark:border-gray-700"
-              >
-                {imagePreviewUrls[img.id] ? (
-                  <img
-                    src={imagePreviewUrls[img.id]}
-                    alt={img.filename}
-                    className="h-auto w-full rounded"
-                    loading="lazy"
-                  />
-                ) : failedImageIds.includes(img.id) ? (
-                  <div className="flex h-[180px] items-center justify-center rounded bg-red-50 text-xs text-red-600 dark:bg-red-950/20 dark:text-red-400">
-                    画像の読み込みに失敗しました
-                  </div>
-                ) : (
-                  <div className="h-[180px] animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
-                )}
-              </div>
+              <LazyPaperImage key={img.id} paperId={paperId} img={img} />
             ))}
           </div>
         )}

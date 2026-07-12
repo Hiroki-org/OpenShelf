@@ -95,6 +95,24 @@ describe("PaperDetailClient", () => {
       cb({ timeRemaining: () => 10, didTimeout: false });
     });
     vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+
+    // Mock IntersectionObserver
+    class MockIntersectionObserver {
+      callback: IntersectionObserverCallback;
+      constructor(callback: IntersectionObserverCallback) {
+        this.callback = callback;
+      }
+      observe(target: Element) {
+        // Trigger instantly as intersecting
+        this.callback(
+          [{ isIntersecting: true, target } as IntersectionObserverEntry],
+          this as unknown as IntersectionObserver,
+        );
+      }
+      unobserve() {}
+      disconnect() {}
+    }
+    vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
   });
 
   afterEach(() => {
