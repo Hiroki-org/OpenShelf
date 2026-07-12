@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { drizzle } from "drizzle-orm/d1";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { orgMembers, orgs } from "../db/schema";
 import type { Env, Variables } from "../types";
 import { authMiddleware } from "../middleware/auth";
@@ -53,53 +53,49 @@ tagsRoute.get("/suggest", authMiddleware, async (c) => {
       .get();
     if (!membership) return c.json({ error: "Forbidden" }, 403);
 
-    const result = await c.env.DB.prepare(
-      `
+    const result = await db.all<{ tag: string }>(
+      sql`
             SELECT
-                ${TRIMMED_TAG_SQL} as tag,
+                ${sql.raw(TRIMMED_TAG_SQL)} as tag,
                 COUNT(*) as count
             FROM paper_orgs
             INNER JOIN papers ON paper_orgs.paper_id = papers.id
-            LEFT JOIN paper_authors ON paper_authors.paper_id = papers.id AND paper_authors.user_id = ?1
-            , json_each(${SAFE_TAG_ARRAY_SQL})
-            WHERE paper_orgs.org_id = ?2
+            LEFT JOIN paper_authors ON paper_authors.paper_id = papers.id AND paper_authors.user_id = ${userId}
+            , json_each(${sql.raw(SAFE_TAG_ARRAY_SQL)})
+            WHERE paper_orgs.org_id = ${org.id}
               AND typeof(json_each.value) = 'text'
-              AND ${TRIMMED_TAG_SQL} != ''
-              AND ${TRIMMED_TAG_SQL} LIKE ?3 || '%' ESCAPE '\\' COLLATE NOCASE
+              AND ${sql.raw(TRIMMED_TAG_SQL)} != ''
+              AND ${sql.raw(TRIMMED_TAG_SQL)} LIKE ${normalizedQuery} || '%' ESCAPE '\\' COLLATE NOCASE
               AND (
                   papers.visibility = 'public'
                   OR papers.visibility = 'org_only'
-                  OR (papers.visibility = 'private' AND paper_authors.user_id = ?1)
+                  OR (papers.visibility = 'private' AND paper_authors.user_id = ${userId})
               )
-            GROUP BY ${TRIMMED_TAG_SQL}
+            GROUP BY ${sql.raw(TRIMMED_TAG_SQL)}
             ORDER BY count DESC, tag ASC
-            LIMIT ?4
+            LIMIT ${TAG_SUGGEST_LIMIT}
         `,
-    )
-      .bind(userId, org.id, normalizedQuery, TAG_SUGGEST_LIMIT)
-      .all();
-    tags = (result.results || []).map((r: any) => r.tag);
+    );
+    tags = result.map((r) => r.tag);
   } else {
-    const result = await c.env.DB.prepare(
-      `
+    const result = await db.all<{ tag: string }>(
+      sql`
             SELECT
-                ${TRIMMED_TAG_SQL} as tag,
+                ${sql.raw(TRIMMED_TAG_SQL)} as tag,
                 COUNT(*) as count
             FROM papers
             INNER JOIN paper_authors ON paper_authors.paper_id = papers.id
-            , json_each(${SAFE_TAG_ARRAY_SQL})
-            WHERE paper_authors.user_id = ?1
+            , json_each(${sql.raw(SAFE_TAG_ARRAY_SQL)})
+            WHERE paper_authors.user_id = ${userId}
               AND typeof(json_each.value) = 'text'
-              AND ${TRIMMED_TAG_SQL} != ''
-              AND ${TRIMMED_TAG_SQL} LIKE ?2 || '%' ESCAPE '\\' COLLATE NOCASE
-            GROUP BY ${TRIMMED_TAG_SQL}
+              AND ${sql.raw(TRIMMED_TAG_SQL)} != ''
+              AND ${sql.raw(TRIMMED_TAG_SQL)} LIKE ${normalizedQuery} || '%' ESCAPE '\\' COLLATE NOCASE
+            GROUP BY ${sql.raw(TRIMMED_TAG_SQL)}
             ORDER BY count DESC, tag ASC
-            LIMIT ?3
+            LIMIT ${TAG_SUGGEST_LIMIT}
         `,
-    )
-      .bind(userId, normalizedQuery, TAG_SUGGEST_LIMIT)
-      .all();
-    tags = (result.results || []).map((r: any) => r.tag);
+    );
+    tags = result.map((r) => r.tag);
   }
 
   return c.json({ tags });

@@ -82,15 +82,7 @@ describe("tags routes", () => {
     });
     const app = await createTestApp();
     const env = createTestEnv();
-    (env.DB as any).prepare = vi
-      .fn()
-      .mockReturnValue({
-        bind: vi
-          .fn()
-          .mockReturnValue({
-            all: vi.fn().mockReturnValue({ results: [{ tag: "AI" }] }),
-          }),
-      });
+    mockDb.all = vi.fn().mockReturnValue([{ tag: "AI" }]);
     const res = await app.request(
       "http://localhost/api/tags/suggest?q=AI",
       {
@@ -138,19 +130,7 @@ describe("tags routes", () => {
 
     const app = await createTestApp();
     const env = createTestEnv();
-    (env.DB as any).prepare = vi
-      .fn()
-      .mockReturnValue({
-        bind: vi
-          .fn()
-          .mockReturnValue({
-            all: vi
-              .fn()
-              .mockReturnValue({
-                results: [{ tag: "Search" }, { tag: "Secret Notes" }],
-              }),
-          }),
-      });
+    mockDb.all = vi.fn().mockReturnValue([{ tag: "Search" }, { tag: "Secret Notes" }]);
     const res = await app.request(
       "http://localhost/api/tags/suggest?q=Se&orgSlug=my-lab",
       {
@@ -174,11 +154,7 @@ describe("tags routes", () => {
 
     const app = await createTestApp();
     const env = createTestEnv();
-    const bind = vi.fn().mockReturnValue({
-      all: vi.fn().mockReturnValue({ results: [] }),
-    });
-
-    (env.DB as any).prepare = vi.fn().mockReturnValue({ bind });
+    mockDb.all = vi.fn().mockReturnValue([]);
 
     const res = await app.request(
       "http://localhost/api/tags/suggest?q=%25%5C_", // %\_
@@ -187,10 +163,21 @@ describe("tags routes", () => {
     );
 
     expect(res.status).toBe(200);
-    const normalized = bind.mock.calls[0][1] as string;
-    expect(normalized).toContain("\\%");
-    expect(normalized).toContain("\\\\");
-    expect(normalized).toContain("\\_");
+    const queryChunks = mockDb.all.mock.calls[0][0].queryChunks;
+    // queryChunks array usually alternates between static strings and params.
+    // The literal should contain the escaped parameter
+    const containsEscaped = queryChunks.some((chunk: any) =>
+      typeof chunk?.value === 'string'
+        ? chunk.value.includes("\\%") || chunk.value.includes("\\_")
+        : (chunk as any)?.includes?.("\\%")
+    ) || queryChunks.some((chunk: any) => chunk.some?.((v: any) => typeof v === 'string' && (v.includes("\\%") || v.includes("\\_"))));
+
+    // We can also stringify the query output since it's a Drizzle SQL object.
+    const queryObj = mockDb.all.mock.calls[0][0];
+    const stringified = JSON.stringify(queryObj);
+    expect(stringified).toContain("\\%");
+    expect(stringified).toContain("\\\\");
+    expect(stringified).toContain("\\_");
   });
 
   it("GET /api/tags/suggest escapes wildcard characters with orgSlug", async () => {
@@ -202,16 +189,12 @@ describe("tags routes", () => {
 
     const app = await createTestApp();
     const env = createTestEnv();
-    const bind = vi.fn().mockReturnValue({
-      all: vi.fn().mockReturnValue({ results: [] }),
-    });
+    mockDb.all = vi.fn().mockReturnValue([]);
 
     queueSelectResponses([
       { getResult: { id: "org-1" } },
       { getResult: { userId: "user-1" } },
     ]);
-
-    (env.DB as any).prepare = vi.fn().mockReturnValue({ bind });
 
     const res = await app.request(
       "http://localhost/api/tags/suggest?q=%25%5C_&orgSlug=test-org", // %\_
@@ -220,10 +203,11 @@ describe("tags routes", () => {
     );
 
     expect(res.status).toBe(200);
-    const normalized = bind.mock.calls[0][2] as string;
-    expect(normalized).toContain("\\%");
-    expect(normalized).toContain("\\\\");
-    expect(normalized).toContain("\\_");
+    const queryObj = mockDb.all.mock.calls[0][0];
+    const stringified = JSON.stringify(queryObj);
+    expect(stringified).toContain("\\%");
+    expect(stringified).toContain("\\\\");
+    expect(stringified).toContain("\\_");
   });
 
   it("GET /api/tags/suggest returns 404 when orgSlug is not found", async () => {
