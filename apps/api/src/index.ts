@@ -152,10 +152,20 @@ app.onError((err, c) => {
 // Routes
 app.route("/api/auth", auth);
 
-if (process.env.NODE_ENV !== "production") {
+app.all("/api/test-auth/*", async (c) => {
+  if (c.env.ENABLE_TEST_AUTH !== "true") {
+    return c.json({ error: "Not Found" }, 404);
+  }
   const { default: testAuth } = await import("./routes/test-auth");
-  app.route("/api/test-auth", testAuth);
-}
+  const tempApp = new Hono<{ Bindings: Env; Variables: Variables }>();
+  tempApp.route("/api/test-auth", testAuth);
+  let executionCtx;
+  try {
+    executionCtx = c.executionCtx;
+  } catch {}
+  return tempApp.fetch(c.req.raw, c.env, executionCtx);
+});
+
 app.route("/api/users", usersRoute);
 app.route("/api/papers", papersRoute);
 app.route("/api/invites", invitesRoute);
