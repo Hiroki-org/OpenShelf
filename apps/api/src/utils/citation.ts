@@ -65,8 +65,30 @@ function pickSurname(author: CitationAuthor): string {
 }
 
 function pickTitleKeyWord(title: string): string {
-    const tokens = normalizeAscii(title).split(/\s+/).filter(Boolean);
-    return tokens.find((token) => !STOP_WORDS.has(token)) || tokens[0] || "paper";
+    const ascii = normalizeAscii(title);
+    if (!ascii) return "paper";
+
+    let firstToken = "";
+    let currentToken = "";
+    const len = ascii.length;
+
+    for (let i = 0; i <= len; i++) {
+        const char = i < len ? ascii[i] : ' ';
+        // `\s` matches space, tab, newline, return, form feed, vertical tab
+        if (char === ' ' || char === '\n' || char === '\t' || char === '\r' || char === '\f' || char === '\v') {
+            if (currentToken) {
+                if (!firstToken) firstToken = currentToken;
+                if (!STOP_WORDS.has(currentToken)) {
+                    return currentToken;
+                }
+                currentToken = "";
+            }
+        } else {
+            currentToken += char;
+        }
+    }
+
+    return firstToken || "paper";
 }
 
 function pickEntryType(paper: CitationPaper): "mastersthesis" | "inproceedings" | "article" | "techreport" | "misc" {
