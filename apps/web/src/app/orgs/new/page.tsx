@@ -17,23 +17,13 @@ function slugify(text: string): string {
     .slice(0, 40);
 }
 
-export default function NewOrgPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
+type SlugStatus = "idle" | "checking" | "available" | "taken" | "invalid";
 
-  const [name, setName] = useState("");
+function useSlugCheck(name: string) {
   const [slug, setSlug] = useState("");
   const [slugManual, setSlugManual] = useState(false);
-  const [description, setDescription] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const [slugStatus, setSlugStatus] = useState<
-    "idle" | "checking" | "available" | "taken" | "invalid"
-  >("idle");
-
-  useEffect(() => {
-    if (!loading && !user) router.push("/");
-  }, [loading, user, router]);
+  const [slugStatus, setSlugStatus] = useState<SlugStatus>("idle");
+  const slugCheckRef = useRef(0);
 
   // Auto-generate slug from name
   useEffect(() => {
@@ -41,8 +31,6 @@ export default function NewOrgPage() {
       setSlug(slugify(name));
     }
   }, [name, slugManual]);
-
-  const slugCheckRef = useRef(0);
 
   // Check slug availability
   const checkSlug = useCallback(async (s: string) => {
@@ -75,6 +63,43 @@ export default function NewOrgPage() {
     const timer = setTimeout(() => checkSlug(slug), 400);
     return () => clearTimeout(timer);
   }, [slug, checkSlug]);
+
+  return { slug, setSlug, setSlugManual, slugStatus };
+}
+
+function SlugStatusMessage({ status }: { status: SlugStatus }) {
+  switch (status) {
+    case "checking":
+      return <span className="text-gray-400 text-xs">確認中...</span>;
+    case "available":
+      return <span className="text-green-600 text-xs">✓ 使用可能</span>;
+    case "taken":
+      return <span className="text-red-600 text-xs">✗ 使用済み</span>;
+    case "invalid":
+      return (
+        <span className="text-red-600 text-xs">
+          ※ 3〜40文字、英小文字・数字・ハイフンのみ
+        </span>
+      );
+    default:
+      return null;
+  }
+}
+
+export default function NewOrgPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const { slug, setSlug, setSlugManual, slugStatus } = useSlugCheck(name);
+
+  useEffect(() => {
+    if (!loading && !user) router.push("/");
+  }, [loading, user, router]);
 
   if (loading || !user) return null;
 
@@ -115,25 +140,6 @@ export default function NewOrgPage() {
       setError("ネットワークエラーが発生しました");
     } finally {
       setSubmitting(false);
-    }
-  };
-
-  const slugStatusText = () => {
-    switch (slugStatus) {
-      case "checking":
-        return <span className="text-gray-400 text-xs">確認中...</span>;
-      case "available":
-        return <span className="text-green-600 text-xs">✓ 使用可能</span>;
-      case "taken":
-        return <span className="text-red-600 text-xs">✗ 使用済み</span>;
-      case "invalid":
-        return (
-          <span className="text-red-600 text-xs">
-            ※ 3〜40文字、英小文字・数字・ハイフンのみ
-          </span>
-        );
-      default:
-        return null;
     }
   };
 
@@ -187,7 +193,9 @@ export default function NewOrgPage() {
               required
             />
           </div>
-          <div className="mt-1">{slugStatusText()}</div>
+          <div className="mt-1">
+            <SlugStatusMessage status={slugStatus} />
+          </div>
         </div>
 
         <div>
