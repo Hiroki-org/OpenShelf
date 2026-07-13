@@ -2,6 +2,7 @@
 
 import { apiFetch } from "@/lib/api";
 import { TAG_DELIMITER_PATTERN, splitTagInput } from "@/lib/tags";
+import { Spinner } from "@/components/spinner";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const DEBOUNCE_MS = 300;
@@ -191,9 +192,11 @@ export function TagAutocompleteInput({
             applySuggestion(selectedSuggestion);
           }
         }}
+        role="combobox"
+        aria-haspopup="listbox"
         aria-autocomplete="list"
         aria-expanded={open}
-        aria-controls={listId}
+        aria-controls={open && suggestions.length > 0 ? listId : undefined}
         aria-activedescendant={activeDescendantId}
         className={className}
         placeholder={placeholder}
@@ -226,7 +229,7 @@ export function TagAutocompleteInput({
       )}
 
       {displayChips.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="mt-2 flex flex-wrap gap-2" aria-hidden="true">
           {displayChips.map((tag, index) => (
             <span
               key={`${tag}-${index}`}
@@ -239,9 +242,13 @@ export function TagAutocompleteInput({
       )}
 
       {loading && (
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          候補を取得中...
-        </p>
+        <div
+          role="status"
+          className="mt-1 flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400"
+        >
+          <Spinner className="h-3 w-3" />
+          <span>候補を取得中...</span>
+        </div>
       )}
     </div>
   );
