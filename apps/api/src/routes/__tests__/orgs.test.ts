@@ -92,7 +92,9 @@ describe("orgs routes", () => {
         env as any,
       );
       expect(res.status).toBe(500);
-      await expect(res.json()).resolves.toEqual({ error: "Internal Server Error" });
+      await expect(res.json()).resolves.toEqual({
+        error: "Internal Server Error",
+      });
     });
 
     it("wraps non-Error insert failures", async () => {
@@ -124,7 +126,9 @@ describe("orgs routes", () => {
         env as any,
       );
       expect(res.status).toBe(500);
-      await expect(res.json()).resolves.toEqual({ error: "Internal Server Error" });
+      await expect(res.json()).resolves.toEqual({
+        error: "Internal Server Error",
+      });
     });
 
     it("returns 409 for UNIQUE constraint violation race condition", async () => {
@@ -2329,22 +2333,100 @@ describe("orgs routes", () => {
 
   describe("GET /api/orgs/:slug/papers algorithmic DoS prevention", () => {
     it("escapes wildcard characters correctly in papers query endpoint", async () => {
-        const app = await createTestApp();
-        const env = createTestEnv();
+      const app = await createTestApp();
+      const env = createTestEnv();
 
-        queueSelectResponses([
-            { getResult: { id: "org-1", slug: "test" } },
-            { getResult: { id: "user-1", role: "admin" } },
-            { allResult: [] }
-        ]);
+      queueSelectResponses([
+        { getResult: { id: "org-1", slug: "test" } },
+        { getResult: { id: "user-1", role: "admin" } },
+        { allResult: [] },
+      ]);
 
-        const res = await app.request(
-            "http://localhost/api/orgs/test/papers?venue=%25%5C_", // %\_
-            {},
-            env as any
-        );
+      const res = await app.request(
+        "http://localhost/api/orgs/test/papers?venue=%25%5C_", // %\_
+        {},
+        env as any,
+      );
 
-        expect(res.status).toBe(200);
+      expect(res.status).toBe(200);
+    });
+  });
+  describe("GET /api/orgs/:slug/tags", () => {
+    it("filters and counts correctly based on visibility and membership", async () => {
+      const token = await createTestJWT({
+        sub: "user-1",
+        githubId: "123",
+        name: "Tester",
+      });
+      const app = await createTestApp();
+      const env = createTestEnv();
+
+      // Org found
+      let queryCallCount = 0;
+      mockDb.select = vi.fn().mockImplementation(() => {
+        return {
+          from: () => ({
+            where: () => ({
+              get: () => {
+                if (queryCallCount === 0) {
+                  queryCallCount++;
+                  return { id: "org-1", slug: "my-lab" }; // getOrgBySlug
+                }
+                if (queryCallCount === 1) {
+                  queryCallCount++;
+                  return null; // getOrgMembership -> isMember = false
+                }
+                return null;
+              },
+            }),
+            innerJoin: () => ({
+              leftJoin: () => ({
+                where: () => ({
+                  all: () => {
+                    return [
+                      {
+                        id: "paper-1",
+                        visibility: "public",
+                        tags: '["tag1", "tag2"]',
+                        authorUserId: "other-user",
+                      },
+                      {
+                        id: "paper-2",
+                        visibility: "org_only",
+                        tags: '["tag3"]',
+                        authorUserId: "other-user",
+                      },
+                      {
+                        id: "paper-3",
+                        visibility: "private",
+                        tags: '["tag4"]',
+                        authorUserId: "user-1", // isAuthor
+                      },
+                      {
+                        id: "paper-4",
+                        visibility: "public",
+                        tags: '["tag1"]',
+                        authorUserId: "user-1",
+                      },
+                    ];
+                  },
+                }),
+              }),
+            }),
+          }),
+        };
+      });
+
+      const res = await app.request(
+        "http://localhost/api/orgs/my-lab/tags",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+        env,
+      );
+      expect(res.status).toBe(200);
+      const data = await res.json();
+      expect(data).toEqual({ tags: ["tag1", "tag2", "tag4"] });
     });
   });
 });

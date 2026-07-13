@@ -236,28 +236,31 @@ orgsRoute.get("/:slug/tags", async (c) => {
 
   const counts = new Map<string, number>();
   const rawTagCounts = new Map<string, number>();
+  const hasUser = currentUserId !== null;
 
   for (const paper of orgPapers) {
-    const isAuthor = currentUserId !== null && paper.authorUserId === currentUserId;
-    const isVisible =
-      paper.visibility === "public" ||
-      (paper.visibility === "org_only" && (isMember || isAuthor)) ||
-      (paper.visibility === "private" && isAuthor);
-    if (!isVisible) continue;
+    const vis = paper.visibility;
+    const isAuthor = hasUser && paper.authorUserId === currentUserId;
 
-    const rawTags = paper.tags ?? "";
-    if (rawTags) {
-      rawTagCounts.set(rawTags, (rawTagCounts.get(rawTags) ?? 0) + 1);
+    if (
+      vis === "public" ||
+      (vis === "org_only" && (isMember || isAuthor)) ||
+      (vis === "private" && isAuthor)
+    ) {
+      const rawTags = paper.tags;
+      if (rawTags) {
+        const c = rawTagCounts.get(rawTags);
+        rawTagCounts.set(rawTags, c === undefined ? 1 : c + 1);
+      }
     }
   }
 
   for (const [rawTags, count] of rawTagCounts) {
     const tags = parseStoredTags(rawTags);
     for (const tag of tags) {
-      if (query) {
-        if (!tag.toLowerCase().startsWith(query)) continue;
-      }
-      counts.set(tag, (counts.get(tag) ?? 0) + count);
+      if (query && !tag.toLowerCase().startsWith(query)) continue;
+      const c = counts.get(tag);
+      counts.set(tag, c === undefined ? count : c + count);
     }
   }
 
