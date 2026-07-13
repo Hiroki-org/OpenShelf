@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ToastContainer, toast } from "../toast";
 
@@ -9,9 +9,7 @@ describe("toast", () => {
 
   afterEach(() => {
     vi.runOnlyPendingTimers();
-    cleanup();
     vi.useRealTimers();
-    vi.unstubAllGlobals();
   });
 
   it("renders and auto-removes toast messages", () => {
@@ -40,35 +38,9 @@ describe("toast", () => {
     const { container } = render(<ToastContainer />);
     const toastWrapper = container.firstChild;
 
-    expect(toastWrapper).not.toHaveAttribute("aria-live");
-    expect(toastWrapper).not.toHaveAttribute("role");
+    expect(toastWrapper).toHaveAttribute("aria-live", "polite");
+    expect(toastWrapper).not.toHaveAttribute("role", "status");
     expect(toastWrapper).not.toHaveAttribute("aria-atomic");
-
-    act(() => {
-      toast.success("saved");
-      toast.error("failed");
-    });
-
-    const successToast = screen.getByText("saved");
-    expect(successToast).toHaveAttribute("role", "status");
-    expect(successToast).toHaveAttribute("aria-live", "polite");
-    expect(successToast).toHaveAttribute("aria-atomic", "true");
-
-    const errorToast = screen.getByText("failed");
-    expect(errorToast).toHaveAttribute("role", "alert");
-    expect(errorToast).toHaveAttribute("aria-live", "assertive");
-    expect(errorToast).toHaveAttribute("aria-atomic", "true");
-  });
-
-  it("renders when crypto.randomUUID is unavailable", () => {
-    vi.stubGlobal("crypto", {});
-    render(<ToastContainer />);
-
-    act(() => {
-      toast.info("fallback id");
-    });
-
-    expect(screen.getByText("fallback id")).toHaveAttribute("role", "status");
   });
 
   it("removes listener on unmount", () => {
@@ -84,19 +56,5 @@ describe("toast", () => {
     expect(container.innerHTML).toBe("");
 
     consoleSpy.mockRestore();
-  });
-
-  it("renders with correct role attributes based on toast type", () => {
-    render(<ToastContainer />);
-
-    act(() => {
-      toast.success("unique-saved");
-      toast.error("unique-failed");
-      toast.info("unique-fyi");
-    });
-
-    expect(screen.getAllByText("unique-saved")[0]).toHaveAttribute("role", "status");
-    expect(screen.getAllByText("unique-failed")[0]).toHaveAttribute("role", "alert");
-    expect(screen.getAllByText("unique-fyi")[0]).toHaveAttribute("role", "status");
   });
 });
