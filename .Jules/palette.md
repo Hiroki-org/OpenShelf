@@ -31,3 +31,12 @@
 ## 2026-06-21 - Conditional ARIA roles for dynamic messages
 **Learning:** 保存成功やエラーなど、結果に応じてメッセージの内容とスタイルが変わるコンテナ要素では、単に `<p>` タグで表示するのではなく、メッセージの重大度に応じて `role="alert"`（エラー用）や `role="status"`（成功・一般メッセージ用）を条件付きで切り替えることで、スクリーンリーダーユーザーにとってより適切で邪魔にならないフィードバックを提供できます。
 **Action:** 今後、動的なフィードバックメッセージを表示するコンポーネントを実装・改善する際は、`role={messageType === 'error' ? 'alert' : 'status'}` のような条件分岐を用いた ARIA ロールの設定を適用します。
+
+## 2026-07-04 - ARIA role adjustment for Toasts and input ARIA roles, PDF Viewer ARIA label, Tag Autocomplete ARIA attributes.
+**Learning:**
+- Toastコンポーネントで `error` とそれ以外のメッセージで適切な `role` (`alert` か `status`) を出し分けることで、支援技術での読み上げがより正確かつ適切に行われるようになります。また、ラッパーとなるコンテナ要素には `aria-live="polite"` ではなく、個別のToastに `role` を割り当てるのがよりよい実装方法です。さらに、`Math.random()` によるID生成は予測可能かつ衝突する可能性があるため、`crypto.randomUUID()` のようなセキュアなID生成方法を使用することが望ましいです。
+- `<input>`でサジェストリストを出すコンポーネント（Tag Autocomplete）において、`role="combobox"`を設定することで、支援技術を使用するユーザーにとって、テキスト入力とリスト選択の両方が可能な入力要素であることをより明確に伝えられます。また、ローディング時のスピナーに `role="status"` を付与することで進行中のステータス変更が適切に読み上げられます。装飾的な要素（入力済みのチップリストなど）には `aria-hidden="true"` を追加して不必要な読み上げを避けるべきです。
+- PDF Viewerなどのコンポーネントにおいて、「前へ」「次へ」のようなボタンには `aria-label="前のページ"` や `aria-label="次のページ"` のようなより具体的なアクセシブル名をつけることで、アイコンだけでなく文字テキストのボタンでもコンテキストがより明確になります。
+
+**Action:**
+今後、動的な通知（Toast）、入力補助要素（Combobox）、ナビゲーションボタン（Paginationなど）を実装・改善する際は、これらのアクセシビリティのベストプラクティス（`role="alert|status"` の出し分け、`role="combobox"`、`aria-hidden="true"`、具体的な `aria-label`）を適用します。また、一意なID生成には常に `crypto.randomUUID()` を使用します。
