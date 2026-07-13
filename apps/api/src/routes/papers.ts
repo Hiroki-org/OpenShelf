@@ -204,7 +204,9 @@ async function buildTrackSessionHash(
 
 function getTrackingHashSecret(env: Env): string {
   if (!env.TRACKING_HASH_SECRET) {
-    throw new Error("TRACKING_HASH_SECRET is required for paper stats tracking");
+    throw new Error(
+      "TRACKING_HASH_SECRET is required for paper stats tracking",
+    );
   }
   return env.TRACKING_HASH_SECRET;
 }
