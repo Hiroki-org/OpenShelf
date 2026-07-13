@@ -99,6 +99,54 @@ describe("BadgeSnippet", () => {
     });
   });
 
+  it("shows error toast if clipboard is not supported", async () => {
+    vi.stubGlobal("navigator", {});
+    render(
+      <BadgeSnippet
+        paperId="paper-1"
+        title="Paper Title"
+        siteBase="https://openshelf.example"
+      />,
+    );
+
+    const markdownPanel = screen.getByText("Markdown").closest("div");
+    fireEvent.click(
+      markdownPanel!.querySelector("button") as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      expect(toastError).toHaveBeenCalledWith(
+        "このブラウザではクリップボード機能を利用できません",
+      );
+    });
+  });
+
+  it("shows error toast if clipboard copy fails", async () => {
+    vi.stubGlobal("navigator", {
+      clipboard: {
+        writeText: vi.fn().mockRejectedValue(new Error("Failed")),
+      },
+    });
+    render(
+      <BadgeSnippet
+        paperId="paper-1"
+        title="Paper Title"
+        siteBase="https://openshelf.example"
+      />,
+    );
+
+    const markdownPanel = screen.getByText("Markdown").closest("div");
+    fireEvent.click(
+      markdownPanel!.querySelector("button") as HTMLButtonElement,
+    );
+
+    await waitFor(() => {
+      expect(toastError).toHaveBeenCalledWith(
+        "クリップボードへのコピーに失敗しました",
+      );
+    });
+  });
+
   it("escapes title content in HTML snippet", () => {
     render(
       <BadgeSnippet
