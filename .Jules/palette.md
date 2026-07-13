@@ -25,3 +25,15 @@
 ## 2026-06-08 - Badge Snippet Accessible Names
 **Learning:** アイコンやコピーなどの汎用的なアクションを実行するボタンが複数リストされている場合、スクリーンリーダーユーザーがどの項目のアクションかを識別できるように、`aria-label` に具体的なコンテキスト（例: `Copy ${snippet.label}`）を含めることが重要です。同時に、表示されているテキスト（この場合は 'Copy'）を `aria-label` に含めることで WCAG 2.5.3（Label in Name）に準拠します。
 **Action:** 今後、リスト内やコンテキストが不明瞭なボタン（特に同じテキストラベルを持つ複数のボタン）を実装・改善する際は、必ず `aria-label` に詳細な説明を含めるようにします。また、以前試みた「文字数カウンターの aria-live 属性の削除」は、スクリーンリーダーユーザーへのフィードバックを完全に奪うことになりアクセシビリティを低下させる（リグレッション）ため、行わないよう注意します。
+## 2026-06-20 - Collection Slug Validation Accessibility
+**Learning:** コレクションの slug のような動的にバリデーションされる入力フィールドにおいて、バリデーションステータスの `<p>` タグに `aria-live="polite"` を付与し、かつ `<input>` 要素に `aria-describedby` で関連付けることで、ユーザーが入力した際に非同期で変化する「確認中...」や「✓ 使用可能」などの状態がスクリーンリーダーに正しく読み上げられるようになり、アクセシビリティが向上します。
+**Action:** 今後、動的な入力バリデーション（可用性チェックなど）を実装・改善する際は、必ず入力フィールドに `aria-describedby` を付与し、ステータス表示の要素に `aria-live="polite"` を付与するパターンを適用します。
+
+## 2026-07-04 - ARIA role adjustment for Toasts and input ARIA roles, PDF Viewer ARIA label, Tag Autocomplete ARIA attributes.
+**Learning:**
+- Toastコンポーネントで `error` とそれ以外のメッセージで適切な `role` (`alert` か `status`) を出し分けることで、支援技術での読み上げがより正確かつ適切に行われるようになります。また、ラッパーとなるコンテナ要素には `aria-live="polite"` ではなく、個別のToastに `role` を割り当てるのがよりよい実装方法です。さらに、`Math.random()` によるID生成は予測可能かつ衝突する可能性があるため、`crypto.randomUUID()` のようなセキュアなID生成方法を使用することが望ましいです。
+- `<input>`でサジェストリストを出すコンポーネント（Tag Autocomplete）において、`role="combobox"`を設定することで、支援技術を使用するユーザーにとって、テキスト入力とリスト選択の両方が可能な入力要素であることをより明確に伝えられます。また、ローディング時のスピナーに `role="status"` を付与することで進行中のステータス変更が適切に読み上げられます。装飾的な要素（入力済みのチップリストなど）には `aria-hidden="true"` を追加して不必要な読み上げを避けるべきです。
+- PDF Viewerなどのコンポーネントにおいて、「前へ」「次へ」のようなボタンには `aria-label="前のページ"` や `aria-label="次のページ"` のようなより具体的なアクセシブル名をつけることで、アイコンだけでなく文字テキストのボタンでもコンテキストがより明確になります。
+
+**Action:**
+今後、動的な通知（Toast）、入力補助要素（Combobox）、ナビゲーションボタン（Paginationなど）を実装・改善する際は、これらのアクセシビリティのベストプラクティス（`role="alert|status"` の出し分け、`role="combobox"`、`aria-hidden="true"`、具体的な `aria-label`）を適用します。また、一意なID生成には常に `crypto.randomUUID()` を使用します。
