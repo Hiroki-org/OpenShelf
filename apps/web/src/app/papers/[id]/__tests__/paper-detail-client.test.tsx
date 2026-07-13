@@ -162,9 +162,16 @@ describe("PaperDetailClient", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByAltText("poster.png")).toHaveAttribute(
+      const preview = screen.getByAltText("poster.png");
+      expect(preview).toHaveAttribute(
         "src",
         expect.stringMatching(/^blob:mock-/),
+      );
+      expect(preview).toHaveAttribute("width", "800");
+      expect(preview).toHaveAttribute("height", "600");
+      expect(preview).toHaveAttribute(
+        "sizes",
+        "(max-width: 640px) 100vw, 50vw",
       );
     });
 

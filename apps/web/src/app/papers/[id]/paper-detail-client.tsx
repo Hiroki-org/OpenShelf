@@ -842,9 +842,9 @@ export default function PaperDetailClient({
                     className="h-auto w-full rounded"
                     loading="lazy"
                     unoptimized
-                    width={0}
-                    height={0}
-                    sizes="100vw"
+                    width={800}
+                    height={600}
+                    sizes="(max-width: 640px) 100vw, 50vw"
                   />
                 ) : failedImageIds.includes(img.id) ? (
                   <div className="flex h-[180px] items-center justify-center rounded bg-red-50 text-xs text-red-600 dark:bg-red-950/20 dark:text-red-400">
