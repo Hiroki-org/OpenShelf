@@ -21,11 +21,8 @@ type CiteButtonProps = {
   paperId: string;
 };
 
-export function CiteButton({ paperId }: CiteButtonProps) {
+function useDropdown() {
   const [open, setOpen] = useState(false);
-  const [loadingFormat, setLoadingFormat] = useState<CitationFormat | null>(
-    null,
-  );
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -55,6 +52,14 @@ export function CiteButton({ paperId }: CiteButtonProps) {
       document.removeEventListener("keydown", handleEscape);
     };
   }, [open]);
+
+  return { open, setOpen, containerRef };
+}
+
+function useCitationCopy(paperId: string, setOpen: (open: boolean) => void) {
+  const [loadingFormat, setLoadingFormat] = useState<CitationFormat | null>(
+    null,
+  );
 
   const handleCopy = async (format: CitationFormat) => {
     setLoadingFormat(format);
@@ -89,6 +94,13 @@ export function CiteButton({ paperId }: CiteButtonProps) {
       setLoadingFormat(null);
     }
   };
+
+  return { loadingFormat, handleCopy };
+}
+
+export function CiteButton({ paperId }: CiteButtonProps) {
+  const { open, setOpen, containerRef } = useDropdown();
+  const { loadingFormat, handleCopy } = useCitationCopy(paperId, setOpen);
 
   return (
     <div className="mb-6 relative inline-block" ref={containerRef}>
