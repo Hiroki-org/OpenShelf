@@ -25,6 +25,58 @@ type Paper = {
 
 type Member = { userId: string; role: string };
 
+type PaperListItemProps = {
+  paper: Paper;
+  idx: number;
+  isAdmin: boolean;
+  move: (index: number, direction: -1 | 1) => Promise<void>;
+};
+
+function PaperListItem({ paper, idx, isAdmin, move }: PaperListItemProps) {
+  return (
+    <li className="rounded-md border p-3 dark:border-gray-700">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <Link
+            href={`/papers/${paper.id}`}
+            className="font-medium hover:underline"
+          >
+            {paper.title}
+          </Link>
+          {paper.abstract && (
+            <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+              {paper.abstract}
+            </p>
+          )}
+          <p className="text-xs text-gray-400 mt-1">
+            visibility: {paper.visibility}
+          </p>
+        </div>
+        {isAdmin && (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label="上に移動"
+              onClick={() => void move(idx, -1)}
+              className="rounded border px-2 py-1 text-xs dark:border-gray-700"
+            >
+              ↑
+            </button>
+            <button
+              type="button"
+              aria-label="下に移動"
+              onClick={() => void move(idx, 1)}
+              className="rounded border px-2 py-1 text-xs dark:border-gray-700"
+            >
+              ↓
+            </button>
+          </div>
+        )}
+      </div>
+    </li>
+  );
+}
+
 type OrgCollectionPageClientProps = {
   slug: string;
   collectionSlug: string;
@@ -159,49 +211,13 @@ export default function OrgCollectionPageClient({
       ) : (
         <ul className="space-y-3">
           {papers.map((paper, idx) => (
-            <li
+            <PaperListItem
               key={paper.id}
-              className="rounded-md border p-3 dark:border-gray-700"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <Link
-                    href={`/papers/${paper.id}`}
-                    className="font-medium hover:underline"
-                  >
-                    {paper.title}
-                  </Link>
-                  {paper.abstract && (
-                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                      {paper.abstract}
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-400 mt-1">
-                    visibility: {paper.visibility}
-                  </p>
-                </div>
-                {isAdmin && (
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      aria-label="上に移動"
-                      onClick={() => void move(idx, -1)}
-                      className="rounded border px-2 py-1 text-xs dark:border-gray-700"
-                    >
-                      ↑
-                    </button>
-                    <button
-                      type="button"
-                      aria-label="下に移動"
-                      onClick={() => void move(idx, 1)}
-                      className="rounded border px-2 py-1 text-xs dark:border-gray-700"
-                    >
-                      ↓
-                    </button>
-                  </div>
-                )}
-              </div>
-            </li>
+              paper={paper}
+              idx={idx}
+              isAdmin={isAdmin}
+              move={move}
+            />
           ))}
         </ul>
       )}
