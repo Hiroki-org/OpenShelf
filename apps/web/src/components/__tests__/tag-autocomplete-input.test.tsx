@@ -79,7 +79,8 @@ describe("TagAutocompleteInput", () => {
       { timeout: 600 },
     );
 
-    const input = screen.getByRole("textbox");
+    const input = screen.getByRole("combobox");
+    expect(input).toHaveAttribute("aria-haspopup", "listbox");
     fireEvent.focus(input);
     expect(
       await screen.findByRole("option", { name: "Machine Learning" }),
@@ -93,7 +94,7 @@ describe("TagAutocompleteInput", () => {
     );
     await new Promise((resolve) => setTimeout(resolve, DEBOUNCE_WAIT_MS));
     expect(apiFetch).toHaveBeenCalledTimes(1);
-    fireEvent.focus(screen.getByRole("textbox"));
+    fireEvent.focus(screen.getByRole("combobox"));
     expect(
       screen.getByRole("option", { name: "Machine Learning" }),
     ).toBeInTheDocument();
@@ -110,7 +111,7 @@ describe("TagAutocompleteInput", () => {
       <TagAutocompleteInput id="paper-tags" value="Ma" onChange={vi.fn()} />,
     );
 
-    const input = screen.getByRole("textbox");
+    const input = screen.getByRole("combobox");
     expect(
       await screen.findByRole("option", { name: "Machine Learning" }),
     ).toBeInTheDocument();
