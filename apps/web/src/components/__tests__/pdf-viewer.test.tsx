@@ -362,8 +362,8 @@ describe("PdfViewer", () => {
     fireEvent.click(screen.getByRole("button", { name: "ズームアウト" }));
     expect(zoomSelect.value).toBe("1.75");
 
-    fireEvent.click(screen.getByRole("button", { name: "次へ（次のページ）" }));
-    fireEvent.click(screen.getByRole("button", { name: "前へ（前のページ）" }));
+    fireEvent.click(screen.getByRole("button", { name: "次へ" }));
+    fireEvent.click(screen.getByRole("button", { name: "前へ" }));
     fireEvent.click(screen.getByRole("button", { name: "連続スクロール" }));
 
     // Mock requestFullscreen
