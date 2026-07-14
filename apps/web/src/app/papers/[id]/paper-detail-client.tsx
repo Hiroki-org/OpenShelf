@@ -522,7 +522,7 @@ export default function PaperDetailClient({
 
   if (loading) return <div className="text-center py-20">読み込み中...</div>;
   if (error)
-    return <div className="text-center py-20 text-red-600">{error}</div>;
+    return <div role="alert" className="text-center py-20 text-red-600">{error}</div>;
   if (!paper) return null;
 
   const formatSize = (bytes: number) => {
