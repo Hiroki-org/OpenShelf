@@ -13,7 +13,7 @@ type FeedButtonProps = {
 
 export function FeedButton({
   url,
-  className = "rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800",
+  className = "rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:focus-visible:ring-white dark:focus-visible:ring-offset-gray-950",
   label = "📡 Feed",
   ariaLabel,
 }: FeedButtonProps) {
@@ -74,12 +74,13 @@ export function FeedButton({
             aria-label="フィード URL"
             value={url}
             rows={3}
-            className="mt-2 w-full resize-none rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-200"
+            onFocus={(e) => e.target.select()}
+            className="mt-2 w-full resize-none rounded-md border border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-200 dark:focus-visible:ring-white dark:focus-visible:ring-offset-gray-950"
           />
           <div className="mt-3 flex items-center gap-2">
             <button
               type="button"
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-700 dark:hover:bg-gray-800 dark:focus-visible:ring-white dark:focus-visible:ring-offset-gray-950"
               aria-label="フィードURLをクリップボードにコピー"
               onClick={handleCopy}
             >
@@ -89,7 +90,7 @@ export function FeedButton({
               href={url}
               target="_blank"
               rel="noreferrer noopener"
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-700 dark:hover:bg-gray-800 dark:focus-visible:ring-white dark:focus-visible:ring-offset-gray-950"
               aria-label="フィードを新しいタブで開く"
             >
               開く
