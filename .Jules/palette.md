@@ -31,3 +31,7 @@
 ## 2026-06-21 - Conditional ARIA roles for dynamic messages
 **Learning:** 保存成功やエラーなど、結果に応じてメッセージの内容とスタイルが変わるコンテナ要素では、単に `<p>` タグで表示するのではなく、メッセージの重大度に応じて `role="alert"`（エラー用）や `role="status"`（成功・一般メッセージ用）を条件付きで切り替えることで、スクリーンリーダーユーザーにとってより適切で邪魔にならないフィードバックを提供できます。
 **Action:** 今後、動的なフィードバックメッセージを表示するコンポーネントを実装・改善する際は、`role={messageType === 'error' ? 'alert' : 'status'}` のような条件分岐を用いた ARIA ロールの設定を適用します。
+
+## 2024-07-15 - Header component keyboard focus states
+**Learning:** React/Next.jsのアプリケーションにおいて、ナビゲーションヘッダー内のインタラクティブ要素（リンクやボタン）に明示的なフォーカス状態（focus-visible）が欠如しているケースが見受けられます。これはキーボードナビゲーションのアクセシビリティに影響を与えます。
+**Action:** 各インタラクティブ要素の className に、Tailwind CSSを用いたフォーカススタイル (`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2`) を追加し、ダークモードとライトモードの両方で十分なコントラストが確保されるように適切に色を設定します。
