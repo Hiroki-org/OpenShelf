@@ -28,3 +28,11 @@
 ## 2026-06-20 - Collection Slug Validation Accessibility
 **Learning:** コレクションの slug のような動的にバリデーションされる入力フィールドにおいて、バリデーションステータスの `<p>` タグに `aria-live="polite"` を付与し、かつ `<input>` 要素に `aria-describedby` で関連付けることで、ユーザーが入力した際に非同期で変化する「確認中...」や「✓ 使用可能」などの状態がスクリーンリーダーに正しく読み上げられるようになり、アクセシビリティが向上します。
 **Action:** 今後、動的な入力バリデーション（可用性チェックなど）を実装・改善する際は、必ず入力フィールドに `aria-describedby` を付与し、ステータス表示の要素に `aria-live="polite"` を付与するパターンを適用します。
+
+## 2024-07-12 - [Focus-visible Accessibility on Interactive Elements]
+**Learning:** キーボードナビゲーションのフォーカスリングに `focus-visible:ring-2` と `focus-visible:ring-offset-2` を組み合わせることで、多様な背景色でも視認性が確保できる。
+**Action:** アプリ全体のボタンやリンク（特にHeaderや再利用可能なコンポーネント）において、一貫して `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2` とそのダークモード対応を実装する。
+
+## 2024-07-12 - [Focus-visible Accessibility PR Closed]
+**Learning:** 複数のコンポーネント（HeaderとFeedButton）に対する改善を1つのPRにまとめた結果、他のPRとコンフリクトし、個別の機能修正PR（#1116, #1118）によって意味的に上書きされる（superseded）理由でクローズされた。
+**Action:** 今後、独立したコンポーネントや機能に対する小規模なUX改善は、コンフリクトを避け、個別にレビュー・マージしやすくするために、1つのPRにまとめすぎず個別のPRとして提出することを検討する。
