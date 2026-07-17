@@ -92,6 +92,6 @@ describe("test-auth routes", () => {
             env as any
         );
         expect(res.status).toBe(400);
-        expect(await res.json()).toEqual({ error: "Invalid JSON" });
+        await expect(res.json()).resolves.toEqual({ error: "Invalid JSON" });
     });
 });

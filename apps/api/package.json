@@ -21,7 +21,7 @@
   "license": "MIT",
   "type": "commonjs",
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260713.1",
+    "@cloudflare/workers-types": "^4.20260624.1",
     "@codspeed/vitest-plugin": "^5.7.0",
     "drizzle-kit": "1.0.0-rc.4-273829f",
     "typescript": "^6.0.3",
@@ -31,6 +31,6 @@
   "dependencies": {
     "drizzle-orm": "^0.45.2",
     "hono": "^4.12.23",
-    "p-map": "^7.0.5"
+    "p-map": "^4.0.0"
   }
 }
