@@ -238,7 +238,8 @@ orgsRoute.get("/:slug/tags", async (c) => {
   const rawTagCounts = new Map<string, number>();
 
   for (const paper of orgPapers) {
-    const isAuthor = currentUserId !== null && paper.authorUserId === currentUserId;
+    const isAuthor =
+      currentUserId !== null && paper.authorUserId === currentUserId;
     const isVisible =
       paper.visibility === "public" ||
       (paper.visibility === "org_only" && (isMember || isAuthor)) ||
@@ -254,10 +255,15 @@ orgsRoute.get("/:slug/tags", async (c) => {
   for (const [rawTags, count] of rawTagCounts) {
     const tags = parseStoredTags(rawTags);
     for (const tag of tags) {
-      if (query) {
-        if (!tag.toLowerCase().startsWith(query)) continue;
-      }
       counts.set(tag, (counts.get(tag) ?? 0) + count);
+    }
+  }
+
+  if (query) {
+    for (const tag of counts.keys()) {
+      if (!tag.toLowerCase().startsWith(query)) {
+        counts.delete(tag);
+      }
     }
   }
 
