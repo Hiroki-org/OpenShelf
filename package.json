@@ -59,7 +59,8 @@
     },
     "wrangler": {
       "esbuild": "0.28.1"
-    }
+    },
+    "undici": "^6.20.0"
   },
   "license": "MIT"
 }
