@@ -22,11 +22,11 @@
   "type": "commonjs",
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260713.1",
-    "@codspeed/vitest-plugin": "^5.7.0",
+    "@codspeed/vitest-plugin": "^5.7.1",
     "drizzle-kit": "1.0.0-rc.4-273829f",
     "typescript": "^6.0.3",
     "vitest": "^4.1.5",
-    "wrangler": "^4.104.0"
+    "wrangler": "^4.110.0"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
