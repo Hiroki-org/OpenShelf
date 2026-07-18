@@ -68,4 +68,30 @@ describe("test-auth routes", () => {
         );
         expect(res.status).toBe(401);
     });
+
+    it("returns 400 if body is invalid JSON", async () => {
+        const app = await createTestApp();
+        const env = createTestEnv({
+            ENABLE_TEST_AUTH: "true",
+            TEST_AUTH_SECRET: "correct-secret",
+            FRONTEND_URL: "http://localhost",
+        });
+
+        const res = await app.request(
+            "http://localhost/api/test-auth/test-token",
+            {
+                method: "POST",
+                headers: {
+                    "x-test-auth-secret": "correct-secret",
+                    "origin": "http://localhost",
+                    "referer": "http://localhost",
+                    "content-type": "application/json",
+                },
+                body: "{ invalid json ",
+            },
+            env as any
+        );
+        expect(res.status).toBe(400);
+        await expect(res.json()).resolves.toEqual({ error: "Invalid JSON" });
+    });
 });
