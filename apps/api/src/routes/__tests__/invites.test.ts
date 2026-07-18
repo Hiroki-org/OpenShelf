@@ -397,7 +397,7 @@ describe("invites routes", () => {
         {
           method: "PUT",
           headers: {
-            Authorization: `******
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ action: "accept" }),
