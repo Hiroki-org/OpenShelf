@@ -31,3 +31,6 @@
 ## 2026-06-21 - Conditional ARIA roles for dynamic messages
 **Learning:** 保存成功やエラーなど、結果に応じてメッセージの内容とスタイルが変わるコンテナ要素では、単に `<p>` タグで表示するのではなく、メッセージの重大度に応じて `role="alert"`（エラー用）や `role="status"`（成功・一般メッセージ用）を条件付きで切り替えることで、スクリーンリーダーユーザーにとってより適切で邪魔にならないフィードバックを提供できます。
 **Action:** 今後、動的なフィードバックメッセージを表示するコンポーネントを実装・改善する際は、`role={messageType === 'error' ? 'alert' : 'status'}` のような条件分岐を用いた ARIA ロールの設定を適用します。
+## 2026-06-25 - Header Interactive Elements Focus States
+**Learning:** ナビゲーションメニューやヘッダーのリンク、ボタンなど、主要なインタラクティブ要素に `focus-visible` スタイルが不足していると、キーボードやスクリーンリーダーのみで操作するユーザーが現在どこにフォーカスがあるか視認できず、アクセシビリティ（WCAG 2.4.7 Focus Visible）に重大な影響を与えます。TailwindCSS の `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2` （および `dark:` バリアント）を利用することで、これを防ぐことができます。
+**Action:** 今後、ナビゲーションやインタラクティブなUIコンポーネントを実装・改善する際は、必ず明確なキーボードフォーカスリング（`focus-visible`）を追加し、すべてのユーザーが現在地を視認できるようにします。
