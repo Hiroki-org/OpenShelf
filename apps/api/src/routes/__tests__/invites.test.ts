@@ -377,6 +377,48 @@ describe("invites routes", () => {
     }
   });
 
+  it("PUT /api/invites/:id logs non-Error failures as strings", async () => {
+    const token = await createTestJWT({
+      sub: "user-2",
+      githubId: "456",
+      name: "Invitee",
+    });
+    mockDb.run = vi.fn().mockRejectedValue("FK setup failed");
+    const consoleErrorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+
+    const app = await createTestApp();
+    const env = createTestEnv();
+
+    try {
+      const res = await app.request(
+        "http://localhost/api/invites/inv-1",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `******
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ action: "accept" }),
+        },
+        env as any,
+      );
+
+      expect(res.status).toBe(500);
+      await expect(res.json()).resolves.toEqual({
+        error: "Failed to respond to invite",
+      });
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Failed to respond to invite",
+        "FK setup failed",
+      );
+      expect(mockDb.select).not.toHaveBeenCalled();
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
+  });
+
   it("PUT /api/invites/:id returns 500 when invite lookup fails", async () => {
     const token = await createTestJWT({
       sub: "user-2",
