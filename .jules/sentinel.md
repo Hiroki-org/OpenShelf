@@ -25,3 +25,9 @@
 **Vulnerability:** Unhandled exceptions in the Hono API routes can leak internal application details, such as stack traces, to the client via default 500 error responses.
 **Learning:** Returning raw Error objects or relying on Hono's default error handling without a custom `onError` hook exposes potentially sensitive debugging information.
 **Prevention:** Always define a global `app.onError((err, c) => { ... })` handler in the main application file (e.g., `apps/api/src/index.ts`) to intercept all unhandled exceptions, log a sanitized version of the error internally, and return a safe, generic JSON response to the user.
+
+
+## 2024-07-19 - [クライアント側の脆弱な乱数生成]
+**Vulnerability:** UIコンポーネント（トースト）のID生成に `Math.random()` が使用されていました。
+**Learning:** `Math.random()` は暗号学的に安全ではありません。UI要素のIDは通常リスクが低いですが、予測可能なIDを使用するとIDの衝突が発生したり、予測不可能性が求められるコンテキストで再利用された場合にセキュリティリスクにつながる可能性があります。
+**Prevention:** 一意のIDを生成する場合は、常に `crypto.randomUUID()` などの暗号学的に安全なメソッドを使用し、`crypto` が未定義の可能性があるHTTPS以外の環境用のフォールバックも提供する必要があります。
