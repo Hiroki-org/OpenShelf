@@ -58,3 +58,53 @@ describe("toast", () => {
     consoleSpy.mockRestore();
   });
 });
+
+  describe("addToast ID generation", () => {
+    let originalCrypto: any;
+
+    beforeEach(() => {
+      originalCrypto = globalThis.crypto;
+    });
+
+    afterEach(() => {
+      Object.defineProperty(globalThis, "crypto", {
+        value: originalCrypto,
+        writable: true,
+        configurable: true,
+      });
+    });
+
+    it("uses crypto.randomUUID when available", () => {
+      const mockUUID = "mock-uuid-1234";
+      Object.defineProperty(globalThis, "crypto", {
+        value: { randomUUID: vi.fn(() => mockUUID) },
+        writable: true,
+        configurable: true,
+      });
+
+      render(<ToastContainer />);
+      act(() => {
+        toast.success("test crypto");
+      });
+
+      expect(globalThis.crypto.randomUUID).toHaveBeenCalled();
+    });
+
+    it("falls back to Math.random when crypto is undefined", () => {
+      Object.defineProperty(globalThis, "crypto", {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
+
+      const mathRandomSpy = vi.spyOn(Math, "random").mockReturnValue(0.123456789);
+
+      render(<ToastContainer />);
+      act(() => {
+        toast.success("test math fallback");
+      });
+
+      expect(mathRandomSpy).toHaveBeenCalled();
+      mathRandomSpy.mockRestore();
+    });
+  });
