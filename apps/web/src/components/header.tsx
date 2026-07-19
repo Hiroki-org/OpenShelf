@@ -22,7 +22,7 @@ export function Header() {
         <div className="flex min-w-0 items-center gap-6">
           <Link
             href="/"
-            className="text-base font-semibold tracking-tight text-gray-950 transition-colors hover:text-gray-700 dark:text-gray-50 dark:hover:text-gray-300"
+            className="text-base font-semibold tracking-tight text-gray-950 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:text-gray-50 dark:hover:text-gray-300 dark:focus-visible:ring-offset-gray-950"
           >
             OpenShelf
           </Link>
@@ -38,7 +38,7 @@ export function Header() {
                     key={item.href}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    className={`rounded-full px-3 py-1.5 transition-colors ${
+                    className={`rounded-full px-3 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950 ${
                       isActive
                         ? "bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
                         : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
@@ -70,7 +70,7 @@ export function Header() {
               <button
                 type="button"
                 onClick={logout}
-                className="rounded-full border border-gray-300 px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-gray-50"
+                className="rounded-full border border-gray-300 px-3 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-offset-gray-950"
               >
                 ログアウト
               </button>
@@ -79,7 +79,7 @@ export function Header() {
             <button
               type="button"
               onClick={login}
-              className="rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+              className="rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 dark:focus-visible:ring-offset-gray-950"
             >
               GitHubでログイン
             </button>
