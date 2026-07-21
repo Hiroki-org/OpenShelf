@@ -31,3 +31,6 @@
 ## 2026-06-21 - Conditional ARIA roles for dynamic messages
 **Learning:** 保存成功やエラーなど、結果に応じてメッセージの内容とスタイルが変わるコンテナ要素では、単に `<p>` タグで表示するのではなく、メッセージの重大度に応じて `role="alert"`（エラー用）や `role="status"`（成功・一般メッセージ用）を条件付きで切り替えることで、スクリーンリーダーユーザーにとってより適切で邪魔にならないフィードバックを提供できます。
 **Action:** 今後、動的なフィードバックメッセージを表示するコンポーネントを実装・改善する際は、`role={messageType === 'error' ? 'alert' : 'status'}` のような条件分岐を用いた ARIA ロールの設定を適用します。
+## 2024-07-21 - [Markdown Editor Keyboard Navigation Fix]
+**Learning:** `focus:outline-none` は、デフォルトのブラウザのフォーカスリングを削除するためにテキストエリアでよく使用されますが、代替となる `focus-visible` がないと、キーボードユーザーはフォーカスの位置を完全に失ってしまいます。カスタムタブコンポーネントにおいて標準のフォーカスリングを使用すると、レイアウト崩れ（クリッピング）が発生することがあります。
+**Action:** アクセシビリティを確保しつつ視覚的なデザインを維持するために、Tailwind で `focus:outline-none` を使用する場合は、常に `focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[color]` と組み合わせる必要があります（特にクリッピングが発生しやすいタブ要素などにおいて）。
