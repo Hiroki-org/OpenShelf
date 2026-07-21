@@ -68,7 +68,7 @@ export function MarkdownEditor({
           aria-controls={`${id}-panel-write`}
           tabIndex={mode === "write" ? 0 : -1}
           onClick={() => onModeChange("write")}
-          className={`px-3 py-2 text-sm ${mode === "write" ? "bg-gray-100 font-medium dark:bg-gray-800" : ""}`}
+          className={`px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900 dark:focus-visible:ring-gray-100 ${mode === "write" ? "bg-gray-100 font-medium dark:bg-gray-800" : ""}`}
         >
           Write
         </button>
@@ -81,7 +81,7 @@ export function MarkdownEditor({
           aria-controls={`${id}-panel-preview`}
           tabIndex={mode === "preview" ? 0 : -1}
           onClick={() => onModeChange("preview")}
-          className={`px-3 py-2 text-sm ${mode === "preview" ? "bg-gray-100 font-medium dark:bg-gray-800" : ""}`}
+          className={`px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900 dark:focus-visible:ring-gray-100 ${mode === "preview" ? "bg-gray-100 font-medium dark:bg-gray-800" : ""}`}
         >
           Preview
         </button>
@@ -97,13 +97,14 @@ export function MarkdownEditor({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             rows={12}
-            className="w-full resize-y border-0 bg-transparent p-3 font-mono text-sm focus:outline-none"
+            className="w-full resize-y border-0 bg-transparent p-3 font-mono text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900 dark:focus-visible:ring-gray-100 rounded-b-md"
             placeholder={placeholder}
           />
         </div>
       ) : (
         <div
-          className="min-h-[12rem] p-3"
+          className="min-h-[12rem] p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900 dark:focus-visible:ring-gray-100 rounded-b-md"
+          tabIndex={0}
           role="tabpanel"
           id={`${id}-panel-preview`}
           aria-labelledby={`${id}-tab-preview`}
