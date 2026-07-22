@@ -56,6 +56,8 @@ describe("NewOrgPage", () => {
       "org-description-counter",
     );
     expect(counter).toHaveAttribute("id", "org-description-counter");
+    expect(counter).not.toHaveAttribute("aria-live");
+    expect(counter).not.toHaveAttribute("aria-atomic");
     expect(counter).toHaveClass("text-gray-500");
 
     fireEvent.change(description, { target: { value: "abc" } });
