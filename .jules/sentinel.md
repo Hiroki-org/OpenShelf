@@ -25,3 +25,6 @@
 **Vulnerability:** Unhandled exceptions in the Hono API routes can leak internal application details, such as stack traces, to the client via default 500 error responses.
 **Learning:** Returning raw Error objects or relying on Hono's default error handling without a custom `onError` hook exposes potentially sensitive debugging information.
 **Prevention:** Always define a global `app.onError((err, c) => { ... })` handler in the main application file (e.g., `apps/api/src/index.ts`) to intercept all unhandled exceptions, log a sanitized version of the error internally, and return a safe, generic JSON response to the user.
+**Vulnerability:** JWTシークレットがキャッシュキーに直接連結され、アプリケーションのメモリ内に機密情報が漏洩する脆弱性。
+**Learning:** キャッシュキーなどの内部状態に環境変数やシークレットをそのまま含めるべきではありません。キーの衝突を避けるためであっても、ハッシュ化するか、安全に省略可能な場合は省略するべきです。
+**Prevention:** センシティブなデータ（トークン、シークレット等）を扱う際は、それらがログやキャッシュ、エラートレースなどに平文で残らないように設計時に注意する。
