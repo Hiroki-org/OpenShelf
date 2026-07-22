@@ -73,6 +73,10 @@ describe("NewCollectionPage", () => {
       "id",
       "description-counter",
     );
+    expect(screen.getByText("0/100")).not.toHaveAttribute("aria-live");
+    expect(screen.getByText("0/500")).not.toHaveAttribute("aria-live");
+    expect(screen.getByText("0/100")).not.toHaveAttribute("aria-atomic");
+    expect(screen.getByText("0/500")).not.toHaveAttribute("aria-atomic");
 
     fireEvent.change(name, { target: { value: "x".repeat(89) } });
     expect(screen.getByText("89/100")).toHaveClass("text-gray-500");

@@ -394,7 +394,12 @@ async function authorizePaperAccess(
     return { ok: false, status: 401, error: "Unauthorized" };
   }
 
-  const token = `${c.env.JWT_SECRET}:${rawToken}`;
+  const encoder = new TextEncoder();
+  const data = encoder.encode(`${c.env.JWT_SECRET}:${rawToken}`);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const token = Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
   let user: { sub: string };
   const now = Date.now();
   const cached = tokenCache.get(token);
@@ -1354,7 +1359,7 @@ papersRoute.post("/:id/invites", authMiddleware, async (c) => {
         resolvedInviteeEmail = null;
       }
     } catch (e: unknown) {
-      console.error("Failed to lookup invitee by email:", e);
+      console.error("Failed to lookup invitee by email:", formatCaughtError(e));
       return c.json({ error: "Internal server error" }, 500);
     }
   }
