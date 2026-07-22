@@ -38,10 +38,10 @@ export function Header() {
                     key={item.href}
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
-                    className={`rounded-full px-3 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950 ${
+                    className={`rounded-full px-3 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-950 ${
                       isActive
-                        ? "bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+                        ? "bg-gray-900 text-white focus-visible:ring-blue-500 dark:bg-gray-100 dark:text-gray-900 dark:focus-visible:ring-blue-400"
+                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus-visible:ring-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100 dark:focus-visible:ring-gray-100"
                     }`}
                   >
                     {item.label}
