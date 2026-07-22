@@ -13,6 +13,12 @@ import { authMiddleware } from "../middleware/auth";
 
 const invitesRoute = new Hono<{ Bindings: Env; Variables: Variables }>();
 
+function formatCaughtError(error: unknown): string {
+    return error instanceof Error
+        ? `${error.name}: ${error.message}`
+        : String(error);
+}
+
 // GET /api/invites/received — invites sent to the current user
 invitesRoute.get("/received", authMiddleware, async (c) => {
     const db = drizzle(c.env.DB);
@@ -73,7 +79,7 @@ const respondInviteHandler = async (c: any) => {
             .where(eq(coauthorInvites.id, inviteId))
             .get();
     } catch (error) {
-        console.error("Failed to respond to invite", error);
+        console.error("Failed to respond to invite", formatCaughtError(error));
         return c.json({ error: "Failed to respond to invite" }, 500);
     }
     if (!invite) return c.json({ error: "Invite not found" }, 404);
@@ -110,7 +116,7 @@ const respondInviteHandler = async (c: any) => {
                 .where(eq(coauthorInvites.id, inviteId));
         }
     } catch (error) {
-        console.error("Failed to respond to invite", error);
+        console.error("Failed to respond to invite", formatCaughtError(error));
         return c.json({ error: "Failed to respond to invite" }, 500);
     }
 
