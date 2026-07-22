@@ -103,8 +103,7 @@ export function MarkdownEditor({
         </div>
       ) : (
         <div
-          className="min-h-[12rem] p-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900 dark:focus-visible:ring-gray-100 rounded-b-md"
-          tabIndex={0}
+          className="min-h-[12rem] p-3"
           role="tabpanel"
           id={`${id}-panel-preview`}
           aria-labelledby={`${id}-tab-preview`}
