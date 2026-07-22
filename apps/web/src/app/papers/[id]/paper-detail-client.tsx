@@ -843,6 +843,7 @@ export default function PaperDetailClient({
                     height={0}
                     sizes="100vw"
                     className="h-auto w-full rounded"
+                    style={{ width: "100%", height: "auto" }}
                     unoptimized
                   />
                 ) : failedImageIds.includes(img.id) ? (
