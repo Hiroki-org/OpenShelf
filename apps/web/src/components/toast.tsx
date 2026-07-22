@@ -20,7 +20,16 @@ export const toast = {
 };
 
 function addToast(message: string, type: ToastType) {
-  const id = Math.random().toString(36).substring(2, 9);
+  let id: string;
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    id = crypto.randomUUID();
+  } else if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+    const arr = new Uint32Array(1);
+    crypto.getRandomValues(arr);
+    id = arr[0].toString(36);
+  } else {
+    id = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+  }
   const newToast = { id, message, type };
   toasts = [...toasts, newToast];
   notify();
