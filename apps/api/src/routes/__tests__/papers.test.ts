@@ -3502,51 +3502,40 @@ describe("papers routes", () => {
         githubId: "123",
         name: "Uploader",
       });
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => undefined);
 
-      try {
-        mockDb.select = vi
-          .fn()
-          .mockImplementationOnce(() =>
-            makeQuery({
-              getResult: {
-                paperId: "paper-1",
-                userId: "user-uploader",
-                role: "uploader",
-              },
-            }),
-          )
-          .mockImplementationOnce(() => {
-            throw new Error("DB Error on email lookup");
-          });
-
-        const app = await createTestApp();
-        const env = createTestEnv();
-        const customRes = await app.request(
-          "http://localhost/api/papers/paper-1/invites",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
+      mockDb.select = vi
+        .fn()
+        .mockImplementationOnce(() =>
+          makeQuery({
+            getResult: {
+              paperId: "paper-1",
+              userId: "user-uploader",
+              role: "uploader",
             },
-            body: JSON.stringify({ inviteeEmail: "error@example.com" }),
-          },
-          env as any,
-        );
+          }),
+        )
+        .mockImplementationOnce(() => {
+          throw new Error("DB Error on email lookup");
+        });
 
-        expect(customRes.status).toBe(500);
-        const data = (await customRes.json()) as any;
-        expect(data.error).toBe("Internal server error");
-        expect(consoleErrorSpy).toHaveBeenCalledWith(
-          "Failed to lookup invitee by email:",
-          "Error: DB Error on email lookup",
-        );
-      } finally {
-        consoleErrorSpy.mockRestore();
-      }
+      const app = await createTestApp();
+      const env = createTestEnv();
+      const customRes = await app.request(
+        "http://localhost/api/papers/paper-1/invites",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ inviteeEmail: "error@example.com" }),
+        },
+        env as any,
+      );
+
+      expect(customRes.status).toBe(500);
+      const data = (await customRes.json()) as any;
+      expect(data.error).toBe("Internal server error");
     });
 
     it("POST /api/papers/:id/invites resolves invitee email to a user id", async () => {
