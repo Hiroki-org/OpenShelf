@@ -90,21 +90,40 @@ describe("toast", () => {
       expect(globalThis.crypto.randomUUID).toHaveBeenCalled();
     });
 
-    it("falls back to Math.random when crypto is undefined", () => {
+    it("uses crypto.getRandomValues when randomUUID is unavailable", () => {
+      const getRandomValues = vi.fn((bytes: Uint8Array) => {
+        bytes.fill(0xab);
+        return bytes;
+      });
+      Object.defineProperty(globalThis, "crypto", {
+        value: { getRandomValues },
+        writable: true,
+        configurable: true,
+      });
+
+      render(<ToastContainer />);
+      act(() => {
+        toast.success("test secure fallback");
+      });
+
+      expect(getRandomValues).toHaveBeenCalledOnce();
+    });
+
+    it("does not use Math.random when crypto is unavailable", () => {
       Object.defineProperty(globalThis, "crypto", {
         value: undefined,
         writable: true,
         configurable: true,
       });
 
-      const mathRandomSpy = vi.spyOn(Math, "random").mockReturnValue(0.123456789);
+      const mathRandomSpy = vi.spyOn(Math, "random");
 
       render(<ToastContainer />);
       act(() => {
-        toast.success("test math fallback");
+        toast.success("test deterministic fallback");
       });
 
-      expect(mathRandomSpy).toHaveBeenCalled();
+      expect(mathRandomSpy).not.toHaveBeenCalled();
       mathRandomSpy.mockRestore();
     });
   });
