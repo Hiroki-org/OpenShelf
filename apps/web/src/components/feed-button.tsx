@@ -13,7 +13,7 @@ type FeedButtonProps = {
 
 export function FeedButton({
   url,
-  className = "rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-700 dark:hover:bg-gray-800 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950",
+  className = "rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800",
   label = "📡 Feed",
   ariaLabel,
 }: FeedButtonProps) {
@@ -79,7 +79,7 @@ export function FeedButton({
           <div className="mt-3 flex items-center gap-2">
             <button
               type="button"
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-700 dark:hover:bg-gray-800 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
+              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
               aria-label="フィードURLをクリップボードにコピー"
               onClick={handleCopy}
             >
@@ -89,7 +89,7 @@ export function FeedButton({
               href={url}
               target="_blank"
               rel="noreferrer noopener"
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-700 dark:hover:bg-gray-800 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
+              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
               aria-label="フィードを新しいタブで開く"
             >
               開く
