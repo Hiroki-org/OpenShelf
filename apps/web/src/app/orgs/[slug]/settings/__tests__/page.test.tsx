@@ -78,139 +78,175 @@ function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status });
 }
 
+const userSearchResults = [
+  {
+    id: "user-3",
+    name: "alicecat",
+    displayName: "Alice Candidate",
+    avatarUrl: null,
+  },
+  {
+    id: "user-4",
+    name: "fallbackalice",
+    displayName: null,
+    avatarUrl: null,
+  },
+];
+
+const searchablePapers = [
+  {
+    id: "paper-1",
+    title: "Existing Paper",
+    visibility: "public",
+    year: 2025,
+    venue: "Conf",
+  },
+  {
+    id: "paper-2",
+    title: "Transformer Tricks",
+    visibility: "public",
+    year: 2024,
+    venue: "Journal",
+  },
+];
+
+function handleOrgRequests(
+  url: string,
+  method: string,
+  init: RequestInit | undefined,
+  state: OrgState,
+) {
+  if (url === "/api/orgs/demo-org" && method === "GET") {
+    return jsonResponse({ org: state.org });
+  }
+
+  if (url === "/api/orgs/demo-org" && method === "PATCH") {
+    const body = JSON.parse(String(init?.body ?? "{}"));
+    state.org = {
+      ...state.org,
+      name: body.name,
+      slug: body.slug,
+      description: body.description,
+    };
+    return jsonResponse({ org: state.org });
+  }
+
+  if (url === "/api/orgs/demo-org" && method === "DELETE") {
+    return jsonResponse({ ok: true });
+  }
+
+  return null;
+}
+
+function handleMemberRequests(
+  url: string,
+  method: string,
+  init: RequestInit | undefined,
+  state: OrgState,
+) {
+  if (url === "/api/orgs/demo-org/members" && method === "GET") {
+    return jsonResponse({ members: state.members });
+  }
+
+  if (url === "/api/users/search?q=al" && method === "GET") {
+    return jsonResponse({
+      users: userSearchResults.filter(
+        (user) => !state.members.some((member) => member.userId === user.id),
+      ),
+    });
+  }
+
+  if (url === "/api/orgs/demo-org/members" && method === "POST") {
+    const body = JSON.parse(String(init?.body ?? "{}"));
+    const candidate = userSearchResults.find((user) => user.id === body.userId);
+    if (candidate) {
+      state.members = [
+        ...state.members,
+        {
+          userId: candidate.id,
+          role: body.role,
+          name: candidate.name,
+          displayName: candidate.displayName,
+          avatarUrl: candidate.avatarUrl,
+          githubId: candidate.name,
+        },
+      ];
+    }
+    return jsonResponse({ ok: true });
+  }
+
+  if (url === "/api/orgs/demo-org/members/member-2" && method === "PATCH") {
+    const body = JSON.parse(String(init?.body ?? "{}"));
+    state.members = state.members.map((member) =>
+      member.userId === "member-2" ? { ...member, role: body.role } : member,
+    );
+    return jsonResponse({ ok: true });
+  }
+
+  if (url === "/api/orgs/demo-org/members/member-2" && method === "DELETE") {
+    state.members = state.members.filter(
+      (member) => member.userId !== "member-2",
+    );
+    return jsonResponse({ ok: true });
+  }
+
+  return null;
+}
+
+function handlePaperRequests(
+  url: string,
+  method: string,
+  init: RequestInit | undefined,
+  state: OrgState,
+  options: OrgApiMockOptions,
+) {
+  if (url === "/api/orgs/demo-org/papers" && method === "GET") {
+    return jsonResponse({ papers: state.papers });
+  }
+
+  if (url === "/api/papers" && method === "GET") {
+    return jsonResponse({ papers: searchablePapers });
+  }
+
+  if (url === "/api/orgs/demo-org/papers" && method === "POST") {
+    const body = JSON.parse(String(init?.body ?? "{}"));
+    const paper = searchablePapers.find((entry) => entry.id === body.paperId);
+    if (paper) {
+      state.papers = [...state.papers, paper];
+    }
+    return jsonResponse({ ok: true });
+  }
+
+  if (url.startsWith("/api/orgs/demo-org/papers/") && method === "DELETE") {
+    const paperId = decodeURIComponent(url.split("/").pop() ?? "");
+    if (options.removePaper) {
+      return options.removePaper(paperId);
+    }
+    state.papers = state.papers.filter((paper) => paper.id !== paperId);
+    return jsonResponse({ ok: true });
+  }
+
+  return null;
+}
+
 function setupOrgApiMock(state: OrgState, options: OrgApiMockOptions = {}) {
-  const userSearchResults = [
-    {
-      id: "user-3",
-      name: "alicecat",
-      displayName: "Alice Candidate",
-      avatarUrl: null,
-    },
-    {
-      id: "user-4",
-      name: "fallbackalice",
-      displayName: null,
-      avatarUrl: null,
-    },
-  ];
-
-  const searchablePapers = [
-    {
-      id: "paper-1",
-      title: "Existing Paper",
-      visibility: "public",
-      year: 2025,
-      venue: "Conf",
-    },
-    {
-      id: "paper-2",
-      title: "Transformer Tricks",
-      visibility: "public",
-      year: 2024,
-      venue: "Journal",
-    },
-  ];
-
   vi.mocked(apiFetch).mockImplementation(async (input, init) => {
     const url = String(input);
     const method = init?.method ?? "GET";
 
-    if (url === "/api/orgs/demo-org" && method === "GET") {
-      return jsonResponse({ org: state.org });
-    }
+    const orgResponse = handleOrgRequests(url, method, init, state);
+    if (orgResponse) return orgResponse;
 
-    if (url === "/api/orgs/demo-org/members" && method === "GET") {
-      return jsonResponse({ members: state.members });
-    }
+    const memberResponse = handleMemberRequests(url, method, init, state);
+    if (memberResponse) return memberResponse;
 
-    if (url === "/api/orgs/demo-org/papers" && method === "GET") {
-      return jsonResponse({ papers: state.papers });
-    }
-
-    if (url === "/api/orgs/demo-org" && method === "PATCH") {
-      const body = JSON.parse(String(init?.body ?? "{}"));
-      state.org = {
-        ...state.org,
-        name: body.name,
-        slug: body.slug,
-        description: body.description,
-      };
-      return jsonResponse({ org: state.org });
-    }
-
-    if (url === "/api/orgs/demo-org" && method === "DELETE") {
-      return jsonResponse({ ok: true });
-    }
-
-    if (url === "/api/users/search?q=al" && method === "GET") {
-      return jsonResponse({
-        users: userSearchResults.filter(
-          (user) => !state.members.some((member) => member.userId === user.id),
-        ),
-      });
-    }
-
-    if (url === "/api/orgs/demo-org/members" && method === "POST") {
-      const body = JSON.parse(String(init?.body ?? "{}"));
-      const candidate = userSearchResults.find(
-        (user) => user.id === body.userId,
-      );
-      if (candidate) {
-        state.members = [
-          ...state.members,
-          {
-            userId: candidate.id,
-            role: body.role,
-            name: candidate.name,
-            displayName: candidate.displayName,
-            avatarUrl: candidate.avatarUrl,
-            githubId: candidate.name,
-          },
-        ];
-      }
-      return jsonResponse({ ok: true });
-    }
-
-    if (url === "/api/orgs/demo-org/members/member-2" && method === "PATCH") {
-      const body = JSON.parse(String(init?.body ?? "{}"));
-      state.members = state.members.map((member) =>
-        member.userId === "member-2" ? { ...member, role: body.role } : member,
-      );
-      return jsonResponse({ ok: true });
-    }
-
-    if (url === "/api/orgs/demo-org/members/member-2" && method === "DELETE") {
-      state.members = state.members.filter(
-        (member) => member.userId !== "member-2",
-      );
-      return jsonResponse({ ok: true });
-    }
-
-    if (url === "/api/papers" && method === "GET") {
-      return jsonResponse({ papers: searchablePapers });
-    }
-
-    if (url === "/api/orgs/demo-org/papers" && method === "POST") {
-      const body = JSON.parse(String(init?.body ?? "{}"));
-      const paper = searchablePapers.find((entry) => entry.id === body.paperId);
-      if (paper) {
-        state.papers = [...state.papers, paper];
-      }
-      return jsonResponse({ ok: true });
-    }
-
-    if (url.startsWith("/api/orgs/demo-org/papers/") && method === "DELETE") {
-      const paperId = decodeURIComponent(url.split("/").pop() ?? "");
-      if (options.removePaper) {
-        return options.removePaper(paperId);
-      }
-      state.papers = state.papers.filter((paper) => paper.id !== paperId);
-      return jsonResponse({ ok: true });
-    }
+    const paperResponse = handlePaperRequests(url, method, init, state, options);
+    if (paperResponse) return paperResponse;
 
     throw new Error(`Unexpected request: ${method} ${url}`);
   });
 }
+
 
 describe("OrgSettingsPage", () => {
   beforeEach(() => {
