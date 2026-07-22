@@ -12,7 +12,6 @@ interface Toast {
 
 let toastListeners: ((toasts: Toast[]) => void)[] = [];
 let toasts: Toast[] = [];
-let fallbackToastId = 0;
 
 export const toast = {
   success: (message: string) => addToast(message, "success"),
@@ -20,30 +19,25 @@ export const toast = {
   info: (message: string) => addToast(message, "info"),
 };
 
+let toastIdCounter = 0;
+
 function addToast(message: string, type: ToastType) {
-  const id = createToastId();
+  let id: string;
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    id = crypto.randomUUID();
+  } else if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    const array = new Uint32Array(1);
+    crypto.getRandomValues(array);
+    id = array[0].toString(36);
+  } else {
+    toastIdCounter++;
+    id = `toast-${Date.now().toString(36)}-${toastIdCounter}`;
+  }
+
   const newToast = { id, message, type };
   toasts = [...toasts, newToast];
   notify();
   setTimeout(() => removeToast(id), 5000);
-}
-
-function createToastId(): string {
-  if (typeof crypto !== "undefined") {
-    if (typeof crypto.randomUUID === "function") {
-      return crypto.randomUUID();
-    }
-
-    if (typeof crypto.getRandomValues === "function") {
-      const bytes = crypto.getRandomValues(new Uint8Array(16));
-      return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join(
-        "",
-      );
-    }
-  }
-
-  fallbackToastId += 1;
-  return `toast-${Date.now().toString(36)}-${fallbackToastId.toString(36)}`;
 }
 
 function removeToast(id: string) {

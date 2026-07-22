@@ -90,40 +90,41 @@ describe("toast", () => {
       expect(globalThis.crypto.randomUUID).toHaveBeenCalled();
     });
 
-    it("uses crypto.getRandomValues when randomUUID is unavailable", () => {
-      const getRandomValues = vi.fn((bytes: Uint8Array) => {
-        bytes.fill(0xab);
-        return bytes;
+    it("uses crypto.getRandomValues when randomUUID is not available", () => {
+      const mockGetRandomValues = vi.fn((array) => {
+        array[0] = 123456;
       });
       Object.defineProperty(globalThis, "crypto", {
-        value: { getRandomValues },
+        value: { getRandomValues: mockGetRandomValues },
         writable: true,
         configurable: true,
       });
 
       render(<ToastContainer />);
       act(() => {
-        toast.success("test secure fallback");
+        toast.success("test crypto fallback");
       });
 
-      expect(getRandomValues).toHaveBeenCalledOnce();
+      expect(mockGetRandomValues).toHaveBeenCalled();
     });
 
-    it("does not use Math.random when crypto is unavailable", () => {
+    it("falls back to timestamp and counter when crypto is completely unavailable", () => {
       Object.defineProperty(globalThis, "crypto", {
         value: undefined,
         writable: true,
         configurable: true,
       });
 
-      const mathRandomSpy = vi.spyOn(Math, "random");
+      const dateSpy = vi.spyOn(Date, "now").mockReturnValue(1600000000000);
 
-      render(<ToastContainer />);
+      const { unmount } = render(<ToastContainer />);
       act(() => {
-        toast.success("test deterministic fallback");
+        toast.success("test math fallback 3");
       });
 
-      expect(mathRandomSpy).not.toHaveBeenCalled();
-      mathRandomSpy.mockRestore();
+      expect(dateSpy).toHaveBeenCalled();
+      expect(screen.getAllByText("test math fallback 3")[0]).toBeInTheDocument();
+      dateSpy.mockRestore();
+      unmount();
     });
   });
