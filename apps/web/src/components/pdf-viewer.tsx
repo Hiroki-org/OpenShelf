@@ -464,7 +464,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             onClick={() => goToPage(activePage - 1)}
             disabled={!canPrev}
             title={!canPrev ? "最初のページです" : undefined}
-            className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
+            className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
           >
             前へ
           </button>
@@ -476,7 +476,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             onClick={() => goToPage(activePage + 1)}
             disabled={!canNext}
             title={!canNext ? "最後のページです" : undefined}
-            className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
+            className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
           >
             次へ
           </button>
@@ -492,7 +492,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             }}
             disabled={zoom <= MIN_ZOOM}
             title={zoom <= MIN_ZOOM ? "これ以上縮小できません" : undefined}
-            className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
+            className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
           >
             -
           </button>
@@ -521,7 +521,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             }}
             disabled={zoom >= MAX_ZOOM}
             title={zoom >= MAX_ZOOM ? "これ以上拡大できません" : undefined}
-            className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
+            className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
           >
             +
           </button>
@@ -529,7 +529,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
           <button
             type="button"
             onClick={toggleFullScreen}
-            className="rounded bg-gray-800 px-2 py-1 text-xs text-white hover:bg-gray-700 dark:bg-gray-200 dark:text-gray-900"
+            className="rounded bg-gray-800 px-2 py-1 text-xs text-white hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:bg-gray-200 dark:text-gray-900 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
           >
             全画面
           </button>
@@ -539,7 +539,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             onClick={() =>
               setViewMode((mode) => (mode === "paged" ? "continuous" : "paged"))
             }
-            className="rounded border border-gray-300 px-2 py-1 text-xs dark:border-gray-600"
+            className="rounded border border-gray-300 px-2 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
           >
             {viewMode === "paged" ? "連続スクロール" : "ページ送り"}
           </button>
@@ -562,7 +562,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
           title={
             searchMatches.length === 0 ? "検索結果がありません" : undefined
           }
-          className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
+          className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
         >
           前の一致
         </button>
@@ -573,7 +573,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
           title={
             searchMatches.length === 0 ? "検索結果がありません" : undefined
           }
-          className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600"
+          className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
         >
           次の一致
         </button>
@@ -614,7 +614,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
               {onDownloadFallback ? (
                 <button
                   type="button"
-                  className="underline"
+                  className="underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950 rounded-sm"
                   onClick={onDownloadFallback}
                 >
                   ダウンロードする
