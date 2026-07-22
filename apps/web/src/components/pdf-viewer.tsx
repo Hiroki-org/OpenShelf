@@ -529,7 +529,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
           <button
             type="button"
             onClick={toggleFullScreen}
-            className="rounded bg-gray-800 px-2 py-1 text-xs text-white hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:bg-gray-200 dark:text-gray-900 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-900"
+            className="rounded bg-gray-800 px-2 py-1 text-xs text-white hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 dark:bg-gray-200 dark:text-gray-900 dark:focus-visible:ring-blue-400 dark:focus-visible:ring-offset-gray-900"
           >
             全画面
           </button>
