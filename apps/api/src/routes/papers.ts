@@ -1354,7 +1354,7 @@ papersRoute.post("/:id/invites", authMiddleware, async (c) => {
         resolvedInviteeEmail = null;
       }
     } catch (e: unknown) {
-      console.error("Failed to lookup invitee by email:", formatCaughtError(e));
+      console.error("Failed to lookup invitee by email:", e);
       return c.json({ error: "Internal server error" }, 500);
     }
   }
