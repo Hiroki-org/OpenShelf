@@ -30,7 +30,7 @@ describe("toast", () => {
   });
 
   it("renders and auto-removes toast messages", () => {
-    render(<ToastContainer />);
+    const { unmount } = render(<ToastContainer />);
 
     act(() => {
       toast.success("saved");
@@ -49,15 +49,35 @@ describe("toast", () => {
     expect(screen.queryByText("saved")).not.toBeInTheDocument();
     expect(screen.queryByText("failed")).not.toBeInTheDocument();
     expect(screen.queryByText("fyi")).not.toBeInTheDocument();
+    unmount();
   });
 
   it("ToastContainer has correct accessibility attributes", () => {
-    const { container } = render(<ToastContainer />);
+    const { container, unmount } = render(<ToastContainer />);
     const toastWrapper = container.firstChild;
 
     expect(toastWrapper).toHaveAttribute("aria-live", "polite");
     expect(toastWrapper).not.toHaveAttribute("role", "status");
     expect(toastWrapper).not.toHaveAttribute("aria-atomic");
+    unmount();
+  });
+
+  it("uses fallback id generation when crypto.randomUUID is not available", () => {
+    const originalRandomUUID = globalThis.crypto.randomUUID;
+    delete (globalThis.crypto as any).randomUUID;
+
+    const { unmount } = render(<ToastContainer />);
+    act(() => {
+      toast.success("fallback test");
+    });
+
+    expect(screen.getByText("fallback test")).toBeInTheDocument();
+
+    unmount();
+    Object.defineProperty(globalThis.crypto, 'randomUUID', {
+      value: originalRandomUUID,
+      configurable: true,
+    });
   });
 
   it("removes listener on unmount", () => {
