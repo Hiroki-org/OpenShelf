@@ -8,6 +8,7 @@ import { splitTagInput } from "@/lib/tags";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Spinner } from "@/components/spinner";
 
 const VISIBILITY_OPTIONS = [
   { value: "private", label: "非公開" },
@@ -533,10 +534,7 @@ export default function PaperEditPage() {
             className="inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-500 disabled:opacity-50 font-medium"
           >
             {submitting && (
-              <span
-                aria-hidden="true"
-                className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-              />
+              <Spinner />
             )}
             {submitting ? "保存中..." : "保存する"}
           </button>
