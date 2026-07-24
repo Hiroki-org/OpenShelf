@@ -3,13 +3,30 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ToastContainer, toast } from "../toast";
 
 describe("toast", () => {
+  let originalCrypto: Crypto | undefined;
+
   beforeEach(() => {
     vi.useFakeTimers();
+    originalCrypto = globalThis.crypto;
+    Object.defineProperty(globalThis, "crypto", {
+      value: {
+        randomUUID: () => `mock-uuid-${Math.random().toString().slice(2, 8)}`,
+      },
+      configurable: true,
+    });
   });
 
   afterEach(() => {
     vi.runOnlyPendingTimers();
     vi.useRealTimers();
+    if (originalCrypto) {
+      Object.defineProperty(globalThis, "crypto", {
+        value: originalCrypto,
+        configurable: true,
+      });
+    } else {
+      delete (globalThis as any).crypto;
+    }
   });
 
   it("renders and auto-removes toast messages", () => {
