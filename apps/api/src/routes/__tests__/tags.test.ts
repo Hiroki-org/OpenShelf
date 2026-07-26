@@ -273,4 +273,59 @@ describe("tags routes", () => {
     expect(res.status).toBe(403);
     await expect(res.json()).resolves.toEqual({ error: "Forbidden" });
   });
+
+  it("GET /api/tags/suggest handles undefined results gracefully (fallback branch)", async () => {
+    const token = await createTestJWT({
+      sub: "user-1",
+      githubId: "123",
+      name: "Tester",
+    });
+    const app = await createTestApp();
+    const env = createTestEnv();
+
+    (env.DB as any).prepare = vi.fn().mockReturnValue({
+      bind: vi.fn().mockReturnValue({
+        all: vi.fn().mockReturnValue({}),
+      }),
+    });
+
+    const res = await app.request(
+      "http://localhost/api/tags/suggest?q=AI",
+      { headers: { Authorization: `Bearer ${token}` } },
+      env as any,
+    );
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual({ tags: [] });
+  });
+
+  it("GET /api/tags/suggest handles undefined results gracefully with orgSlug (fallback branch)", async () => {
+    const token = await createTestJWT({
+      sub: "user-1",
+      githubId: "123",
+      name: "Tester",
+    });
+    const app = await createTestApp();
+    const env = createTestEnv();
+
+    queueSelectResponses([
+      { getResult: { id: "org-1" } },
+      { getResult: { userId: "user-1" } },
+    ]);
+
+    (env.DB as any).prepare = vi.fn().mockReturnValue({
+      bind: vi.fn().mockReturnValue({
+        all: vi.fn().mockReturnValue({}),
+      }),
+    });
+
+    const res = await app.request(
+      "http://localhost/api/tags/suggest?q=AI&orgSlug=my-lab",
+      { headers: { Authorization: `Bearer ${token}` } },
+      env as any,
+    );
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toEqual({ tags: [] });
+  });
 });
