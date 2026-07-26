@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { verify } from "hono/jwt";
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
@@ -51,7 +51,7 @@ function parseVisibility(value: unknown): Visibility | null {
   return null;
 }
 
-async function getCurrentUser(c: any): Promise<CurrentUser> {
+async function getCurrentUser(c: Context<{ Bindings: Env; Variables: Variables }>): Promise<CurrentUser> {
   const middlewareUser = c.get("user") as { sub?: string } | undefined;
   if (middlewareUser?.sub) return { id: middlewareUser.sub };
 
