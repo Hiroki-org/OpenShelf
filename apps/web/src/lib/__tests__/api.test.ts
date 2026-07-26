@@ -17,6 +17,26 @@ describe("api helpers", () => {
     expect(authHeaders()).toEqual({});
   });
 
+  it("authHeaders returns empty object when window is undefined (server-side)", () => {
+    const originalWindow = globalThis.window;
+
+    // Mock window as undefined to simulate server-side
+    Object.defineProperty(globalThis, "window", {
+      value: undefined,
+      configurable: true,
+    });
+
+    try {
+      expect(authHeaders()).toEqual({});
+    } finally {
+      // Restore window
+      Object.defineProperty(globalThis, "window", {
+        value: originalWindow,
+        configurable: true,
+      });
+    }
+  });
+
   it("apiFetch calls API_BASE + path with Authorization header", async () => {
     localStorage.setItem("auth_token", "token-x");
     const fetchMock = vi
