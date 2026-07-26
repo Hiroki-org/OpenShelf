@@ -394,7 +394,7 @@ async function authorizePaperAccess(
     return { ok: false, status: 401, error: "Unauthorized" };
   }
 
-  const token = `${c.env.JWT_SECRET}:${rawToken}`;
+  const token = await generateHmacSha256(c.env.JWT_SECRET, rawToken);
   let user: { sub: string };
   const now = Date.now();
   const cached = tokenCache.get(token);
