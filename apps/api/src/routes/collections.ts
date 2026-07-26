@@ -705,37 +705,41 @@ collectionsRoute.get("/collections/:id/papers", async (c) => {
   } else {
     const restrictedIds = restrictedRows.map((r) => r.id);
 
-    // Batch 1: which restricted papers is this user an author of?
-    const authoredRows = await db
-      .select({ paperId: paperAuthors.paperId })
-      .from(paperAuthors)
-      .where(
+    // Batch access check: fetch both authorship and org-based access in a single query
+    const accessRows = await db
+      .select({
+        paperId: papers.id,
+        isAuthor: paperAuthors.userId,
+        isOrgMember: orgMembers.userId,
+      })
+      .from(papers)
+      .leftJoin(
+        paperAuthors,
         and(
-          inArray(paperAuthors.paperId, restrictedIds),
-          eq(paperAuthors.userId, currentUserId),
-        ),
-      )
-      .all();
-    const authoredSet = new Set(authoredRows.map((r) => r.paperId));
-
-    // Batch 2: which org_only papers can the user see via org membership?
-    const orgOnlyIds = restrictedRows
-      .filter((r) => r.visibility === "org_only" && !authoredSet.has(r.id))
-      .map((r) => r.id);
-    const orgAccessSet = new Set<string>();
-    if (orgOnlyIds.length > 0) {
-      const orgAccessRows = await db
-        .select({ paperId: paperOrgs.paperId })
-        .from(orgMembers)
-        .innerJoin(paperOrgs, eq(orgMembers.orgId, paperOrgs.orgId))
-        .where(
-          and(
-            inArray(paperOrgs.paperId, orgOnlyIds),
-            eq(orgMembers.userId, currentUserId),
-          ),
+          eq(paperAuthors.paperId, papers.id),
+          eq(paperAuthors.userId, currentUserId)
         )
-        .all();
-      for (const r of orgAccessRows) orgAccessSet.add(r.paperId);
+      )
+      .leftJoin(
+        paperOrgs,
+        eq(paperOrgs.paperId, papers.id)
+      )
+      .leftJoin(
+        orgMembers,
+        and(
+          eq(orgMembers.orgId, paperOrgs.orgId),
+          eq(orgMembers.userId, currentUserId)
+        )
+      )
+      .where(inArray(papers.id, restrictedIds))
+      .all();
+
+    const authoredSet = new Set<string>();
+    const orgAccessSet = new Set<string>();
+
+    for (const row of accessRows) {
+      if (row.isAuthor) authoredSet.add(row.paperId);
+      if (row.isOrgMember) orgAccessSet.add(row.paperId);
     }
 
     visiblePapers = rows.filter((r) => {
