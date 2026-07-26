@@ -5,6 +5,7 @@ describe("api helpers", () => {
   beforeEach(() => {
     localStorage.clear();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it("authHeaders returns Authorization header when token exists", () => {
@@ -15,6 +16,15 @@ describe("api helpers", () => {
 
   it("authHeaders returns empty object when token does not exist", () => {
     expect(authHeaders()).toEqual({});
+  });
+
+  it("authHeaders returns empty object when window is undefined (server-side)", () => {
+    vi.stubGlobal("window", undefined);
+    try {
+      expect(authHeaders()).toEqual({});
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it("apiFetch calls API_BASE + path with Authorization header", async () => {
