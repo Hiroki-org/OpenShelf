@@ -3,14 +3,26 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ToastContainer, toast } from "../toast";
 
 describe("toast", () => {
-  let originalCrypto: Crypto | undefined;
+  let originalCryptoDescriptor: PropertyDescriptor | undefined;
+  let uuidCounter = 0;
+  const randomUUIDMock = vi.fn(() => {
+    uuidCounter += 1;
+    return `00000000-0000-4000-8000-${uuidCounter
+      .toString()
+      .padStart(12, "0")}` as `${string}-${string}-${string}-${string}-${string}`;
+  });
 
   beforeEach(() => {
     vi.useFakeTimers();
-    originalCrypto = globalThis.crypto;
+    originalCryptoDescriptor = Object.getOwnPropertyDescriptor(
+      globalThis,
+      "crypto",
+    );
+    uuidCounter = 0;
+    randomUUIDMock.mockClear();
     Object.defineProperty(globalThis, "crypto", {
       value: {
-        randomUUID: () => `mock-uuid-${Math.random().toString().slice(2, 8)}`,
+        randomUUID: randomUUIDMock,
       },
       configurable: true,
     });
@@ -19,11 +31,8 @@ describe("toast", () => {
   afterEach(() => {
     vi.runOnlyPendingTimers();
     vi.useRealTimers();
-    if (originalCrypto) {
-      Object.defineProperty(globalThis, "crypto", {
-        value: originalCrypto,
-        configurable: true,
-      });
+    if (originalCryptoDescriptor) {
+      Object.defineProperty(globalThis, "crypto", originalCryptoDescriptor);
     } else {
       delete (globalThis as any).crypto;
     }
@@ -41,6 +50,7 @@ describe("toast", () => {
     expect(screen.getByText("saved")).toBeInTheDocument();
     expect(screen.getByText("failed")).toBeInTheDocument();
     expect(screen.getByText("fyi")).toBeInTheDocument();
+    expect(randomUUIDMock).toHaveBeenCalledTimes(3);
 
     act(() => {
       vi.advanceTimersByTime(5000);
@@ -74,7 +84,7 @@ describe("toast", () => {
     expect(screen.getByText("fallback test")).toBeInTheDocument();
 
     unmount();
-    Object.defineProperty(globalThis.crypto, 'randomUUID', {
+    Object.defineProperty(globalThis.crypto, "randomUUID", {
       value: originalRandomUUID,
       configurable: true,
     });
