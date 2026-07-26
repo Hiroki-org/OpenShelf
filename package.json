@@ -37,7 +37,7 @@
     "@esbuild-kit/core-utils": {
       "esbuild": "^0.25.12"
     },
-    "brace-expansion": "5.0.6",
+    "brace-expansion": "5.0.8",
     "devalue": "^5.6.4",
     "flatted": "^3.4.2",
     "micromatch": {
@@ -45,9 +45,10 @@
     },
     "picomatch@^4.0.0": "^4.0.4",
     "next": {
-      "postcss": "8.5.12"
+      "postcss": "8.5.23"
     },
     "postcss": "$postcss",
+    "sharp": "0.35.3",
     "esbuild": "0.28.1",
     "form-data": "4.0.6",
     "vite": "8.0.16",
