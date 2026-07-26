@@ -77,8 +77,8 @@ tagsRoute.get("/suggest", authMiddleware, async (c) => {
         `,
     )
       .bind(userId, org.id, normalizedQuery, TAG_SUGGEST_LIMIT)
-      .all();
-    tags = (result.results || []).map((r: any) => r.tag);
+      .all<{ tag: string }>();
+    tags = (result.results || []).map((r) => r.tag);
   } else {
     const result = await c.env.DB.prepare(
       `
@@ -98,8 +98,8 @@ tagsRoute.get("/suggest", authMiddleware, async (c) => {
         `,
     )
       .bind(userId, normalizedQuery, TAG_SUGGEST_LIMIT)
-      .all();
-    tags = (result.results || []).map((r: any) => r.tag);
+      .all<{ tag: string }>();
+    tags = (result.results || []).map((r) => r.tag);
   }
 
   return c.json({ tags });
