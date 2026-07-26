@@ -3,26 +3,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ToastContainer, toast } from "../toast";
 
 describe("toast", () => {
-  let originalCryptoDescriptor: PropertyDescriptor | undefined;
-  let uuidCounter = 0;
-  const randomUUIDMock = vi.fn(() => {
-    uuidCounter += 1;
-    return `00000000-0000-4000-8000-${uuidCounter
-      .toString()
-      .padStart(12, "0")}` as `${string}-${string}-${string}-${string}-${string}`;
-  });
+  let originalCrypto: Crypto | undefined;
 
   beforeEach(() => {
     vi.useFakeTimers();
-    originalCryptoDescriptor = Object.getOwnPropertyDescriptor(
-      globalThis,
-      "crypto",
-    );
-    uuidCounter = 0;
-    randomUUIDMock.mockClear();
+    originalCrypto = globalThis.crypto;
     Object.defineProperty(globalThis, "crypto", {
       value: {
-        randomUUID: randomUUIDMock,
+        randomUUID: () => `mock-uuid-${Math.random().toString().slice(2, 8)}`,
       },
       configurable: true,
     });
@@ -31,14 +19,19 @@ describe("toast", () => {
   afterEach(() => {
     vi.runOnlyPendingTimers();
     vi.useRealTimers();
-    if (originalCryptoDescriptor) {
-      Object.defineProperty(globalThis, "crypto", originalCryptoDescriptor);
+    if (originalCrypto) {
+      Object.defineProperty(globalThis, "crypto", {
+        value: originalCrypto,
+        configurable: true,
+      });
     } else {
       delete (globalThis as any).crypto;
     }
+    vi.restoreAllMocks();
   });
 
   it("renders and auto-removes toast messages", () => {
+    const uuidSpy = vi.spyOn(globalThis.crypto, 'randomUUID');
     const { unmount } = render(<ToastContainer />);
 
     act(() => {
@@ -47,10 +40,11 @@ describe("toast", () => {
       toast.info("fyi");
     });
 
+    expect(uuidSpy).toHaveBeenCalledTimes(3);
+
     expect(screen.getByText("saved")).toBeInTheDocument();
     expect(screen.getByText("failed")).toBeInTheDocument();
     expect(screen.getByText("fyi")).toBeInTheDocument();
-    expect(randomUUIDMock).toHaveBeenCalledTimes(3);
 
     act(() => {
       vi.advanceTimersByTime(5000);
@@ -84,7 +78,7 @@ describe("toast", () => {
     expect(screen.getByText("fallback test")).toBeInTheDocument();
 
     unmount();
-    Object.defineProperty(globalThis.crypto, "randomUUID", {
+    Object.defineProperty(globalThis.crypto, 'randomUUID', {
       value: originalRandomUUID,
       configurable: true,
     });
