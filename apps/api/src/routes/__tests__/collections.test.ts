@@ -1601,7 +1601,7 @@ describe("collections routes", () => {
           { id: "p2", visibility: "public" },
         ],
       },
-      { allResult: [{ paperId: "p1" }] },
+      { allResult: [{ paperId: "p1", isAuthor: "user-1", isOrgMember: null }] },
     ]);
     const app = await createTestApp();
     const env = createTestEnv();
@@ -1634,8 +1634,7 @@ describe("collections routes", () => {
         },
       },
       { allResult: [{ id: "p1", visibility: "org_only" }] },
-      { allResult: [] },
-      { allResult: [{ paperId: "p1" }] },
+      { allResult: [{ paperId: "p1", isAuthor: null, isOrgMember: "user-1" }] },
     ]);
     const app = await createTestApp();
     const env = createTestEnv();
@@ -2156,8 +2155,10 @@ describe("collections routes", () => {
           },
         ],
       },
-      { allResult: [{ paperId: "paper-authored" }] },
-      { allResult: [{ paperId: "paper-org" }] },
+      { allResult: [
+        { paperId: "paper-authored", isAuthor: "user-1", isOrgMember: null },
+        { paperId: "paper-org", isAuthor: null, isOrgMember: "user-1" }
+      ] },
     ]);
 
     const app = await createTestApp();

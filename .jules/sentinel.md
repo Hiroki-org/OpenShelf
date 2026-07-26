@@ -25,3 +25,8 @@
 **Vulnerability:** Unhandled exceptions in the Hono API routes can leak internal application details, such as stack traces, to the client via default 500 error responses.
 **Learning:** Returning raw Error objects or relying on Hono's default error handling without a custom `onError` hook exposes potentially sensitive debugging information.
 **Prevention:** Always define a global `app.onError((err, c) => { ... })` handler in the main application file (e.g., `apps/api/src/index.ts`) to intercept all unhandled exceptions, log a sanitized version of the error internally, and return a safe, generic JSON response to the user.
+
+## $(date +%Y-%m-%d) - [N+1 Query Optimization in Drizzle ORM]
+**Vulnerability:** Not a direct security vulnerability, but a performance issue caused by executing batched database queries sequentially in a loop, potentially leading to slow response times or Denial of Service (DoS) under heavy load.
+**Learning:** Found in `apps/api/src/routes/collections.ts` where multiple sequential queries were used to determine authorship and organization membership access levels. Replaced sequential loops/queries with a single `leftJoin` query, extracting all required access control rows in one network request.
+**Prevention:** Always consolidate multiple sequential, related table lookups into a single SQL query using `leftJoin` or `innerJoin` within Drizzle ORM to minimize database roundtrips and avoid N+1 query inefficiencies.
