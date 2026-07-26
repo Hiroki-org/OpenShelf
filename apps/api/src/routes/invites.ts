@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Hono, Context } from "hono";
 import { drizzle } from "drizzle-orm/d1";
 import { and, eq, sql } from "drizzle-orm";
 import {
@@ -42,8 +42,11 @@ invitesRoute.get("/received", authMiddleware, async (c) => {
     return c.json({ invites: rows });
 });
 
-const respondInviteHandler = async (c: any) => {
+const respondInviteHandler = async (
+    c: Context<{ Bindings: Env; Variables: Variables }>,
+) => {
     const inviteId = c.req.param("inviteId");
+    if (!inviteId) return c.json({ error: "Invite ID is required" }, 400);
     let body: { action?: unknown };
     try {
         body = await c.req.json();
