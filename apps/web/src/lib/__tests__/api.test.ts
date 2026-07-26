@@ -5,6 +5,7 @@ describe("api helpers", () => {
   beforeEach(() => {
     localStorage.clear();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it("authHeaders returns Authorization header when token exists", () => {
@@ -18,29 +19,11 @@ describe("api helpers", () => {
   });
 
   it("authHeaders returns empty object when window is undefined (server-side)", () => {
-    const originalWindowDescriptor = Object.getOwnPropertyDescriptor(
-      globalThis,
-      "window",
-    );
-
-    // Mock window as undefined to simulate server-side
-    Object.defineProperty(globalThis, "window", {
-      value: undefined,
-      configurable: true,
-    });
-
+    vi.stubGlobal("window", undefined);
     try {
       expect(authHeaders()).toEqual({});
     } finally {
-      if (originalWindowDescriptor) {
-        Object.defineProperty(
-          globalThis,
-          "window",
-          originalWindowDescriptor,
-        );
-      } else {
-        delete (globalThis as { window?: Window }).window;
-      }
+      vi.unstubAllGlobals();
     }
   });
 
