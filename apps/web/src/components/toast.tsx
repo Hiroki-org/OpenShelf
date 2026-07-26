@@ -19,8 +19,22 @@ export const toast = {
   info: (message: string) => addToast(message, "info"),
 };
 
+// Fallback ID counter for environments without crypto
+let fallbackIdCounter = 0;
+
 function addToast(message: string, type: ToastType) {
-  const id = Math.random().toString(36).substring(2, 9);
+  let id: string;
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    id = crypto.randomUUID();
+  } else if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+    const array = new Uint32Array(1);
+    crypto.getRandomValues(array);
+    id = array[0].toString(36);
+  } else {
+    // Non-secure fallback for legacy/non-HTTPS environments where crypto might be undefined
+    id = `fallback-${Date.now()}-${fallbackIdCounter++}`;
+  }
+
   const newToast = { id, message, type };
   toasts = [...toasts, newToast];
   notify();
