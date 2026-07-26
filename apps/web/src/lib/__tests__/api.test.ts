@@ -18,7 +18,10 @@ describe("api helpers", () => {
   });
 
   it("authHeaders returns empty object when window is undefined (server-side)", () => {
-    const originalWindow = globalThis.window;
+    const originalWindowDescriptor = Object.getOwnPropertyDescriptor(
+      globalThis,
+      "window",
+    );
 
     // Mock window as undefined to simulate server-side
     Object.defineProperty(globalThis, "window", {
@@ -29,11 +32,15 @@ describe("api helpers", () => {
     try {
       expect(authHeaders()).toEqual({});
     } finally {
-      // Restore window
-      Object.defineProperty(globalThis, "window", {
-        value: originalWindow,
-        configurable: true,
-      });
+      if (originalWindowDescriptor) {
+        Object.defineProperty(
+          globalThis,
+          "window",
+          originalWindowDescriptor,
+        );
+      } else {
+        delete (globalThis as { window?: Window }).window;
+      }
     }
   });
 
