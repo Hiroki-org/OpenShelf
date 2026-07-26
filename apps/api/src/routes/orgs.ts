@@ -25,6 +25,8 @@ const orgsRoute = new Hono<{ Bindings: Env; Variables: Variables }>();
 const ORG_TAGS_LIMIT = 100;
 const ORG_PAPERS_PAGE_SIZE = 20;
 
+const parsedTagsCache = new Map<string, string[]>();
+
 function normalizeFilterValue(value: string | undefined): string | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
@@ -237,7 +239,8 @@ orgsRoute.get("/:slug/tags", async (c) => {
   const counts = new Map<string, number>();
   const rawTagCounts = new Map<string, number>();
 
-  for (const paper of orgPapers) {
+  for (let i = 0; i < orgPapers.length; i++) {
+    const paper = orgPapers[i];
     const isAuthor = currentUserId !== null && paper.authorUserId === currentUserId;
     const isVisible =
       paper.visibility === "public" ||
@@ -245,19 +248,30 @@ orgsRoute.get("/:slug/tags", async (c) => {
       (paper.visibility === "private" && isAuthor);
     if (!isVisible) continue;
 
-    const rawTags = paper.tags ?? "";
+    const rawTags = paper.tags;
     if (rawTags) {
-      rawTagCounts.set(rawTags, (rawTagCounts.get(rawTags) ?? 0) + 1);
+      const c = rawTagCounts.get(rawTags);
+      rawTagCounts.set(rawTags, c === undefined ? 1 : c + 1);
     }
   }
 
+  const normalizedQuery = query ? query.toLowerCase() : null;
+
   for (const [rawTags, count] of rawTagCounts) {
-    const tags = parseStoredTags(rawTags);
-    for (const tag of tags) {
-      if (query) {
-        if (!tag.toLowerCase().startsWith(query)) continue;
+    let tags = parsedTagsCache.get(rawTags);
+    if (tags === undefined) {
+      tags = parseStoredTags(rawTags);
+      if (parsedTagsCache.size < 10000) {
+        parsedTagsCache.set(rawTags, tags);
       }
-      counts.set(tag, (counts.get(tag) ?? 0) + count);
+    }
+
+    for (let i = 0; i < tags.length; i++) {
+      const tag = tags[i];
+      if (normalizedQuery && !tag.toLowerCase().startsWith(normalizedQuery)) continue;
+
+      const current = counts.get(tag);
+      counts.set(tag, current === undefined ? count : current + count);
     }
   }
 
