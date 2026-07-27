@@ -372,7 +372,18 @@ export default function NewCollectionPage() {
             slugStatus === "taken" ||
             slugStatus === "invalid"
           }
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-700 disabled:opacity-50 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+          title={
+            submitting
+              ? undefined
+              : slug.length < 3
+                ? "slug を3文字以上入力してください"
+                : slugStatus === "idle" || slugStatus === "checking"
+                  ? "slug の確認完了を待ってください"
+                  : slugStatus === "taken" || slugStatus === "invalid"
+                    ? "slug を修正してください"
+                    : undefined
+          }
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-700 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
         >
           {submitting && (
             <span
