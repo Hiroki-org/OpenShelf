@@ -21,7 +21,7 @@
   "license": "MIT",
   "type": "commonjs",
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260713.1",
+    "@cloudflare/workers-types": "^5.20260727.1",
     "@codspeed/vitest-plugin": "^5.7.1",
     "drizzle-kit": "1.0.0-rc.4-273829f",
     "typescript": "^6.0.3",
