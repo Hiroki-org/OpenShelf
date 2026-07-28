@@ -19,8 +19,22 @@ export const toast = {
   info: (message: string) => addToast(message, "info"),
 };
 
+function generateId() {
+  if (typeof crypto !== "undefined") {
+    if (crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    if (crypto.getRandomValues) {
+      const array = new Uint32Array(1);
+      crypto.getRandomValues(array);
+      return array[0].toString(36);
+    }
+  }
+  return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+}
+
 function addToast(message: string, type: ToastType) {
-  const id = Math.random().toString(36).substring(2, 9);
+  const id = generateId();
   const newToast = { id, message, type };
   toasts = [...toasts, newToast];
   notify();
