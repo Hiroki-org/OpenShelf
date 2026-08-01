@@ -1,0 +1,1 @@
+I have extracted the `calculateBarHeight` function from an inline nested computation to improve code readability and maintainability. Tests pass and I am not seeing any regression. Is there any feedback on the changes made?

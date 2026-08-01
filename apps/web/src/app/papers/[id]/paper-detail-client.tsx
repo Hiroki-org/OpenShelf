@@ -111,6 +111,11 @@ type PaperDetailClientProps = {
   siteBase: string;
 };
 
+function calculateBarHeight(views: number, maxDailyViewCount: number): number {
+  if (maxDailyViewCount === 0) return 4;
+  return Math.max(4, Math.round((views / maxDailyViewCount) * 120));
+}
+
 function formatStatsDateLabel(date: string) {
   const [, month, day] = date.split("-");
   return `${Number(month)}/${Number(day)}`;
@@ -731,15 +736,10 @@ export default function PaperDetailClient({
                 <div className="mt-4 overflow-x-auto">
                   <div className="flex min-w-[720px] items-end gap-2">
                     {stats.daily.map((entry) => {
-                      const barHeight =
-                        maxDailyViewCount === 0
-                          ? 4
-                          : Math.max(
-                              4,
-                              Math.round(
-                                (entry.views / maxDailyViewCount) * 120,
-                              ),
-                            );
+                      const barHeight = calculateBarHeight(
+                        entry.views,
+                        maxDailyViewCount,
+                      );
 
                       return (
                         <div
