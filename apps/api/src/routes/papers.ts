@@ -317,6 +317,13 @@ async function generateHmacSha256(
     .join("");
 }
 
+export async function buildAuthorizationCacheKey(
+  jwtSecret: string,
+  rawToken: string,
+): Promise<string> {
+  return generateHmacSha256(jwtSecret, rawToken);
+}
+
 async function getPaperPublicStats(
   db: ReturnType<typeof drizzle>,
   paperId: string,
@@ -394,7 +401,7 @@ async function authorizePaperAccess(
     return { ok: false, status: 401, error: "Unauthorized" };
   }
 
-  const token = `${c.env.JWT_SECRET}:${rawToken}`;
+  const token = await buildAuthorizationCacheKey(c.env.JWT_SECRET, rawToken);
   let user: { sub: string };
   const now = Date.now();
   const cached = tokenCache.get(token);
