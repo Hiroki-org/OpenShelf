@@ -198,7 +198,7 @@ export default function InvitesPage() {
                         onClick={() => respond(inv.id, "accept")}
                         disabled={isProcessing}
                         aria-busy={processingAction === "accept"}
-                        className="inline-flex min-w-[72px] items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 disabled:opacity-50 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+                        className="inline-flex min-w-[72px] items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 disabled:opacity-50 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
                       >
                         {processingAction === "accept" && (
                           <Spinner className="h-4 w-4" />
@@ -218,7 +218,7 @@ export default function InvitesPage() {
                         onClick={() => respond(inv.id, "decline")}
                         disabled={isProcessing}
                         aria-busy={processingAction === "decline"}
-                        className="inline-flex min-w-[72px] items-center justify-center gap-2 rounded-xl border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-900"
+                        className="inline-flex min-w-[72px] items-center justify-center gap-2 rounded-xl border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 disabled:opacity-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-900 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
                       >
                         {processingAction === "decline" && (
                           <Spinner className="h-4 w-4" />
