@@ -10,6 +10,7 @@ describe("toast", () => {
   afterEach(() => {
     vi.runOnlyPendingTimers();
     vi.useRealTimers();
+    vi.unstubAllGlobals();
   });
 
   it("renders and auto-removes toast messages", () => {
@@ -39,7 +40,7 @@ describe("toast", () => {
   it("uses randomUUID when available", () => {
     const mockUUID = "123e4567-e89b-12d3-a456-426614174000";
     vi.stubGlobal("crypto", {
-      randomUUID: vi.fn().mockReturnValue(mockUUID)
+      randomUUID: vi.fn().mockReturnValue(mockUUID),
     });
     const { unmount } = render(<ToastContainer />);
 
@@ -49,8 +50,6 @@ describe("toast", () => {
 
     expect(crypto.randomUUID).toHaveBeenCalled();
     expect(screen.getByText("uuid-test")).toBeInTheDocument();
-    vi.unstubAllGlobals();
-
     act(() => {
       vi.advanceTimersByTime(5000);
     });
@@ -59,7 +58,7 @@ describe("toast", () => {
 
   it("uses getRandomValues fallback when randomUUID is unavailable", () => {
     const mockGetRandomValues = vi.fn().mockImplementation((arr: Uint32Array) => {
-      arr[0] = 12345;
+      arr.set([12345, 67890, 13579, 24680]);
       return arr;
     });
     vi.stubGlobal("crypto", {
@@ -72,8 +71,8 @@ describe("toast", () => {
     });
 
     expect(mockGetRandomValues).toHaveBeenCalled();
+    expect(mockGetRandomValues.mock.calls[0][0]).toHaveLength(4);
     expect(screen.getByText("fallback-test-1")).toBeInTheDocument();
-    vi.unstubAllGlobals();
 
     act(() => {
       vi.advanceTimersByTime(5000);
@@ -90,7 +89,31 @@ describe("toast", () => {
     });
 
     expect(screen.getByText("fallback-test-2")).toBeInTheDocument();
-    vi.unstubAllGlobals();
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+    unmount();
+  });
+
+  it("falls back when crypto methods throw", () => {
+    const randomUUID = vi.fn(() => {
+      throw new Error("randomUUID unavailable");
+    });
+    const getRandomValues = vi.fn(() => {
+      throw new Error("getRandomValues unavailable");
+    });
+    vi.stubGlobal("crypto", { randomUUID, getRandomValues });
+    const { unmount } = render(<ToastContainer />);
+
+    expect(() => {
+      act(() => {
+        toast.success("exception-fallback");
+      });
+    }).not.toThrow();
+
+    expect(randomUUID).toHaveBeenCalledOnce();
+    expect(getRandomValues).toHaveBeenCalledOnce();
+    expect(screen.getByText("exception-fallback")).toBeInTheDocument();
 
     act(() => {
       vi.advanceTimersByTime(5000);
