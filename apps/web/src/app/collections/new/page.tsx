@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "@/components/auth-provider";
-import { Spinner } from "@/components/spinner";
 import { apiFetch } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -375,7 +374,12 @@ export default function NewCollectionPage() {
           }
           className="inline-flex items-center justify-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-700 disabled:opacity-50 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
         >
-          {submitting && <Spinner />}
+          {submitting && (
+            <span
+              aria-hidden="true"
+              className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+            />
+          )}
           {submitting ? "作成中..." : "作成"}
         </button>
       </form>

@@ -35,6 +35,3 @@
 ## 2026-07-20 - Keyboard Focus Visibility
 **Learning:** ブラウザデフォルトのフォーカスリングは背景色によっては視認性が低く、キーボードユーザーが現在どの要素を操作しているのか見失いやすくなります。特にカスタムボタンやリンクコンポーネントでは、Tailwindの `focus-visible:` ユーティリティを使用して明確なフォーカスリングを定義することがアクセシビリティ向上において非常に重要です。
 **Action:** 今後、インタラクティブな要素（ボタン、リンク、タブなど）を実装する際は、マウスユーザーの体験を損なわないよう `focus:` ではなく `focus-visible:` を使用し、十分なコントラストを持つフォーカスリング（例: `focus-visible:ring-2 focus-visible:ring-offset-2`）を必ず追加するようにします。
-## 2026-07-25 - Refactoring to Shared Spinner for Accessibility
-**Learning:** Hardcoding loading spinners with raw Tailwind classes often leads to missing `aria-hidden="true"` and missing `prefers-reduced-motion` support.
-**Action:** Use a shared `<Spinner />` component across the application to encapsulate accessibility and motion attributes, ensuring a consistent and accessible experience for all users. When querying Tailwind classes with modifiers in tests, escape the colon.
