@@ -109,7 +109,6 @@ function createFatReader(
 
     if (!loadedFatSectors.has(fatSectorIndex)) {
       const fatSectorNum = fatSectors[fatSectorIndex];
-      if (fatSectorNum === undefined) return 0xffffffff;
       const offset = (fatSectorNum + 1) * sectorSize;
       if (offset >= file.size) return 0xffffffff;
       const buffer = await file
@@ -235,9 +234,14 @@ async function hasOleStream(
 
        for (let j = 0; j < runLength; j++) {
          const byteOffset = j * sectorSize;
-         if (byteOffset >= dirBuffer.byteLength) break;
+         if (byteOffset >= dirBuffer.byteLength) {
+           break;
+         }
 
          const byteLength = Math.min(sectorSize, dirBuffer.byteLength - byteOffset);
+         // If a sector gets truncated, we might not have a full directory entry to read.
+         // Or at least it might not have the 128 bytes we need per entry.
+         // DataView works fine even if byteLength < sectorSize as long as we don't read past it.
          const sectorView = new DataView(dirBuffer, byteOffset, byteLength);
 
          if (checkDirectorySector(sectorView, targetStream, sectorSize)) {
