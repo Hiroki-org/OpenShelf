@@ -72,6 +72,17 @@ describe("MarkdownEditor", () => {
     expect(mockOnChange).toHaveBeenCalledWith("New content");
   });
 
+  it("provides a visible keyboard focus ring for the textarea", () => {
+    render(<MarkdownEditor {...defaultProps} />);
+
+    expect(screen.getByRole("textbox")).toHaveClass(
+      "focus-visible:ring-2",
+      "focus-visible:ring-inset",
+      "focus-visible:ring-gray-900",
+      "dark:focus-visible:ring-gray-100",
+    );
+  });
+
   it("calls onModeChange when clicking tabs", () => {
     const { rerender } = render(<MarkdownEditor {...defaultProps} />);
 
