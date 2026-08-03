@@ -461,6 +461,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            aria-label="前のページへ"
             onClick={() => goToPage(activePage - 1)}
             disabled={!canPrev}
             title={!canPrev ? "最初のページです" : undefined}
@@ -473,6 +474,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
           </span>
           <button
             type="button"
+            aria-label="次のページへ"
             onClick={() => goToPage(activePage + 1)}
             disabled={!canNext}
             title={!canNext ? "最後のページです" : undefined}
@@ -528,6 +530,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
 
           <button
             type="button"
+            aria-label="全画面表示の切り替え"
             onClick={toggleFullScreen}
             className="rounded bg-gray-800 px-2 py-1 text-xs text-white hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:bg-gray-200 dark:text-gray-900 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
           >
@@ -536,6 +539,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
 
           <button
             type="button"
+            aria-label={viewMode === "paged" ? "連続スクロールに切り替え" : "ページ送りに切り替え"}
             onClick={() =>
               setViewMode((mode) => (mode === "paged" ? "continuous" : "paged"))
             }
@@ -557,6 +561,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
         />
         <button
           type="button"
+          aria-label="前の一致へ移動"
           disabled={searchMatches.length === 0}
           onClick={() => moveMatchCursor(-1)}
           title={
@@ -568,6 +573,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
         </button>
         <button
           type="button"
+          aria-label="次の一致へ移動"
           disabled={searchMatches.length === 0}
           onClick={() => moveMatchCursor(1)}
           title={
