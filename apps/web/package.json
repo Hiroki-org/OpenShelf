@@ -39,7 +39,7 @@
     "jsdom": "^27.0.1",
     "postcss": "^8.5.19",
     "tailwindcss": "^4.2.3",
-    "typescript": "^6",
+    "typescript": "^7",
     "vitest": "^4.1.5"
   },
   "optionalDependencies": {
