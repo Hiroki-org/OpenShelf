@@ -15,7 +15,7 @@ describe("AuthCallback", () => {
 
   beforeEach(() => {
     replace.mockReset();
-    localStorage.clear();
+    sessionStorage.clear();
     window.location.hash = "";
   });
 
@@ -27,7 +27,7 @@ describe("AuthCallback", () => {
     expect(screen.getByText("ログイン中...")).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(localStorage.getItem("auth_token")).toBe("test-token");
+      expect(sessionStorage.getItem("auth_token")).toBe("test-token");
       expect(replace).toHaveBeenCalledWith("/");
     });
   });

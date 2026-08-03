@@ -10,7 +10,7 @@ export default function AuthCallback() {
     const params = new URLSearchParams(hash);
     const token = params.get("token");
     if (token) {
-      localStorage.setItem("auth_token", token);
+      sessionStorage.setItem("auth_token", token);
     }
     router.replace("/");
   }, [router]);

@@ -59,7 +59,7 @@ export async function loginAsTestUser(page: Page, user?: TestUserInput) {
 
   await page.goto('/');
   await page.evaluate((jwt) => {
-    localStorage.setItem('auth_token', jwt);
+    sessionStorage.setItem('auth_token', jwt);
   }, token);
   await page.reload();
 

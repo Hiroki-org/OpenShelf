@@ -3,12 +3,12 @@ import { apiFetch, authHeaders } from "../api";
 
 describe("api helpers", () => {
   beforeEach(() => {
-    localStorage.clear();
+    sessionStorage.clear();
     vi.restoreAllMocks();
   });
 
   it("authHeaders returns Authorization header when token exists", () => {
-    localStorage.setItem("auth_token", "abc123");
+    sessionStorage.setItem("auth_token", "abc123");
 
     expect(authHeaders()).toEqual({ Authorization: "Bearer abc123" });
   });
@@ -18,7 +18,7 @@ describe("api helpers", () => {
   });
 
   it("apiFetch calls API_BASE + path with Authorization header", async () => {
-    localStorage.setItem("auth_token", "token-x");
+    sessionStorage.setItem("auth_token", "token-x");
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(new Response(null, { status: 200 }));
