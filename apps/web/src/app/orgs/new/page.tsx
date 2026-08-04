@@ -187,7 +187,7 @@ export default function NewOrgPage() {
               required
             />
           </div>
-          <div className="mt-1">{slugStatusText()}</div>
+          <div aria-live="polite" className="mt-1">{slugStatusText()}</div>
         </div>
 
         <div>
@@ -218,7 +218,7 @@ export default function NewOrgPage() {
           </div>
         </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
 
         <button
           type="submit"
