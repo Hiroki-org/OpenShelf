@@ -195,7 +195,7 @@ export function TagAutocompleteInput({
         aria-expanded={open}
         aria-controls={listId}
         aria-activedescendant={activeDescendantId}
-        className={className}
+        className={`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-gray-100 ${className ?? ""}`}
         placeholder={placeholder}
       />
 
