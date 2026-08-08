@@ -530,7 +530,7 @@ export default function PaperEditPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-500 disabled:opacity-50 font-medium"
+            className="inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-500 disabled:opacity-50 font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-600 dark:focus-visible:ring-blue-400 dark:focus-visible:ring-offset-gray-900"
           >
             {submitting && (
               <span
