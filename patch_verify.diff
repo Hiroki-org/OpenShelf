@@ -1,0 +1,10 @@
+<<<<<<< SEARCH
+function formatStatsDateLabel(date: string) {
+=======
+function calculateBarHeight(views: number, maxDailyViewCount: number): number {
+  if (maxDailyViewCount === 0) return 4;
+  return Math.max(4, Math.round((views / maxDailyViewCount) * 120));
+}
+
+function formatStatsDateLabel(date: string) {
+>>>>>>> REPLACE
