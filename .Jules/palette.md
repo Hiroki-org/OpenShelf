@@ -35,3 +35,6 @@
 ## 2026-07-20 - Keyboard Focus Visibility
 **Learning:** ブラウザデフォルトのフォーカスリングは背景色によっては視認性が低く、キーボードユーザーが現在どの要素を操作しているのか見失いやすくなります。特にカスタムボタンやリンクコンポーネントでは、Tailwindの `focus-visible:` ユーティリティを使用して明確なフォーカスリングを定義することがアクセシビリティ向上において非常に重要です。
 **Action:** 今後、インタラクティブな要素（ボタン、リンク、タブなど）を実装する際は、マウスユーザーの体験を損なわないよう `focus:` ではなく `focus-visible:` を使用し、十分なコントラストを持つフォーカスリング（例: `focus-visible:ring-2 focus-visible:ring-offset-2`）を必ず追加するようにします。
+## $(date +%Y-%m-%d) - [キーボードアクセシビリティ]
+**Learning:** The application had several primary action buttons and dropdown menus missing proper `focus-visible` states, which makes keyboard navigation difficult. Standardizing `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2` across all interactive elements is critical for a consistent and accessible experience.
+**Action:** Ensure all new buttons and interactive elements include these focus utility classes by default.
