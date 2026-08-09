@@ -97,7 +97,7 @@ export function MarkdownEditor({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             rows={12}
-            className="w-full resize-y border-0 bg-transparent p-3 font-mono text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900 dark:focus-visible:ring-gray-100"
+            className="w-full resize-y border-0 bg-transparent p-3 font-mono text-sm focus:outline-none"
             placeholder={placeholder}
           />
         </div>

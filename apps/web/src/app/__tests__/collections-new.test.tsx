@@ -269,14 +269,6 @@ describe("NewCollectionPage", () => {
 
     const submit = screen.getByRole("button", { name: "作成" });
     expect(submit).toBeDisabled();
-    expect(submit).toHaveAccessibleDescription("組織スラッグを入力してください");
-
-    const submitGroup = screen.getByRole("group", { name: "作成操作" });
-    expect(submitGroup).toHaveAttribute("tabindex", "0");
-    expect(submitGroup).toHaveClass("focus-visible:ring-2");
-    expect(submitGroup).toHaveAccessibleDescription(
-      "組織スラッグを入力してください",
-    );
 
     fireEvent.change(screen.getByLabelText("org slug"), {
       target: { value: "example-org" },
@@ -284,8 +276,43 @@ describe("NewCollectionPage", () => {
 
     await waitFor(() => expectSlugAvailable());
     expect(submit).not.toBeDisabled();
-    expect(submitGroup).not.toHaveAttribute("tabindex");
-    expect(screen.queryByText("組織スラッグを入力してください")).not.toBeInTheDocument();
+  });
+
+  it("shows correct disabled reason tooltip and uses a focusable wrapper for accessibility", async () => {
+    vi.mocked(apiFetch).mockImplementation(async (url) => {
+      if (url === "/api/users/user-1/collections") {
+        return new Response(JSON.stringify({ collections: [] }), { status: 200 });
+      }
+      throw new Error(`Unexpected request: ${String(url)}`);
+    });
+
+    render(<NewCollectionPage />);
+
+    const wrapper = screen.getByTitle("slug を3文字以上入力してください");
+    expect(wrapper).toHaveAttribute("tabindex", "0");
+    expect(screen.getByRole("button", { name: "作成" })).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("name"), {
+      target: { value: "Lab Picks" },
+    });
+
+    // slug checks start, state is checking/idle
+    await waitFor(() => {
+      expect(screen.getByTitle("slug の確認完了を待ってください")).toBeInTheDocument();
+    });
+
+    await waitFor(() => expectSlugAvailable());
+
+    // Button should be enabled, tooltip removed
+    expect(screen.getByRole("button", { name: "作成" })).not.toBeDisabled();
+    expect(screen.queryByTitle(/./)).not.toBeInTheDocument();
+
+    // Switch to org
+    fireEvent.click(screen.getByLabelText(/^org$/));
+
+    // Org slug missing
+    expect(screen.getByTitle("組織スラッグを入力してください")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "作成" })).toBeDisabled();
   });
 
   it("redirects guests to home", () => {
