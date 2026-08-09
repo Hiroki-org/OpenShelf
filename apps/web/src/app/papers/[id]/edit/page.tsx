@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "@/components/auth-provider";
-import { Spinner } from "@/components/spinner";
 import { TagAutocompleteInput } from "@/components/tag-autocomplete-input";
 import { MarkdownEditor } from "@/components/markdown-editor";
 import { apiFetch } from "@/lib/api";
@@ -230,7 +229,7 @@ export default function PaperEditPage() {
   if (authLoading || loading) {
     return (
       <div className="flex justify-center py-20">
-        <Spinner className="h-8 w-8 border-4 border-blue-600" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
       </div>
     );
   }
@@ -533,7 +532,12 @@ export default function PaperEditPage() {
             disabled={submitting}
             className="inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-500 disabled:opacity-50 font-medium"
           >
-            {submitting && <Spinner />}
+            {submitting && (
+              <span
+                aria-hidden="true"
+                className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+              />
+            )}
             {submitting ? "保存中..." : "保存する"}
           </button>
         </div>
