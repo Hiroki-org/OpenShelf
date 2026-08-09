@@ -269,6 +269,14 @@ describe("NewCollectionPage", () => {
 
     const submit = screen.getByRole("button", { name: "作成" });
     expect(submit).toBeDisabled();
+    expect(submit).toHaveAccessibleDescription("組織スラッグを入力してください");
+
+    const submitGroup = screen.getByRole("group", { name: "作成操作" });
+    expect(submitGroup).toHaveAttribute("tabindex", "0");
+    expect(submitGroup).toHaveClass("focus-visible:ring-2");
+    expect(submitGroup).toHaveAccessibleDescription(
+      "組織スラッグを入力してください",
+    );
 
     fireEvent.change(screen.getByLabelText("org slug"), {
       target: { value: "example-org" },
@@ -276,6 +284,8 @@ describe("NewCollectionPage", () => {
 
     await waitFor(() => expectSlugAvailable());
     expect(submit).not.toBeDisabled();
+    expect(submitGroup).not.toHaveAttribute("tabindex");
+    expect(screen.queryByText("組織スラッグを入力してください")).not.toBeInTheDocument();
   });
 
   it("redirects guests to home", () => {

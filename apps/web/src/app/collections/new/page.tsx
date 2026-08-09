@@ -63,6 +63,18 @@ export default function NewCollectionPage() {
     return `組織 @${orgSlug} のコレクションとして作成されます`;
   }, [ownerType, orgSlug]);
 
+  const submitDisabledReason = submitting
+    ? "作成処理が完了するまでお待ちください"
+    : ownerType === "org" && !orgSlug.trim()
+      ? "組織スラッグを入力してください"
+      : slug.length < 3
+        ? "slug を3文字以上入力してください"
+        : slugStatus === "idle" || slugStatus === "checking"
+          ? "slug の確認完了を待ってください"
+          : slugStatus === "taken" || slugStatus === "invalid"
+            ? "slug を修正してください"
+            : null;
+
   useEffect(() => {
     slugCheckRef.current += 1;
     setSlugStatus("idle");
@@ -362,37 +374,35 @@ export default function NewCollectionPage() {
 
         {error && <p className="text-sm text-red-600">{error}</p>}
 
-        <button
-          type="submit"
-          disabled={
-            submitting ||
-            slug.length < 3 ||
-            slugStatus === "idle" ||
-            slugStatus === "checking" ||
-            slugStatus === "taken" ||
-            slugStatus === "invalid"
-          }
-          title={
-            submitting
-              ? undefined
-              : slug.length < 3
-                ? "slug を3文字以上入力してください"
-                : slugStatus === "idle" || slugStatus === "checking"
-                  ? "slug の確認完了を待ってください"
-                  : slugStatus === "taken" || slugStatus === "invalid"
-                    ? "slug を修正してください"
-                    : undefined
-          }
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-700 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
-        >
-          {submitting && (
-            <span
-              aria-hidden="true"
-              className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-            />
+        <div className="flex flex-col items-start gap-1">
+          <span
+            role="group"
+            aria-label="作成操作"
+            aria-describedby={submitDisabledReason ? "submit-disabled-reason" : undefined}
+            tabIndex={submitDisabledReason ? 0 : undefined}
+            className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
+          >
+            <button
+              type="submit"
+              disabled={submitDisabledReason !== null}
+              aria-describedby={submitDisabledReason ? "submit-disabled-reason" : undefined}
+              className="inline-flex items-center justify-center gap-2 rounded-md bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-700 disabled:opacity-50 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+            >
+              {submitting && (
+                <span
+                  aria-hidden="true"
+                  className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+                />
+              )}
+              {submitting ? "作成中..." : "作成"}
+            </button>
+          </span>
+          {submitDisabledReason && (
+            <p id="submit-disabled-reason" className="text-sm text-gray-600 dark:text-gray-400">
+              {submitDisabledReason}
+            </p>
           )}
-          {submitting ? "作成中..." : "作成"}
-        </button>
+        </div>
       </form>
     </div>
   );
