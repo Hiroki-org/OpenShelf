@@ -96,6 +96,8 @@ async function parseOleHeader(file: File): Promise<OleHeader | null> {
   return { sectorSize, dirSector, fatSectors };
 }
 
+const MAX_FAT_CACHE_SIZE = 1000;
+
 function createFatReader(
   file: File,
   sectorSize: number,
@@ -115,6 +117,10 @@ function createFatReader(
       const buffer = await file
         .slice(offset, offset + sectorSize)
         .arrayBuffer();
+
+      if (loadedFatSectors.size >= MAX_FAT_CACHE_SIZE) {
+        loadedFatSectors.delete(loadedFatSectors.keys().next().value!);
+      }
       loadedFatSectors.set(fatSectorIndex, new DataView(buffer));
     }
 

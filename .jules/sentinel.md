@@ -25,3 +25,8 @@
 **Vulnerability:** Unhandled exceptions in the Hono API routes can leak internal application details, such as stack traces, to the client via default 500 error responses.
 **Learning:** Returning raw Error objects or relying on Hono's default error handling without a custom `onError` hook exposes potentially sensitive debugging information.
 **Prevention:** Always define a global `app.onError((err, c) => { ... })` handler in the main application file (e.g., `apps/api/src/index.ts`) to intercept all unhandled exceptions, log a sanitized version of the error internally, and return a safe, generic JSON response to the user.
+
+## 2026-07-29 - [メモリ制限のないキャッシュによるDoS脆弱性の修正]
+**Vulnerability:** OLEファイルの検証時(`apps/api/src/utils/file.ts`)に使用されるキャッシュ(`loadedFatSectors`)に最大サイズ制限がなく、悪意のあるファイルによってメモリ枯渇(DoS)を引き起こす可能性がありました。
+**Learning:** Cloudflare Workersのような長時間稼働する環境でモジュールレベルのキャッシュ(`Map`など)を実装する場合、時間経過に伴うメモリリークを防ぐために、常に最大サイズ制限を設ける必要があります。
+**Prevention:** キャッシュにデータを追加する前に、キャッシュサイズを確認し、制限を超えた場合は古いデータを破棄するか追加を拒否する処理を必ず実装します。
