@@ -36,6 +36,6 @@
 **Learning:** ブラウザデフォルトのフォーカスリングは背景色によっては視認性が低く、キーボードユーザーが現在どの要素を操作しているのか見失いやすくなります。特にカスタムボタンやリンクコンポーネントでは、Tailwindの `focus-visible:` ユーティリティを使用して明確なフォーカスリングを定義することがアクセシビリティ向上において非常に重要です。
 **Action:** 今後、インタラクティブな要素（ボタン、リンク、タブなど）を実装する際は、マウスユーザーの体験を損なわないよう `focus:` ではなく `focus-visible:` を使用し、十分なコントラストを持つフォーカスリング（例: `focus-visible:ring-2 focus-visible:ring-offset-2`）を必ず追加するようにします。
 
-## 2026-07-27 - Focus and Screen Reader Improvements for Upload Components
+## 2025-07-27 - Focus and Screen Reader Improvements for Upload Components
 **Learning:** Custom drag-and-drop zones (`<button>` tags visually styled as areas) often lack focus indicators because they don't look like traditional buttons, leading to poor keyboard accessibility. Also, decorative text like "+" and "✕" used in place of icons are read aloud by screen readers unless explicitly hidden.
 **Action:** Always add standard `focus-visible` ring styles to interactive elements regardless of their visual shape. Consistently use `aria-hidden="true"` on decorative text characters serving as icons, and `motion-safe:` for spinners.
