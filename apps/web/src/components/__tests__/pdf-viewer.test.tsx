@@ -208,7 +208,7 @@ describe("PdfViewer", () => {
     render(<PdfViewer fileUrl="https://example.com/mobile.pdf" />);
     await waitFor(() => {
       expect(
-        screen.getByRole("button", { name: "ページ送り" }),
+      screen.getByRole("button", { name: "ページ送りに切り替え" }),
       ).toBeInTheDocument();
     });
 
@@ -284,7 +284,7 @@ describe("PdfViewer", () => {
       expect(screen.getByText("1 / 2")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "次の一致" }));
+    fireEvent.click(screen.getByRole("button", { name: "次の一致へ移動" }));
 
     await waitFor(() => {
       expect(screen.getByText("2 / 2")).toBeInTheDocument();
@@ -294,18 +294,19 @@ describe("PdfViewer", () => {
       expect(renderedPages).toContain(3);
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "前の一致" }));
+    fireEvent.click(screen.getByRole("button", { name: "前の一致へ移動" }));
 
     await waitFor(() => {
       expect(screen.getByText("1 / 2")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "次の一致" }));
+    fireEvent.click(screen.getByRole("button", { name: "次の一致へ移動" }));
     await waitFor(() => {
       expect(screen.getByText("2 / 2")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "連続スクロール" }));
+    fireEvent.click(screen.getByRole("button", { name: "連続スクロールに切り替え" }));
+    fireEvent.click(screen.getByRole("button", { name: "ページ送りに切り替え" }));
     await waitFor(() => {
       expect(screen.getByText("2 / 2")).toBeInTheDocument();
     });
@@ -362,14 +363,14 @@ describe("PdfViewer", () => {
     fireEvent.click(screen.getByRole("button", { name: "ズームアウト" }));
     expect(zoomSelect.value).toBe("1.75");
 
-    fireEvent.click(screen.getByRole("button", { name: "次へ" }));
-    fireEvent.click(screen.getByRole("button", { name: "前へ" }));
-    fireEvent.click(screen.getByRole("button", { name: "連続スクロール" }));
+    fireEvent.click(screen.getByRole("button", { name: "次のページへ" }));
+    fireEvent.click(screen.getByRole("button", { name: "前のページへ" }));
+    fireEvent.click(screen.getByRole("button", { name: "連続スクロールに切り替え" }));
 
     // Mock requestFullscreen
     const container = screen.getByTestId("pdf-viewer-surface");
     container.requestFullscreen = vi.fn().mockResolvedValue(undefined);
-    fireEvent.click(screen.getByRole("button", { name: "全画面" }));
+    fireEvent.click(screen.getByRole("button", { name: "全画面表示の切り替え" }));
     expect(container.requestFullscreen).toHaveBeenCalled();
   });
 
