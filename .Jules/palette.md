@@ -39,3 +39,7 @@
 ## 2026-07-27 - Focus and Screen Reader Improvements for Upload Components
 **Learning:** Custom drag-and-drop zones (`<button>` tags visually styled as areas) often lack focus indicators because they don't look like traditional buttons, leading to poor keyboard accessibility. Also, decorative text like "+" and "✕" used in place of icons are read aloud by screen readers unless explicitly hidden.
 **Action:** Always add standard `focus-visible` ring styles to interactive elements regardless of their visual shape. Consistently use `aria-hidden="true"` on decorative text characters serving as icons, and `motion-safe:` for spinners.
+
+## $(date +%Y-%m-%d) - Consistent Keyboard Focus Visibility
+**Learning:** インタラクティブな要素（特に様々な画面の主要なボタン）において、`focus-visible:` クラスが欠落しているとキーボード操作時にフォーカス位置を見失う問題があります。Tailwind でスタイリングする際、一部のボタンだけ `focus-visible:` が設定されているとアプリケーション全体で一貫した操作感が得られません。
+**Action:** 今後、新規・既存に関わらずボタンコンポーネントを扱う際は、一貫して `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2` （またはコンテキストに応じた適切なリング設定）を追加し、キーボードユーザーへのアクセシビリティを保つようにします。

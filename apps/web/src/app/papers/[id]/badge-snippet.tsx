@@ -132,7 +132,7 @@ export function BadgeSnippet({ paperId, title, siteBase }: BadgeSnippetProps) {
               <button
                 type="button"
                 aria-label={`Copy ${snippet.label}`}
-                className="rounded bg-blue-600 px-2 py-1 text-white hover:bg-blue-500"
+                className="rounded bg-blue-600 px-2 py-1 text-white hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-blue-400 dark:focus-visible:ring-offset-gray-950"
                 onClick={() => copySnippet(snippet.value)}
               >
                 Copy
