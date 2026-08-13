@@ -4,7 +4,8 @@ import { Spinner } from "@/components/spinner";
 import { toast } from "@/components/toast";
 import { apiFetch } from "@/lib/api";
 import { safePath } from "@/lib/sanitization";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { useFocusTrap } from "@/hooks/use-focus-trap";
 
 type CitationFormat = "bibtex" | "biblatex" | "apa" | "ieee" | "mla" | "plain";
 
@@ -27,34 +28,16 @@ export function CiteButton({ paperId }: CiteButtonProps) {
     null,
   );
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (!open) return;
-
-    const handlePointerDown = (event: PointerEvent) => {
-      const target = event.target;
-      if (
-        target instanceof Node &&
-        containerRef.current &&
-        !containerRef.current.contains(target)
-      ) {
-        setOpen(false);
-      }
-    };
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener("pointerdown", handlePointerDown);
-    document.addEventListener("keydown", handleEscape);
-    return () => {
-      document.removeEventListener("pointerdown", handlePointerDown);
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, [open]);
+  useFocusTrap({
+    open,
+    setOpen,
+    containerRef,
+    triggerRef,
+    dialogRef,
+  });
 
   const handleCopy = async (format: CitationFormat) => {
     setLoadingFormat(format);
@@ -93,8 +76,9 @@ export function CiteButton({ paperId }: CiteButtonProps) {
   return (
     <div className="mb-6 relative inline-block" ref={containerRef}>
       <button
+        ref={triggerRef}
         type="button"
-        className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
+        className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
         aria-haspopup="menu"
@@ -105,6 +89,7 @@ export function CiteButton({ paperId }: CiteButtonProps) {
 
       {open && (
         <div
+          ref={dialogRef}
           className="absolute z-20 mt-2 w-44 rounded-md border border-gray-200 bg-white p-1 shadow-lg dark:border-gray-700 dark:bg-gray-900"
           role="menu"
         >
@@ -112,7 +97,7 @@ export function CiteButton({ paperId }: CiteButtonProps) {
             <button
               key={option.value}
               type="button"
-              className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60 dark:text-gray-200 dark:hover:bg-gray-800"
+              className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900 disabled:cursor-not-allowed disabled:opacity-60 dark:text-gray-200 dark:hover:bg-gray-800 dark:focus-visible:ring-gray-100"
               onClick={() => handleCopy(option.value)}
               disabled={loadingFormat !== null}
               role="menuitem"

@@ -97,4 +97,34 @@ describe("CiteButton", () => {
       expect(screen.queryByRole("menu")).not.toBeInTheDocument();
     });
   });
+
+  it("traps focus inside the menu and returns focus to trigger on escape", async () => {
+    render(
+      <div>
+        <button type="button">previous</button>
+        <CiteButton paperId="paper-1" />
+        <button type="button">next</button>
+      </div>,
+    );
+
+    const trigger = screen.getByRole("button", { name: /📋 Cite/ });
+    fireEvent.click(trigger);
+
+    const bibtexButton = await screen.findByRole("menuitem", { name: "BibTeX" });
+    const plainTextButton = screen.getByRole("menuitem", { name: "Plain Text" });
+
+    bibtexButton.focus();
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+    expect(plainTextButton).toHaveFocus();
+
+    fireEvent.keyDown(document, { key: "Tab" });
+    expect(bibtexButton).toHaveFocus();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+
+    await waitFor(() => {
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+      expect(trigger).toHaveFocus();
+    });
+  });
 });
