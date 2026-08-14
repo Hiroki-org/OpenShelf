@@ -68,10 +68,12 @@ vi.mock("next/link", () => ({
 }));
 
 vi.mock("next/image", () => ({
-  default: ({ src, alt, ...props }: any) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={typeof src === "string" ? src : ""} alt={alt} {...props} />
-  ),
+  default: ({ src, alt, ...props }: any) =>
+    React.createElement("img", {
+      src: typeof src === "string" ? src : "",
+      alt,
+      ...props,
+    }),
 }));
 
 function jsonResponse(body: unknown, status = 200) {
