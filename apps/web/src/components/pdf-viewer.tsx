@@ -416,19 +416,21 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
 
   const handleZoomOut = useCallback(() => {
     setZoom((currentZoom) => {
-      const currentIndex = ZOOM_PRESETS.indexOf(snapZoom(currentZoom));
-      if (currentIndex > 0) return ZOOM_PRESETS[currentIndex - 1];
-      return currentZoom;
+      const currentIndex = Math.max(
+        1,
+        ZOOM_PRESETS.indexOf(snapZoom(currentZoom)),
+      );
+      return ZOOM_PRESETS[currentIndex - 1];
     });
   }, []);
 
   const handleZoomIn = useCallback(() => {
     setZoom((currentZoom) => {
-      const currentIndex = ZOOM_PRESETS.indexOf(snapZoom(currentZoom));
-      if (currentIndex < ZOOM_PRESETS.length - 1) {
-        return ZOOM_PRESETS[currentIndex + 1];
-      }
-      return currentZoom;
+      const currentIndex = Math.min(
+        ZOOM_PRESETS.length - 2,
+        ZOOM_PRESETS.indexOf(snapZoom(currentZoom)),
+      );
+      return ZOOM_PRESETS[currentIndex + 1];
     });
   }, []);
 
