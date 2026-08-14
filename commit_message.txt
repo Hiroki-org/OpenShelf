@@ -1,0 +1,5 @@
+🔒 [Security] Fix SQL Injection Vulnerability in LIKE clauses
+
+🎯 **What:** The application contained a SQL injection vulnerability in search handlers due to the string concatenation of parameters inside `sql` blocks (`LIKE '%' || ${param} || '%'`) and raw Drizzle queries.
+⚠️ **Risk:** Potential SQL injection by injecting unsanitized single quotes or control characters that could break out of the string expression when parsed by the SQLite engine, manipulating the query execution natively.
+🛡️ **Solution:** Altered the code across `orgs`, `users`, and `tags` route handlers to properly map the parameters using Drizzle parameterized values inside template literals (e.g., `LIKE ${`%${param}%`}`) and updated `bind` methods with JS-level string formatting (e.g. `param + "%"`) rather than concatenation inside raw SQL strings.
