@@ -46,6 +46,10 @@ function sanitizeUrl(url: string): string {
   }
 }
 
+function escapeMarkdownUrl(url: string): string {
+  return encodeURI(url).replaceAll("(", "%28").replaceAll(")", "%29");
+}
+
 export function BadgeSnippet({ paperId, title, siteBase }: BadgeSnippetProps) {
   const { snippets, badgePreviewUrl } = useMemo(() => {
     const normalizedSiteBase =
@@ -74,7 +78,7 @@ export function BadgeSnippet({ paperId, title, siteBase }: BadgeSnippetProps) {
       {
         key: "markdown",
         label: "Markdown",
-        value: `[![OpenShelf Badge](${badgeSvgUrl})](${safePaperUrl})`,
+        value: `[![OpenShelf Badge](${escapeMarkdownUrl(badgeSvgUrl)})](${escapeMarkdownUrl(safePaperUrl)})`,
       },
       {
         key: "html",
@@ -84,7 +88,7 @@ export function BadgeSnippet({ paperId, title, siteBase }: BadgeSnippetProps) {
       {
         key: "shields",
         label: "shields.io",
-        value: `[![OpenShelf Badge](${shieldsImageUrl})](${safePaperUrl})`,
+        value: `[![OpenShelf Badge](${escapeMarkdownUrl(shieldsImageUrl)})](${escapeMarkdownUrl(safePaperUrl)})`,
       },
     ];
     return { snippets: items, badgePreviewUrl: badgeSvgUrl };
