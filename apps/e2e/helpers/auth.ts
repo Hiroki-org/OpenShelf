@@ -1,9 +1,9 @@
 import { APIRequestContext, Page } from '@playwright/test';
 import { randomUUID } from 'crypto';
 
-export const apiURL = process.env.E2E_API_URL || 'http://localhost:8787';
+export const apiURL = process.env.E2E_API_URL || 'http://127.0.0.1:8787';
 export const testAuthSecret = process.env.TEST_AUTH_SECRET || 'test-secret';
-export const testOrigin = process.env.E2E_BASE_URL || 'http://localhost:3000';
+export const testOrigin = process.env.E2E_BASE_URL || 'http://127.0.0.1:3000';
 
 type TestUserInput = {
   sub?: string;

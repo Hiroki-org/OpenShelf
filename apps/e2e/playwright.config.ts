@@ -1,8 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 import path from 'path';
 
-const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3000';
-const apiURL = process.env.E2E_API_URL || 'http://localhost:8787';
+const baseURL = process.env.E2E_BASE_URL || 'http://127.0.0.1:3000';
+const apiURL = process.env.E2E_API_URL || 'http://127.0.0.1:8787';
 const testAuthSecret = process.env.TEST_AUTH_SECRET || 'test-secret';
 const jwtSecret = process.env.JWT_SECRET || 'test-jwt-secret';
 const trackingHashSecret = process.env.TRACKING_HASH_SECRET || 'test-tracking-hash-secret';

@@ -196,8 +196,8 @@ jobs:
         env:
           ENABLE_TEST_AUTH: "true"
           TEST_AUTH_SECRET: ${{ secrets.E2E_JWT_SECRET || 'e2e-ci-only-secret' }}
-          E2E_API_URL: http://localhost:8787
-          NEXT_PUBLIC_API_URL: http://localhost:8787
+          E2E_API_URL: http://127.0.0.1:8787
+          NEXT_PUBLIC_API_URL: http://127.0.0.1:8787
       - name: Upload Playwright HTML report
         uses: actions/upload-artifact@v7
         if: always()

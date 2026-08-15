@@ -332,7 +332,7 @@ test.describe('論文ダウンロード', () => {
         const memberToken = await page.evaluate(() => localStorage.getItem('auth_token'));
         const authSecret = process.env.TEST_AUTH_SECRET || 'test-secret';
 
-        const apiURL = process.env.E2E_API_URL || 'http://localhost:8787';
+        const apiURL = process.env.E2E_API_URL || 'http://127.0.0.1:8787';
         const setupRes = await page.request.post(`${apiURL}/api/test-auth/test-org`, {
             headers: { 'x-test-auth-secret': authSecret },
             data: { userId: memberUserId, orgId }
