@@ -39,3 +39,7 @@
 ## 2026-07-27 - Focus and Screen Reader Improvements for Upload Components
 **Learning:** Custom drag-and-drop zones (`<button>` tags visually styled as areas) often lack focus indicators because they don't look like traditional buttons, leading to poor keyboard accessibility. Also, decorative text like "+" and "✕" used in place of icons are read aloud by screen readers unless explicitly hidden.
 **Action:** Always add standard `focus-visible` ring styles to interactive elements regardless of their visual shape. Consistently use `aria-hidden="true"` on decorative text characters serving as icons, and `motion-safe:` for spinners.
+
+## 2026-08-17 - Accessible Icon Buttons containing Text Characters
+**Learning:** アイコンの代わりに `+` や `-` といったテキスト記号を使用してボタンを表現する場合、スクリーンリーダーが `aria-label` に加えてテキストの記号そのものを読み上げてしまうことがあります（例：「ズームイン、プラス」）。
+**Action:** 今後、テキストの記号のみを含むアイコンボタンを作成・改善する際は、必ず記号自体を `<span aria-hidden="true">` でラップし、スクリーンリーダーが視覚的な記号を余分に読み上げないようにします。
