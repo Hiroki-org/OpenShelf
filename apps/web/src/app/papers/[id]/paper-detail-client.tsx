@@ -817,7 +817,7 @@ export default function PaperDetailClient({
                 <p>プレビューを読み込めません</p>
                 <button
                   type="button"
-                  className="underline"
+                  className="underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950 rounded-sm"
                   onClick={() => handleDownload(pdfFile)}
                   aria-label={`${pdfFile.filename}をPDFプレビューからダウンロード`}
                 >
@@ -875,7 +875,7 @@ export default function PaperDetailClient({
                 type="button"
                 onClick={() => handleDownload(f)}
                 aria-label={`${f.filename}をダウンロード`}
-                className="rounded bg-blue-600 px-3 py-1.5 text-xs text-white hover:bg-blue-500 transition-colors"
+                className="rounded bg-blue-600 px-3 py-1.5 text-xs text-white hover:bg-blue-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
               >
                 ダウンロード
               </button>
