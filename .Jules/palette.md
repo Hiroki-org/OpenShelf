@@ -39,3 +39,6 @@
 ## 2026-07-27 - Focus and Screen Reader Improvements for Upload Components
 **Learning:** Custom drag-and-drop zones (`<button>` tags visually styled as areas) often lack focus indicators because they don't look like traditional buttons, leading to poor keyboard accessibility. Also, decorative text like "+" and "✕" used in place of icons are read aloud by screen readers unless explicitly hidden.
 **Action:** Always add standard `focus-visible` ring styles to interactive elements regardless of their visual shape. Consistently use `aria-hidden="true"` on decorative text characters serving as icons, and `motion-safe:` for spinners.
+## $(date +%Y-%m-%d) - Zoom Button Accessibility Improvement
+**Learning:** ズームボタンのようなアイコン（`+`、`-`）のみのボタンにおいて、すでに `aria-label` が設定されている場合、ネイティブの `title` 属性を使用して `disabled` の理由をツールチップとして表示すると、スクリーンリーダーで二重読み上げが発生する可能性があります。この問題を解決するために `title` を削除し、`aria-label` を動的に変更して `disabled` の理由を含めるアプローチは、キーボードユーザー向けのツールチップを失うため、アクセシビリティの観点で完全な解決策とは言えません。今後は `aria-disabled="true"` と独自のツールチップコンポーネントを組み合わせるアプローチが推奨されます。
+**Action:** 今回は、既存の `title` 属性を削除して `aria-label` を動的に変更しつつ、視覚的な記号（`-`、`+`）を `<span aria-hidden="true">` でラップすることで、当面の二重読み上げ問題と不要な記号の読み上げ問題を解決しました。今後はより堅牢なツールチップUIの実装を検討します。
