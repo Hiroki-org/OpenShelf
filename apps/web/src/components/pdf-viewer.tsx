@@ -494,7 +494,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             title={zoom <= MIN_ZOOM ? "これ以上縮小できません" : undefined}
             className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
           >
-            -
+            <span aria-hidden="true">-</span>
           </button>
 
           <select
@@ -523,7 +523,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             title={zoom >= MAX_ZOOM ? "これ以上拡大できません" : undefined}
             className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
           >
-            +
+            <span aria-hidden="true">+</span>
           </button>
 
           <button
