@@ -145,6 +145,7 @@ export function TagAutocompleteInput({
         type="text"
         value={value}
         onChange={(event) => onChange(event.target.value)}
+        aria-describedby={`${id}-loading`}
         onFocus={() => {
           if (suggestions.length > 0) setOpen(true);
         }}
@@ -238,11 +239,13 @@ export function TagAutocompleteInput({
         </div>
       )}
 
-      {loading && (
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          候補を取得中...
-        </p>
-      )}
+      <div id={`${id}-loading`} aria-live="polite">
+        {loading && (
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            候補を取得中...
+          </p>
+        )}
+      </div>
     </div>
   );
 }
