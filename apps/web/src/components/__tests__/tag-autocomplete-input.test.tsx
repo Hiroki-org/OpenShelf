@@ -214,4 +214,24 @@ describe("TagAutocompleteInput", () => {
     expect(screen.getByText("機械学習")).toBeInTheDocument();
     expect(screen.getByText("深層学習")).toBeInTheDocument();
   });
+
+  it("announces the loading state to screen readers with aria-live", async () => {
+    vi.mocked(apiFetch).mockResolvedValue(
+      new Promise(() => {}), // Never resolve to keep loading state
+    );
+
+    render(<TestHarness />);
+
+    const input = screen.getByPlaceholderText("タグ");
+    fireEvent.change(input, { target: { value: "Ma" } });
+
+    // The live region should exist immediately
+    const liveRegion = document.querySelector('[aria-live="polite"]');
+    expect(liveRegion).toBeInTheDocument();
+    expect(liveRegion).toHaveAttribute("aria-atomic", "true");
+
+    await waitFor(() => {
+      expect(screen.getByText("候補を取得中...")).toBeInTheDocument();
+    });
+  });
 });
