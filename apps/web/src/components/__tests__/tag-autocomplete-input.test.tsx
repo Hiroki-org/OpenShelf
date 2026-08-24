@@ -216,8 +216,8 @@ describe("TagAutocompleteInput", () => {
   });
 
   it("announces the loading state to screen readers with aria-live", async () => {
-    vi.mocked(apiFetch).mockResolvedValue(
-      new Promise(() => {}), // Never resolve to keep loading state
+    vi.mocked(apiFetch).mockImplementation(
+      () => new Promise<Response>(() => {}), // Never resolve to keep loading state
     );
 
     render(<TestHarness />);
