@@ -39,3 +39,7 @@
 ## 2026-07-27 - Focus and Screen Reader Improvements for Upload Components
 **Learning:** Custom drag-and-drop zones (`<button>` tags visually styled as areas) often lack focus indicators because they don't look like traditional buttons, leading to poor keyboard accessibility. Also, decorative text like "+" and "✕" used in place of icons are read aloud by screen readers unless explicitly hidden.
 **Action:** Always add standard `focus-visible` ring styles to interactive elements regardless of their visual shape. Consistently use `aria-hidden="true"` on decorative text characters serving as icons, and `motion-safe:` for spinners.
+
+## $(date +%Y-%m-%d) - Conditional ARIA roles for toast notifications
+**Learning:** Toast通知のように、表示されるメッセージの種類（エラー、成功、情報など）に応じてコンテキストが変わる場合、すべてに共通の属性を持たせるのではなく、動的にARIA属性を割り当てることが重要です。エラーには `role="alert"`、それ以外には `role="status"` を付与することで、スクリーンリーダーユーザーにとってより的確で分かりやすいフィードバックとなります。
+**Action:** 今後、Toastや通知コンポーネントのUIを構築・改善する際は、単純な `aria-live` だけでなく、メッセージの性質に基づいた条件付きの `role` 属性の付与を必ず行います。
