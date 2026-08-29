@@ -4307,3 +4307,51 @@ describe("Error handling and untested branches", () => {
     consoleErrorSpy.mockRestore();
   });
 });
+
+
+describe("Additional error cases for POST /api/papers", () => {
+  it("rejects upload when no files are provided (pendingValidations is empty)", async () => {
+    const { createTestJWT, createTestApp, createTestEnv, mockDb } = await import("../../test/helpers");
+    const token = await createTestJWT({
+      sub: "user-1",
+      githubId: "123",
+      name: "Uploader",
+    });
+    const app = await createTestApp();
+    const env = createTestEnv({ DB: mockDb as any });
+
+    // Provide a valid metadata payload but no "files_X" fields.
+    const formData = new FormData();
+    formData.append(
+      "metadata",
+      JSON.stringify({
+        title: "Test Paper No Files",
+        abstract: "Abstract",
+        visibility: "public",
+        showViewCount: true,
+        language: "en",
+        externalUrl: null,
+        doi: null,
+        venue: null,
+        venueType: null,
+        year: null,
+        category: null,
+        tags: [],
+      }),
+    );
+
+    const res = await app.request(
+      "http://localhost/api/papers",
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      },
+      env as any,
+    );
+
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as any;
+    expect(body.error).toBe("At least one file is required");
+  });
+});

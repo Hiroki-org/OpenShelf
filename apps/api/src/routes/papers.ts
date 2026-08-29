@@ -654,6 +654,13 @@ async function prepareUploadEntries(
   paperId: string,
 ): Promise<{ errorResponse?: Response; uploads?: UploadEntry[] }> {
   const uploads: UploadEntry[] = [];
+  const pendingValidations: {
+    file: File;
+    promise: Promise<boolean>;
+    ft: string;
+    safeFilename: string;
+    uniqueFilename: string;
+  }[] = [];
 
   // Validate all file entries before any upload or DB mutation.
   for (let i = 0; body[`files_${i}`]; i++) {
@@ -697,7 +704,38 @@ async function prepareUploadEntries(
         ),
       };
 
-    const isValidContent = await validateMagicNumbers(file, file.type);
+    const ft = (body[`file_types_${i}`] as string) || "paper";
+    if (!VALID_FILE_TYPES.includes(ft))
+      return {
+        errorResponse: c.json({ error: `Invalid file_type: ${ft}` }, 400),
+      };
+
+    const safeFilename = sanitizeFilename(file.name);
+    const uniqueFilename = `${crypto.randomUUID()}-${safeFilename}`;
+
+    pendingValidations.push({
+      file,
+      promise: validateMagicNumbers(file, file.type),
+      ft,
+      safeFilename,
+      uniqueFilename,
+    });
+  }
+
+  if (pendingValidations.length === 0) {
+    return {
+      errorResponse: c.json({ error: "At least one file is required" }, 400),
+    };
+  }
+
+  const validationResults = await Promise.all(
+    pendingValidations.map((v) => v.promise),
+  );
+
+  for (let i = 0; i < pendingValidations.length; i++) {
+    const { file, ft, safeFilename, uniqueFilename } = pendingValidations[i];
+    const isValidContent = validationResults[i];
+
     if (!isValidContent) {
       console.error(
         `Magic number validation failed for file ${file.name} (declared: ${file.type})`,
@@ -712,27 +750,12 @@ async function prepareUploadEntries(
       };
     }
 
-    const ft = (body[`file_types_${i}`] as string) || "paper";
-    if (!VALID_FILE_TYPES.includes(ft))
-      return {
-        errorResponse: c.json({ error: `Invalid file_type: ${ft}` }, 400),
-      };
-
-    const safeFilename = sanitizeFilename(file.name);
-    const uniqueFilename = `${crypto.randomUUID()}-${safeFilename}`;
-
     uploads.push({
       file,
       fileType: ft as UploadEntry["fileType"],
       safeFilename,
       r2Key: `papers/${paperId}/${ft}/${uniqueFilename}`,
     });
-  }
-
-  if (uploads.length === 0) {
-    return {
-      errorResponse: c.json({ error: "At least one file is required" }, 400),
-    };
   }
 
   return { uploads };
