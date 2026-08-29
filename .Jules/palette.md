@@ -39,3 +39,6 @@
 ## 2026-07-27 - Focus and Screen Reader Improvements for Upload Components
 **Learning:** Custom drag-and-drop zones (`<button>` tags visually styled as areas) often lack focus indicators because they don't look like traditional buttons, leading to poor keyboard accessibility. Also, decorative text like "+" and "✕" used in place of icons are read aloud by screen readers unless explicitly hidden.
 **Action:** Always add standard `focus-visible` ring styles to interactive elements regardless of their visual shape. Consistently use `aria-hidden="true"` on decorative text characters serving as icons, and `motion-safe:` for spinners.
+## 2026-08-13 - Focus Trap and Keyboard Accessibility in Custom Dropdowns
+**Learning:** `CiteButton`のようなカスタムドロップダウンメニューにおいて、単にメニューを開閉するだけでなく、キーボード操作でメニュー項目の間を移動したり（Tabキー）、メニュー外をクリック/Escapeキーを押下した際にメニューを閉じてフォーカスをトリガーボタンに戻す制御が重要です。また、これに加えて `focus-visible` スタイルを適用することで、視覚的にもフォーカスの位置が明確になります。
+**Action:** 今後、カスタムのドロップダウンやポップオーバーを実装する際は、既存の `useFocusTrap` フックを積極的に活用し、インタラクティブ要素に対する適切なフォーカスリング（`focus-visible:ring-2` など）とキーボードナビゲーションを確保します。
