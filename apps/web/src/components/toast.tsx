@@ -19,37 +19,8 @@ export const toast = {
   info: (message: string) => addToast(message, "info"),
 };
 
-let fallbackIdCounter = 0;
-
-function generateToastId(): string {
-  const cryptoApi = globalThis.crypto;
-
-  if (typeof cryptoApi?.randomUUID === "function") {
-    try {
-      return cryptoApi.randomUUID();
-    } catch {
-      // Try the next available source when a platform implementation fails.
-    }
-  }
-
-  if (typeof cryptoApi?.getRandomValues === "function") {
-    try {
-      const values = new Uint32Array(4);
-      cryptoApi.getRandomValues(values);
-      return Array.from(values, (value) =>
-        value.toString(36).padStart(7, "0"),
-      ).join("");
-    } catch {
-      // Fall through to the collision-resistant local identifier below.
-    }
-  }
-
-  return `fallback-${Date.now().toString(36)}-${(fallbackIdCounter++).toString(36)}`;
-}
-
 function addToast(message: string, type: ToastType) {
-  const id = generateToastId();
-
+  const id = Math.random().toString(36).substring(2, 9);
   const newToast = { id, message, type };
   toasts = [...toasts, newToast];
   notify();
