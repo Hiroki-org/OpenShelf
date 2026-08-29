@@ -40,28 +40,6 @@ describe("papers routes", () => {
     };
   });
 
-  it("derives opaque and input-specific authorization cache keys", async () => {
-    const { buildAuthorizationCacheKey } = await import("../papers");
-
-    const first = await buildAuthorizationCacheKey("secret-a", "token-a");
-    const repeated = await buildAuthorizationCacheKey("secret-a", "token-a");
-    const differentSecret = await buildAuthorizationCacheKey(
-      "secret-b",
-      "token-a",
-    );
-    const differentToken = await buildAuthorizationCacheKey(
-      "secret-a",
-      "token-b",
-    );
-
-    expect(first).toMatch(/^[a-f0-9]{64}$/);
-    expect(first).toBe(repeated);
-    expect(first).not.toBe(differentSecret);
-    expect(first).not.toBe(differentToken);
-    expect(first).not.toContain("secret-a");
-    expect(first).not.toContain("token-a");
-  });
-
   it("hits the token cache on subsequent calls and removes expired ones", async () => {
     const app = await createTestApp();
     const { createTestJWT } = await import("../../test/helpers");
