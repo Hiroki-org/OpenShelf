@@ -65,7 +65,7 @@ tagsRoute.get("/suggest", authMiddleware, async (c) => {
             WHERE paper_orgs.org_id = ?2
               AND typeof(json_each.value) = 'text'
               AND ${TRIMMED_TAG_SQL} != ''
-              AND ${TRIMMED_TAG_SQL} LIKE ?3 || '%' ESCAPE '\\' COLLATE NOCASE
+              AND ${TRIMMED_TAG_SQL} LIKE ?3 ESCAPE '\\' COLLATE NOCASE
               AND (
                   papers.visibility = 'public'
                   OR papers.visibility = 'org_only'
@@ -76,7 +76,7 @@ tagsRoute.get("/suggest", authMiddleware, async (c) => {
             LIMIT ?4
         `,
     )
-      .bind(userId, org.id, normalizedQuery, TAG_SUGGEST_LIMIT)
+      .bind(userId, org.id, normalizedQuery + "%", TAG_SUGGEST_LIMIT)
       .all();
     tags = (result.results || []).map((r: any) => r.tag);
   } else {
@@ -91,13 +91,13 @@ tagsRoute.get("/suggest", authMiddleware, async (c) => {
             WHERE paper_authors.user_id = ?1
               AND typeof(json_each.value) = 'text'
               AND ${TRIMMED_TAG_SQL} != ''
-              AND ${TRIMMED_TAG_SQL} LIKE ?2 || '%' ESCAPE '\\' COLLATE NOCASE
+              AND ${TRIMMED_TAG_SQL} LIKE ?2 ESCAPE '\\' COLLATE NOCASE
             GROUP BY ${TRIMMED_TAG_SQL}
             ORDER BY count DESC, tag ASC
             LIMIT ?3
         `,
     )
-      .bind(userId, normalizedQuery, TAG_SUGGEST_LIMIT)
+      .bind(userId, normalizedQuery + "%", TAG_SUGGEST_LIMIT)
       .all();
     tags = (result.results || []).map((r: any) => r.tag);
   }
