@@ -243,6 +243,47 @@ describe("UploadPage", () => {
     expect(await screen.findByText("test.pdf")).toBeInTheDocument();
   });
 
+  it("exposes accessible upload controls and a reduced-motion-safe spinner", async () => {
+    vi.mocked(apiFetch).mockImplementation(() => new Promise(() => {}));
+    render(<UploadPage />);
+
+    const dropzone = screen.getByRole("button", {
+      description: /添付ファイル/i,
+    });
+    expect(dropzone).toHaveClass("focus-visible:ring-2");
+    expect(screen.getByText("+")).toHaveAttribute("aria-hidden", "true");
+
+    fireEvent.change(screen.getByLabelText(/タイトル/i), {
+      target: { value: "Accessible upload" },
+    });
+    fireEvent.change(screen.getByLabelText("アップロードファイル"), {
+      target: {
+        files: [
+          new File(["%PDF-1.7"], "paper.pdf", {
+            type: "application/pdf",
+          }),
+        ],
+      },
+    });
+
+    const removeButton = await screen.findByRole("button", {
+      name: "paper.pdf を削除",
+    });
+    expect(removeButton).toHaveClass("focus-visible:ring-2");
+    expect(removeButton.firstElementChild).toHaveAttribute("aria-hidden", "true");
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "成果物をアップロードする" }),
+    );
+
+    const spinner = await waitFor(() => {
+      const element = document.querySelector(".motion-safe\\:animate-spin");
+      expect(element).not.toBeNull();
+      return element;
+    });
+    expect(spinner).toHaveAttribute("aria-hidden", "true");
+  });
+
   it("does not show drop feedback for non-file drags", () => {
     render(<UploadPage />);
 
