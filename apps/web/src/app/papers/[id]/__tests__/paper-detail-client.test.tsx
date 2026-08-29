@@ -268,9 +268,9 @@ describe("PaperDetailClient", () => {
             previews: 2,
           },
           daily: [
-            { date: "2026-03-01", views: 1, downloads: 0, previews: 0 },
-            { date: "2026-03-02", views: 3, downloads: 1, previews: 0 },
-            { date: "2026-03-03", views: 2, downloads: 1, previews: 0 },
+            { date: "2026-03-01", views: 0, downloads: 0, previews: 0 },
+            { date: "2026-03-02", views: 12, downloads: 1, previews: 0 },
+            { date: "2026-03-03", views: 0, downloads: 1, previews: 0 },
           ],
           days: 30,
         });
@@ -406,9 +406,8 @@ describe("PaperDetailClient", () => {
       })
       .closest("section");
     expect(statsSection).not.toBeNull();
-    expect(within(statsSection!).getByText("12")).toBeInTheDocument();
+    expect(within(statsSection!).getAllByText("12")[0]).toBeInTheDocument();
     expect(within(statsSection!).getByText("5")).toBeInTheDocument();
-    expect(screen.getByText("3/2")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Description" }),
     ).toBeInTheDocument();
@@ -502,7 +501,11 @@ describe("PaperDetailClient", () => {
             downloads: 11,
             previews: 3,
           },
-          daily: [],
+          daily: [
+            { date: "2026-03-01", views: 0, downloads: 0, previews: 0 },
+            { date: "2026-03-02", views: 2, downloads: 1, previews: 0 },
+            { date: "2026-03-03", views: 0, downloads: 1, previews: 0 },
+          ],
           days: 30,
         });
       }
@@ -524,6 +527,14 @@ describe("PaperDetailClient", () => {
     expect(
       await screen.findByText("👁️ 42 views · 📥 11 downloads"),
     ).toBeInTheDocument();
+    const statsSection = screen
+      .getByRole("heading", {
+        name: "閲覧統計",
+      })
+      .closest("section");
+    expect(statsSection).not.toBeNull();
+    expect(within(statsSection!).getByText("2")).toBeInTheDocument();
+    expect(screen.getByText("3/2")).toBeInTheDocument();
   });
 
   it("uses apiFetch for private paper tracking even when sendBeacon exists", async () => {
@@ -578,7 +589,11 @@ describe("PaperDetailClient", () => {
       if (url === "/api/papers/paper-1/stats?days=30" && method === "GET") {
         return jsonResponse({
           total: { views: 1, downloads: 1, previews: 1 },
-          daily: [],
+          daily: [
+            { date: "2026-03-01", views: 0, downloads: 0, previews: 0 },
+            { date: "2026-03-02", views: 1, downloads: 1, previews: 1 },
+            { date: "2026-03-03", views: 0, downloads: 1, previews: 0 },
+          ],
           days: 30,
         });
       }
@@ -685,7 +700,11 @@ describe("PaperDetailClient", () => {
             downloads: 0,
             previews: 0,
           },
-          daily: [],
+          daily: [
+            { date: "2026-03-01", views: 0, downloads: 0, previews: 0 },
+            { date: "2026-03-02", views: 0, downloads: 0, previews: 0 },
+            { date: "2026-03-03", views: 0, downloads: 0, previews: 0 },
+          ],
           days: 30,
         });
       }
