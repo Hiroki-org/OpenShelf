@@ -621,7 +621,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
                 </button>
               ) : (
                 <a
-                  className="underline"
+                  className="underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950 rounded-sm"
                   href={fileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
