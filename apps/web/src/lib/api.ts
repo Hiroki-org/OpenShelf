@@ -2,7 +2,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 export function authHeaders(): HeadersInit {
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
+    typeof window !== "undefined" ? sessionStorage.getItem("auth_token") : null;
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 

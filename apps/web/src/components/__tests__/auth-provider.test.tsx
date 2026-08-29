@@ -39,12 +39,12 @@ describe("AuthProvider", () => {
   });
 
   beforeEach(() => {
-    localStorage.clear();
+    sessionStorage.clear();
     vi.clearAllMocks();
   });
 
   it("sets user when token exists and /api/auth/me succeeds", async () => {
-    localStorage.setItem("auth_token", "token-1");
+    sessionStorage.setItem("auth_token", "token-1");
     vi.mocked(apiFetch).mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -85,8 +85,8 @@ describe("AuthProvider", () => {
     });
   });
 
-  it("logout clears localStorage token and sets user null", async () => {
-    localStorage.setItem("auth_token", "token-1");
+  it("logout clears sessionStorage token and sets user null", async () => {
+    sessionStorage.setItem("auth_token", "token-1");
     vi.mocked(apiFetch).mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -116,7 +116,7 @@ describe("AuthProvider", () => {
     fireEvent.click(screen.getByRole("button", { name: "logout" }));
 
     await waitFor(() => {
-      expect(localStorage.getItem("auth_token")).toBeNull();
+      expect(sessionStorage.getItem("auth_token")).toBeNull();
       expect(screen.getByTestId("user").textContent).toBe("null");
     });
   });
@@ -141,7 +141,7 @@ describe("AuthProvider", () => {
   });
 
   it("keeps user null when /api/auth/me responds with non-ok", async () => {
-    localStorage.setItem("auth_token", "token-1");
+    sessionStorage.setItem("auth_token", "token-1");
     vi.mocked(apiFetch).mockResolvedValue(new Response("{}", { status: 401 }));
 
     render(
@@ -157,7 +157,7 @@ describe("AuthProvider", () => {
   });
 
   it("keeps user null when /api/auth/me throws", async () => {
-    localStorage.setItem("auth_token", "token-1");
+    sessionStorage.setItem("auth_token", "token-1");
     vi.mocked(apiFetch).mockRejectedValue(new Error("network error"));
 
     render(
@@ -242,7 +242,7 @@ describe("AuthProvider", () => {
   });
 
   it("refresh re-fetches user data", async () => {
-    localStorage.setItem("auth_token", "token-1");
+    sessionStorage.setItem("auth_token", "token-1");
     vi.mocked(apiFetch)
       .mockResolvedValueOnce(
         new Response(JSON.stringify({ user: null }), { status: 401 }),
