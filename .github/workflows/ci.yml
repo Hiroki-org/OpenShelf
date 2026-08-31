@@ -21,8 +21,8 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -33,8 +33,8 @@ jobs:
     name: Type Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -45,8 +45,8 @@ jobs:
     name: Test API
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -71,8 +71,8 @@ jobs:
     name: Test Web
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -102,7 +102,7 @@ jobs:
       CODECOV_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - name: Download API coverage artifact
         uses: actions/download-artifact@v8
         with:
@@ -139,8 +139,8 @@ jobs:
     name: Build Web (Preview Check)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -163,8 +163,8 @@ jobs:
             shardTotal: 2
             shardLabel: 2-of-2
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -219,8 +219,8 @@ jobs:
     name: CodSpeed
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -239,7 +239,7 @@ jobs:
           echo "Skipping CodSpeed: no benchmark-relevant API changes in this pull request."
       - name: Run benchmarks
         if: ${{ github.event_name != 'pull_request' || steps.codspeed_changes.outputs.codspeed == 'true' }}
-        uses: CodSpeedHQ/action@v4
+        uses: CodSpeedHQ/action@v5
         with:
           mode: simulation
           run: npx vitest bench --run --config apps/api/vitest.config.ts --passWithNoTests
