@@ -776,7 +776,7 @@ export default function PaperDetailClient({
             href={paper.externalUrl!}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-500 transition-colors"
+            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 dark:focus-visible:ring-offset-gray-950"
           >
             <span>🔗</span>
             正式版はこちら
@@ -875,7 +875,7 @@ export default function PaperDetailClient({
                 type="button"
                 onClick={() => handleDownload(f)}
                 aria-label={`${f.filename}をダウンロード`}
-                className="rounded bg-blue-600 px-3 py-1.5 text-xs text-white hover:bg-blue-500 transition-colors"
+                className="rounded bg-blue-600 px-3 py-1.5 text-xs text-white hover:bg-blue-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 dark:focus-visible:ring-offset-gray-950"
               >
                 ダウンロード
               </button>
@@ -929,7 +929,7 @@ export default function PaperDetailClient({
             type="button"
             onClick={() => setShowInvite(true)}
             aria-label={`${paper.title}に共著者を招待`}
-            className="mt-3 text-sm text-blue-600 hover:underline dark:text-blue-400"
+            className="mt-3 text-sm text-blue-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 rounded-sm dark:text-blue-400 dark:focus-visible:ring-blue-400 dark:focus-visible:ring-offset-gray-950"
           >
             + 共著者を招待
           </button>
@@ -972,7 +972,7 @@ export default function PaperDetailClient({
                     disabled={inviting !== null}
                     aria-busy={inviting === u.id}
                     aria-label={`${u.displayName ?? u.name}を共著者として招待`}
-                    className="inline-flex min-w-[72px] items-center justify-center rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-500 disabled:opacity-50"
+                    className="inline-flex min-w-[72px] items-center justify-center rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-500 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 dark:focus-visible:ring-offset-gray-950"
                   >
                     {inviting === u.id ? (
                       <span className="flex items-center justify-center gap-1">
@@ -997,7 +997,7 @@ export default function PaperDetailClient({
               setSearchQuery("");
               setSearchResults([]);
             }}
-            className="mt-2 text-sm text-gray-500 hover:underline"
+            className="mt-2 text-sm text-gray-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 rounded-sm dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
           >
             キャンセル
           </button>
