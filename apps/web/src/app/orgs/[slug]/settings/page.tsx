@@ -645,7 +645,7 @@ export default function OrgSettingsPage() {
                       type="button"
                       onClick={() => handleRemoveMember(m.userId)}
                       aria-label={`${m.displayName ?? m.name}をメンバーから削除`}
-                      className="text-red-500 hover:text-red-700 text-xs"
+                      className="text-red-500 hover:text-red-700 text-xs rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-red-500"
                     >
                       削除
                     </button>
@@ -721,7 +721,7 @@ export default function OrgSettingsPage() {
                     type="button"
                     onClick={() => handleRemovePaper(p.id)}
                     aria-label={`${p.title}の紐づけを解除`}
-                    className="text-red-500 hover:text-red-700 text-xs shrink-0 ml-2"
+                    className="text-red-500 hover:text-red-700 text-xs shrink-0 ml-2 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-red-500"
                   >
                     解除
                   </button>
