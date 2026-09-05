@@ -23,8 +23,11 @@ describe("toast", () => {
     });
 
     expect(screen.getByText("saved")).toBeInTheDocument();
+    expect(screen.getByText("saved")).toHaveAttribute("role", "status");
     expect(screen.getByText("failed")).toBeInTheDocument();
+    expect(screen.getByText("failed")).toHaveAttribute("role", "alert");
     expect(screen.getByText("fyi")).toBeInTheDocument();
+    expect(screen.getByText("fyi")).toHaveAttribute("role", "status");
 
     act(() => {
       vi.advanceTimersByTime(5000);
