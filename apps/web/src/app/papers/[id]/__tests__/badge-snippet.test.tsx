@@ -20,8 +20,10 @@ vi.mock("@/components/toast", () => ({
 }));
 
 vi.mock("next/image", () => ({
-  // eslint-disable-next-line @next/next/no-img-element
-  default: ({ unoptimized: _unoptimized, ...props }: any) => <img {...props} />,
+  default: ({ src, alt, unoptimized: _unoptimized, ...props }: any) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={typeof src === "string" ? src : ""} alt={alt} {...props} />
+  ),
 }));
 
 describe("BadgeSnippet", () => {

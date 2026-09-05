@@ -40,10 +40,12 @@ vi.mock("next/link", () => ({
 }));
 
 vi.mock("next/image", () => ({
-  default: ({ src, alt, unoptimized: _unoptimized, ...props }: any) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={typeof src === "string" ? src : ""} alt={alt} {...props} />
-  ),
+  default: ({ src, alt, unoptimized: _unoptimized, ...props }: any) =>
+    React.createElement("img", {
+      src: typeof src === "string" ? src : "",
+      alt,
+      ...props,
+    }),
 }));
 
 vi.mock("next/dynamic", () => ({
