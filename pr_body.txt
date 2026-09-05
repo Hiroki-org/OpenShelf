@@ -1,0 +1,4 @@
+🎯 **What:** Extracted `validateUploadForm` and `buildUploadFormData` helper functions from `handleSubmit` in `apps/web/src/app/upload/page.tsx`.
+💡 **Why:** `handleSubmit` was becoming a monolithic function handling input validation, form data construction, API calling, and error handling. Breaking these out improves code maintainability, reduces function complexity, and isolates validation and data construction logic into independent testable units.
+✅ **Verification:** Verified by running `pnpm lint` and `pnpm test apps/web/src/app/upload/__tests__/page.test.tsx`, along with the full test suite (`pnpm test`) and typechecker (`pnpm run typecheck`), which all pass perfectly.
+✨ **Result:** The `handleSubmit` function is now much shorter and easier to read, focusing solely on coordinating the component state and executing the API request.
