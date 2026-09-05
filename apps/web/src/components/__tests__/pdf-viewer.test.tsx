@@ -599,4 +599,34 @@ describe("PdfViewer", () => {
       expect(currentPageWrapper).toHaveClass("ring-2", "ring-blue-500");
     });
   });
+
+  it("updates zoom button aria-labels when zoom limits are reached", async () => {
+    render(<PdfViewer fileUrl="https://example.com/zoom.pdf" />);
+
+    // 初期状態 (ズーム 100%) では通常のラベル
+    expect(screen.getByRole("button", { name: "ズームイン" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "ズームアウト" })).not.toBeDisabled();
+
+    const zoomSelect = screen.getByLabelText("PDF zoom");
+
+    // 最小ズーム (50%) に設定
+    fireEvent.change(zoomSelect, { target: { value: "0.5" } });
+
+    // 最小ズーム時はズームアウトボタンが無効化され、ラベルに理由が追加される
+    expect(
+      screen.getByRole("button", { name: "ズームアウト (これ以上縮小できません)" })
+    ).toBeDisabled();
+    // ズームインは可能
+    expect(screen.getByRole("button", { name: "ズームイン" })).not.toBeDisabled();
+
+    // 最大ズーム (200%) に設定
+    fireEvent.change(zoomSelect, { target: { value: "2" } });
+
+    // 最大ズーム時はズームインボタンが無効化され、ラベルに理由が追加される
+    expect(
+      screen.getByRole("button", { name: "ズームイン (これ以上拡大できません)" })
+    ).toBeDisabled();
+    // ズームアウトは可能
+    expect(screen.getByRole("button", { name: "ズームアウト" })).not.toBeDisabled();
+  });
 });
