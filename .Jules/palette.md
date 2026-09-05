@@ -39,3 +39,6 @@
 ## 2026-07-27 - Focus and Screen Reader Improvements for Upload Components
 **Learning:** Custom drag-and-drop zones (`<button>` tags visually styled as areas) often lack focus indicators because they don't look like traditional buttons, leading to poor keyboard accessibility. Also, decorative text like "+" and "✕" used in place of icons are read aloud by screen readers unless explicitly hidden.
 **Action:** Always add standard `focus-visible` ring styles to interactive elements regardless of their visual shape. Consistently use `aria-hidden="true"` on decorative text characters serving as icons, and `motion-safe:` for spinners.
+## 2026-08-18 - Focus states for interactive buttons
+**Learning:** キーボードナビゲーションのアクセシビリティを向上させるために、インタラクティブな要素（特にアイコンボタンやダウンロードボタンなどのカスタム要素）には、`focus-visible:ring-2` などの Tailwind クラスを使用して、明確なフォーカスインジケーターを追加することが重要です。また、装飾的な文字（`▾` など）には `aria-hidden="true"` を指定して、スクリーンリーダーの不要な読み上げを防ぐべきです。
+**Action:** 今後、カスタムボタンやリンクを実装・改善する際は、必ず `focus-visible` を使用したフォーカススタイルと、装飾的なアイコンや文字に対する適切な ARIA 属性 (`aria-hidden="true"`) を適用します。
