@@ -39,3 +39,7 @@
 ## 2026-07-27 - Focus and Screen Reader Improvements for Upload Components
 **Learning:** Custom drag-and-drop zones (`<button>` tags visually styled as areas) often lack focus indicators because they don't look like traditional buttons, leading to poor keyboard accessibility. Also, decorative text like "+" and "✕" used in place of icons are read aloud by screen readers unless explicitly hidden.
 **Action:** Always add standard `focus-visible` ring styles to interactive elements regardless of their visual shape. Consistently use `aria-hidden="true"` on decorative text characters serving as icons, and `motion-safe:` for spinners.
+
+## $(date +%Y-%m-%d) - Focus and Screen Reader Improvements for Form Pages
+**Learning:** Reactの単体テスト環境 (Vitest / JSDOM) において、Tailwindの修飾子 (例: `motion-safe:`) を付与したクラス名（例: `motion-safe:animate-spin`）を持つ要素を `querySelector` 等で取得する際は、コロン(`:`)をバックスラッシュ2つでエスケープ (`motion-safe\\:animate-spin`) しないと構文エラーや要素未発見エラーになることが確認できた。
+**Action:** 今後、アクセシビリティ対応（`focus-visible:` や `motion-safe:` 等）でコロンを含むクラス名を追加し、それに依存するテストが落ちた場合は、テストコード内のセレクター文字列のエスケープを必ず修正する。
