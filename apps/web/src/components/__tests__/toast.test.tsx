@@ -23,8 +23,11 @@ describe("toast", () => {
     });
 
     expect(screen.getByText("saved")).toBeInTheDocument();
+    expect(screen.getByText("saved")).toHaveAttribute("role", "status");
     expect(screen.getByText("failed")).toBeInTheDocument();
+    expect(screen.getByText("failed")).toHaveAttribute("role", "alert");
     expect(screen.getByText("fyi")).toBeInTheDocument();
+    expect(screen.getByText("fyi")).toHaveAttribute("role", "status");
 
     act(() => {
       vi.advanceTimersByTime(5000);
@@ -125,7 +128,7 @@ describe("toast", () => {
     const { container, unmount } = render(<ToastContainer />);
     const toastWrapper = container.firstChild;
 
-    expect(toastWrapper).toHaveAttribute("aria-live", "polite");
+    expect(toastWrapper).not.toHaveAttribute("aria-live");
     expect(toastWrapper).not.toHaveAttribute("role", "status");
     expect(toastWrapper).not.toHaveAttribute("aria-atomic");
     unmount();
