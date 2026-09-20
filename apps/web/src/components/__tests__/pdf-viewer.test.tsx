@@ -612,10 +612,10 @@ describe("PdfViewer", () => {
     // 最小ズーム (50%) に設定
     fireEvent.change(zoomSelect, { target: { value: "0.5" } });
 
-    // 最小ズーム時はズームアウトボタンが無効化され、ラベルに理由が追加される
+    // 最小ズーム時もボタンはフォーカス可能なまま、理由を伝える
     expect(
       screen.getByRole("button", { name: "ズームアウト (これ以上縮小できません)" })
-    ).toBeDisabled();
+    ).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByRole("button", { name: "ズームアウト (これ以上縮小できません)" })).toHaveAttribute("title", "これ以上縮小できません");
     // ズームインは可能
     expect(screen.getByRole("button", { name: "ズームイン" })).not.toBeDisabled();
@@ -623,10 +623,10 @@ describe("PdfViewer", () => {
     // 最大ズーム (200%) に設定
     fireEvent.change(zoomSelect, { target: { value: "2" } });
 
-    // 最大ズーム時はズームインボタンが無効化され、ラベルに理由が追加される
+    // 最大ズーム時もボタンはフォーカス可能なまま、理由を伝える
     expect(
       screen.getByRole("button", { name: "ズームイン (これ以上拡大できません)" })
-    ).toBeDisabled();
+    ).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByRole("button", { name: "ズームイン (これ以上拡大できません)" })).toHaveAttribute("title", "これ以上拡大できません");
     // ズームアウトは可能
     expect(screen.getByRole("button", { name: "ズームアウト" })).not.toBeDisabled();
