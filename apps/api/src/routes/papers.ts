@@ -656,9 +656,8 @@ async function prepareUploadEntries(
   const uploads: UploadEntry[] = [];
 
   // Validate all file entries before any upload or DB mutation.
-  for (let i = 0; body[`files_${i}`]; i++) {
-    const fileCandidate = body[`files_${i}`];
-
+  let fileCandidate;
+  for (let i = 0; (fileCandidate = body[`files_${i}`]); i++) {
     if (typeof fileCandidate === "string" || Array.isArray(fileCandidate)) {
       console.error(`Field files_${i} is not a single file`);
       return {
