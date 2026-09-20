@@ -476,7 +476,7 @@ export default function UploadPage() {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             aria-describedby="upload-files-label"
-            className={`group flex w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed px-5 py-10 transition-all ${
+            className={`group flex w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed px-5 py-10 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950 ${
               isDragging
                 ? "border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-950/30"
                 : "border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-950 dark:hover:border-gray-600 dark:hover:bg-gray-900"
@@ -489,7 +489,7 @@ export default function UploadPage() {
                   : "bg-gray-100 text-gray-600 group-hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:group-hover:bg-gray-700"
               }`}
             >
-              <span className="text-2xl">+</span>
+              <span className="text-2xl" aria-hidden="true">+</span>
             </div>
             <span
               className={`mt-4 block text-sm font-medium ${
@@ -546,9 +546,9 @@ export default function UploadPage() {
                       type="button"
                       onClick={() => removeFile(i)}
                       aria-label={`${entry.file.name} を削除`}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/40 dark:hover:text-red-400"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:hover:bg-red-950/40 dark:hover:text-red-400 dark:focus-visible:ring-red-400 dark:focus-visible:ring-offset-gray-950"
                     >
-                      <span>✕</span>
+                      <span aria-hidden="true">✕</span>
                     </button>
                   </div>
                 </li>
@@ -571,7 +571,7 @@ export default function UploadPage() {
           >
             {uploading ? (
               <span className="flex items-center gap-2">
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                <span aria-hidden="true" className="h-4 w-4 motion-safe:animate-spin rounded-full border-2 border-current border-t-transparent" />
                 アップロード中...
               </span>
             ) : (
