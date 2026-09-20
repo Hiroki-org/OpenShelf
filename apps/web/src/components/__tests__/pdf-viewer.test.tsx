@@ -617,6 +617,7 @@ describe("PdfViewer", () => {
       name: "ズームアウト (これ以上縮小できません)",
     });
     expect(zoomOutAtMinimum).toHaveAttribute("aria-disabled", "true");
+    expect(zoomOutAtMinimum).not.toBeDisabled();
     expect(zoomOutAtMinimum).toHaveAttribute("title", "これ以上縮小できません");
     fireEvent.click(zoomOutAtMinimum);
     expect(zoomSelect).toHaveValue("0.5");
@@ -631,6 +632,7 @@ describe("PdfViewer", () => {
       name: "ズームイン (これ以上拡大できません)",
     });
     expect(zoomInAtMaximum).toHaveAttribute("aria-disabled", "true");
+    expect(zoomInAtMaximum).not.toBeDisabled();
     expect(zoomInAtMaximum).toHaveAttribute("title", "これ以上拡大できません");
     fireEvent.click(zoomInAtMaximum);
     expect(zoomSelect).toHaveValue("2");
