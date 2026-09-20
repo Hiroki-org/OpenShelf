@@ -120,6 +120,13 @@ function formatCount(value: number | null | undefined): string {
   return new Intl.NumberFormat().format(value ?? 0);
 }
 
+function calculateBarHeight(views: number, maxViews: number): number {
+  if (maxViews === 0) {
+    return 4;
+  }
+  return Math.max(4, Math.round((views / maxViews) * 120));
+}
+
 function revokeUrlsIdle(urls: string[]) {
   if (urls.length === 0) return;
   const urlsToRevoke = [...urls];
@@ -731,15 +738,10 @@ export default function PaperDetailClient({
                 <div className="mt-4 overflow-x-auto">
                   <div className="flex min-w-[720px] items-end gap-2">
                     {stats.daily.map((entry) => {
-                      const barHeight =
-                        maxDailyViewCount === 0
-                          ? 4
-                          : Math.max(
-                              4,
-                              Math.round(
-                                (entry.views / maxDailyViewCount) * 120,
-                              ),
-                            );
+                      const barHeight = calculateBarHeight(
+                        entry.views,
+                        maxDailyViewCount,
+                      );
 
                       return (
                         <div
