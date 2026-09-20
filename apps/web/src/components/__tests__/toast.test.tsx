@@ -128,7 +128,7 @@ describe("toast", () => {
     const { container, unmount } = render(<ToastContainer />);
     const toastWrapper = container.firstChild;
 
-    expect(toastWrapper).toHaveAttribute("aria-live", "polite");
+    expect(toastWrapper).not.toHaveAttribute("aria-live");
     expect(toastWrapper).not.toHaveAttribute("role", "status");
     expect(toastWrapper).not.toHaveAttribute("aria-atomic");
     unmount();
