@@ -486,6 +486,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
           <button
             type="button"
             aria-label={zoom <= MIN_ZOOM ? "ズームアウト (これ以上縮小できません)" : "ズームアウト"}
+            title={zoom <= MIN_ZOOM ? "これ以上縮小できません" : "ズームアウト"}
             onClick={() => {
               const currentIndex = ZOOM_PRESETS.indexOf(snapZoom(zoom));
               if (currentIndex > 0) setZoom(ZOOM_PRESETS[currentIndex - 1]);
@@ -512,6 +513,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
           <button
             type="button"
             aria-label={zoom >= MAX_ZOOM ? "ズームイン (これ以上拡大できません)" : "ズームイン"}
+            title={zoom >= MAX_ZOOM ? "これ以上拡大できません" : "ズームイン"}
             onClick={() => {
               const currentIndex = ZOOM_PRESETS.indexOf(snapZoom(zoom));
               if (currentIndex < ZOOM_PRESETS.length - 1) {

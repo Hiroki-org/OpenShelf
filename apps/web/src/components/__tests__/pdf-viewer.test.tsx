@@ -616,6 +616,7 @@ describe("PdfViewer", () => {
     expect(
       screen.getByRole("button", { name: "ズームアウト (これ以上縮小できません)" })
     ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "ズームアウト (これ以上縮小できません)" })).toHaveAttribute("title", "これ以上縮小できません");
     // ズームインは可能
     expect(screen.getByRole("button", { name: "ズームイン" })).not.toBeDisabled();
 
@@ -626,6 +627,7 @@ describe("PdfViewer", () => {
     expect(
       screen.getByRole("button", { name: "ズームイン (これ以上拡大できません)" })
     ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "ズームイン (これ以上拡大できません)" })).toHaveAttribute("title", "これ以上拡大できません");
     // ズームアウトは可能
     expect(screen.getByRole("button", { name: "ズームアウト" })).not.toBeDisabled();
   });
