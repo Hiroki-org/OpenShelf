@@ -75,6 +75,54 @@ type FileEntry = {
   fileType: (typeof VALID_FILE_TYPES)[number];
 };
 
+function validateUploadForm(title: string, files: FileEntry[]): string | null {
+  if (!title.trim()) {
+    return "タイトルは必須です";
+  }
+  if (files.length === 0) {
+    return "ファイルを1つ以上添付してください";
+  }
+  return null;
+}
+
+type UploadFormDataParams = {
+  title: string;
+  abstract: string;
+  visibility: string;
+  showViewCount: boolean;
+  venue: string;
+  venueType: string;
+  year: string;
+  category: string;
+  tags: string;
+  files: FileEntry[];
+};
+
+function buildUploadFormData(params: UploadFormDataParams): FormData {
+  const formData = new FormData();
+  formData.append(
+    "metadata",
+    JSON.stringify({
+      title: params.title.trim(),
+      abstract: params.abstract.trim() || null,
+      visibility: params.visibility,
+      showViewCount: params.showViewCount,
+      venue: params.venue.trim() || null,
+      venueType: params.venueType || null,
+      year: params.year ? Number(params.year) : null,
+      category: params.category || null,
+      tags: splitTagInput(params.tags),
+    }),
+  );
+
+  params.files.forEach((entry, i) => {
+    formData.append(`files_${i}`, entry.file);
+    formData.append(`file_types_${i}`, entry.fileType);
+  });
+
+  return formData;
+}
+
 export default function UploadPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -169,36 +217,26 @@ export default function UploadPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!title.trim()) {
-      setError("タイトルは必須です");
-      return;
-    }
-    if (files.length === 0) {
-      setError("ファイルを1つ以上添付してください");
+
+    const validationError = validateUploadForm(title, files);
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
     setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append(
-        "metadata",
-        JSON.stringify({
-          title: title.trim(),
-          abstract: abstract.trim() || null,
-          visibility,
-          showViewCount,
-          venue: venue.trim() || null,
-          venueType: venueType || null,
-          year: year ? Number(year) : null,
-          category: category || null,
-          tags: splitTagInput(tags),
-        }),
-      );
-
-      files.forEach((entry, i) => {
-        formData.append(`files_${i}`, entry.file);
-        formData.append(`file_types_${i}`, entry.fileType);
+      const formData = buildUploadFormData({
+        title,
+        abstract,
+        visibility,
+        showViewCount,
+        venue,
+        venueType,
+        year,
+        category,
+        tags,
+        files,
       });
 
       const res = await apiFetch("/api/papers", {

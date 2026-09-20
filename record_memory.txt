@@ -1,0 +1,1 @@
+The Pull Request was manually closed as obsolete stale low-priority automation work. Acknowledged the closure via a general issue comment using `gh pr comment 1221` and stopped pushing changes.
