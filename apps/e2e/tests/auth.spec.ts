@@ -16,7 +16,7 @@ test.describe('認証', () => {
         await expect(page.getByRole('heading', { name: 'マイライブラリ' })).toBeVisible();
     });
 
-    test('ログアウト操作後、localStorage からトークンが削除され、未認証状態に戻ること', async ({ page }) => {
+    test('ログアウト操作後、sessionStorage からトークンが削除され、未認証状態に戻ること', async ({ page }) => {
         await loginAsTestUser(page, { name: 'Token User' });
         
         // ログアウトをクリック
@@ -25,8 +25,8 @@ test.describe('認証', () => {
         // 未認証状態ボタンの表示を確認 (ヘッダーとメインコンテンツの複数箇所に存在する可能性があるため、first を使うか、特定の場所を指定する)
         await expect(page.getByRole('button', { name: 'GitHubでログイン' }).first()).toBeVisible();
 
-        // localStorage の確認
-        const token = await page.evaluate(() => localStorage.getItem('auth_token'));
+        // sessionStorage の確認
+        const token = await page.evaluate(() => sessionStorage.getItem('auth_token'));
         expect(token).toBeNull();
     });
 });

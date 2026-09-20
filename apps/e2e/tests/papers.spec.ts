@@ -25,7 +25,7 @@ async function uploadPaper(page: Page, options: { title: string; visibility: 'pu
 }
 
 async function getFirstFileId(page: Page, paperId: string): Promise<string> {
-    const token = await page.evaluate(() => localStorage.getItem('auth_token'));
+    const token = await page.evaluate(() => sessionStorage.getItem('auth_token'));
     expect(token, 'auth_token が未設定です').toBeTruthy();
 
     const detailRes = await page.request.get(`/api/papers/${paperId}`, {
@@ -329,7 +329,7 @@ test.describe('論文ダウンロード', () => {
         // 1. メンバーとしてログインし、組織を作成・所属
         const userPayload = await loginAsTestUser(page);
         const memberUserId = userPayload.sub;
-        const memberToken = await page.evaluate(() => localStorage.getItem('auth_token'));
+        const memberToken = await page.evaluate(() => sessionStorage.getItem('auth_token'));
         const authSecret = process.env.TEST_AUTH_SECRET || 'test-secret';
 
         const apiURL = process.env.E2E_API_URL || 'http://localhost:8787';
@@ -381,7 +381,7 @@ test.describe('論文ダウンロード', () => {
         const nonMemberPage = await nonMemberContext.newPage();
         try {
             await loginAsTestUser(nonMemberPage); // 別ユーザー(非メンバー)としてログイン
-            const nonMemberToken = await nonMemberPage.evaluate(() => localStorage.getItem('auth_token'));
+            const nonMemberToken = await nonMemberPage.evaluate(() => sessionStorage.getItem('auth_token'));
 
             const nonMemberDownloadRes = await nonMemberPage.request.get(`${apiURL}/api/papers/${paperId}/files/${fileId}/download`, {
                 headers: { 'Authorization': `Bearer ${nonMemberToken}` }

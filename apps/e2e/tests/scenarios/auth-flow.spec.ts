@@ -12,14 +12,14 @@ test.describe('Auth Flow', () => {
         await page.goto('/upload');
         await expect(page.getByRole('heading', { name: "成果物アップロード" })).toBeVisible();
 
-        // トークンが localStorage に存在すること
-        const token = await page.evaluate(() => localStorage.getItem('auth_token'));
+        // トークンが sessionStorage に存在すること
+        const token = await page.evaluate(() => sessionStorage.getItem('auth_token'));
         expect(token).toBeTruthy();
 
         // ログアウト処理
         await page.getByRole('button', { name: 'ログアウト' }).click();
         await expect.poll(async () => {
-            return page.evaluate(() => localStorage.getItem('auth_token'));
+            return page.evaluate(() => sessionStorage.getItem('auth_token'));
         }).toBeNull();
 
         // '/upload' にアクセスすると未認証状態としてルートなどにリダイレクトされることを確認
@@ -33,7 +33,7 @@ test.describe('Auth Flow', () => {
 
     test('認証トークンで API にアクセスでき、ログアウト後は未認証になること', async ({ page }) => {
         const user = await loginAsTestUser(page);
-        const token = await page.evaluate(() => localStorage.getItem('auth_token'));
+        const token = await page.evaluate(() => sessionStorage.getItem('auth_token'));
         expect(token).toBeTruthy();
 
         const meRes = await page.request.get('/api/users/me', {
@@ -57,7 +57,7 @@ test.describe('Auth Flow', () => {
 
         await page.getByRole('button', { name: 'ログアウト' }).click();
         await expect.poll(async () => {
-            return page.evaluate(() => localStorage.getItem('auth_token'));
+            return page.evaluate(() => sessionStorage.getItem('auth_token'));
         }).toBeNull();
 
         const unauthRes = await page.request.get('/api/users/me');
