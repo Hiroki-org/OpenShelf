@@ -612,22 +612,30 @@ describe("PdfViewer", () => {
     // 最小ズーム (50%) に設定
     fireEvent.change(zoomSelect, { target: { value: "0.5" } });
 
-    // 最小ズーム時はズームアウトボタンが無効化され、ラベルに理由が追加される
-    expect(
-      screen.getByRole("button", { name: "ズームアウト (これ以上縮小できません)" })
-    ).toBeDisabled();
-    expect(screen.getByRole("button", { name: "ズームアウト (これ以上縮小できません)" })).toHaveAttribute("title", "これ以上縮小できません");
+    // 最小ズーム時もボタンはフォーカス可能なまま、理由を伝える
+    const zoomOutAtMinimum = screen.getByRole("button", {
+      name: "ズームアウト (これ以上縮小できません)",
+    });
+    expect(zoomOutAtMinimum).toHaveAttribute("aria-disabled", "true");
+    expect(zoomOutAtMinimum).not.toBeDisabled();
+    expect(zoomOutAtMinimum).toHaveAttribute("title", "これ以上縮小できません");
+    fireEvent.click(zoomOutAtMinimum);
+    expect(zoomSelect).toHaveValue("0.5");
     // ズームインは可能
     expect(screen.getByRole("button", { name: "ズームイン" })).not.toBeDisabled();
 
     // 最大ズーム (200%) に設定
     fireEvent.change(zoomSelect, { target: { value: "2" } });
 
-    // 最大ズーム時はズームインボタンが無効化され、ラベルに理由が追加される
-    expect(
-      screen.getByRole("button", { name: "ズームイン (これ以上拡大できません)" })
-    ).toBeDisabled();
-    expect(screen.getByRole("button", { name: "ズームイン (これ以上拡大できません)" })).toHaveAttribute("title", "これ以上拡大できません");
+    // 最大ズーム時もボタンはフォーカス可能なまま、理由を伝える
+    const zoomInAtMaximum = screen.getByRole("button", {
+      name: "ズームイン (これ以上拡大できません)",
+    });
+    expect(zoomInAtMaximum).toHaveAttribute("aria-disabled", "true");
+    expect(zoomInAtMaximum).not.toBeDisabled();
+    expect(zoomInAtMaximum).toHaveAttribute("title", "これ以上拡大できません");
+    fireEvent.click(zoomInAtMaximum);
+    expect(zoomSelect).toHaveValue("2");
     // ズームアウトは可能
     expect(screen.getByRole("button", { name: "ズームアウト" })).not.toBeDisabled();
   });
