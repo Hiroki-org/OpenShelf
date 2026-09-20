@@ -631,4 +631,48 @@ describe("PdfViewer", () => {
     // ズームアウトは可能
     expect(screen.getByRole("button", { name: "ズームアウト" })).not.toBeDisabled();
   });
+
+  it("disables previous and next buttons at document boundaries", async () => {
+    render(<PdfViewer fileUrl="https://example.com/nav.pdf" />);
+    const [documentProps] = mockDocument.mock.calls[
+      mockDocument.mock.calls.length - 1
+    ] as [MockDocumentProps];
+
+    await act(async () => {
+      documentProps.onLoadSuccess?.(createMockPdfDocument(["page1", "page2"]));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("1 / 2")).toBeInTheDocument();
+    });
+
+    const prevButton = screen.getByRole("button", { name: "前へ" });
+    expect(prevButton).toBeDisabled();
+    expect(prevButton).toHaveAttribute("title", "最初のページです");
+
+    const nextButton = screen.getByRole("button", { name: "次へ" });
+    expect(nextButton).not.toBeDisabled();
+    expect(nextButton).not.toHaveAttribute("title");
+
+    fireEvent.click(nextButton);
+
+    await waitFor(() => {
+      expect(screen.getByText("2 / 2")).toBeInTheDocument();
+    });
+
+    expect(nextButton).toBeDisabled();
+    expect(nextButton).toHaveAttribute("title", "最後のページです");
+    expect(prevButton).not.toBeDisabled();
+    expect(prevButton).not.toHaveAttribute("title");
+
+    // 「前へ」ボタンをクリックして1ページ目に戻る
+    fireEvent.click(prevButton);
+
+    await waitFor(() => {
+      expect(screen.getByText("1 / 2")).toBeInTheDocument();
+    });
+
+    expect(prevButton).toBeDisabled();
+    expect(nextButton).not.toBeDisabled();
+  });
 });
