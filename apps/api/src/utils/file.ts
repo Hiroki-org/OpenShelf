@@ -109,7 +109,6 @@ function createFatReader(
 
     if (!loadedFatSectors.has(fatSectorIndex)) {
       const fatSectorNum = fatSectors[fatSectorIndex];
-      if (fatSectorNum === undefined) return 0xffffffff;
       const offset = (fatSectorNum + 1) * sectorSize;
       if (offset >= file.size) return 0xffffffff;
       const buffer = await file
@@ -181,25 +180,82 @@ async function hasOleStream(
   const MAX_DIR_SECTORS = 1000;
   let dirSectorsRead = 0;
 
+  // Batch read dir sectors
+  const BATCH_SIZE = 64; // Read 64 sectors at once
   while (
     dirSector !== 0xffffffff &&
     dirSector !== 0xfffffffe &&
     dirSectorsRead < MAX_DIR_SECTORS
   ) {
-    const dirOffset = (dirSector + 1) * sectorSize;
-    if (dirOffset >= file.size) break;
+    let currentDirSector = dirSector;
+    const sectorsToRead: number[] = [];
 
-    const dirBuffer = await file
-      .slice(dirOffset, dirOffset + sectorSize)
-      .arrayBuffer();
-    const dirView = new DataView(dirBuffer);
-
-    if (checkDirectorySector(dirView, targetStream, sectorSize)) {
-      return true;
+    // Collect a batch of sectors
+    for (let i = 0; i < BATCH_SIZE; i++) {
+      if (
+        currentDirSector === 0xffffffff ||
+        currentDirSector === 0xfffffffe ||
+        dirSectorsRead + i >= MAX_DIR_SECTORS
+      ) {
+        break;
+      }
+      sectorsToRead.push(currentDirSector);
+      currentDirSector = await getFatEntry(currentDirSector);
     }
 
-    dirSector = await getFatEntry(dirSector);
-    dirSectorsRead++;
+    if (sectorsToRead.length === 0) break;
+
+    // For small files, we might just read one large block instead of many small ones,
+    // but sectors might not be contiguous. The issue is many small slice/arrayBuffer calls.
+    // If they are contiguous, we could read them as one block. Let's check for contiguous runs.
+
+    let i = 0;
+    let hitEOF = false;
+    while (i < sectorsToRead.length) {
+       let runStart = i;
+       let runEnd = i;
+
+       while (runEnd + 1 < sectorsToRead.length && sectorsToRead[runEnd + 1] === sectorsToRead[runEnd] + 1) {
+          runEnd++;
+       }
+
+       const startSector = sectorsToRead[runStart];
+       const runLength = runEnd - runStart + 1;
+       const dirOffset = (startSector + 1) * sectorSize;
+       const runByteSize = runLength * sectorSize;
+
+       if (dirOffset >= file.size) {
+         hitEOF = true;
+         break;
+       }
+
+       const endOffset = Math.min(dirOffset + runByteSize, file.size);
+       const dirBuffer = await file.slice(dirOffset, endOffset).arrayBuffer();
+
+       for (let j = 0; j < runLength; j++) {
+         const byteOffset = j * sectorSize;
+         if (byteOffset >= dirBuffer.byteLength) {
+           break;
+         }
+
+         const byteLength = Math.min(sectorSize, dirBuffer.byteLength - byteOffset);
+         // If a sector gets truncated, we might not have a full directory entry to read.
+         // Or at least it might not have the 128 bytes we need per entry.
+         // DataView works fine even if byteLength < sectorSize as long as we don't read past it.
+         const sectorView = new DataView(dirBuffer, byteOffset, byteLength);
+
+         if (checkDirectorySector(sectorView, targetStream, sectorSize)) {
+            return true;
+         }
+       }
+
+       i = runEnd + 1;
+    }
+
+    if (hitEOF) break;
+
+    dirSector = currentDirSector;
+    dirSectorsRead += sectorsToRead.length;
   }
 
   return false;
