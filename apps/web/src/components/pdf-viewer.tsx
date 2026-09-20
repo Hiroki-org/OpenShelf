@@ -414,6 +414,26 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
     setIsPinching(false);
   }, []);
 
+  const handleZoomOut = useCallback(() => {
+    setZoom((currentZoom) => {
+      const currentIndex = Math.max(
+        1,
+        ZOOM_PRESETS.indexOf(snapZoom(currentZoom)),
+      );
+      return ZOOM_PRESETS[currentIndex - 1];
+    });
+  }, []);
+
+  const handleZoomIn = useCallback(() => {
+    setZoom((currentZoom) => {
+      const currentIndex = Math.min(
+        ZOOM_PRESETS.length - 2,
+        ZOOM_PRESETS.indexOf(snapZoom(currentZoom)),
+      );
+      return ZOOM_PRESETS[currentIndex + 1];
+    });
+  }, []);
+
   const searchRegex = useMemo(() => {
     if (!debouncedSearchQuery) return null;
     const escapedQuery = debouncedSearchQuery.replace(
@@ -486,10 +506,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
           <button
             type="button"
             aria-label="ズームアウト"
-            onClick={() => {
-              const currentIndex = ZOOM_PRESETS.indexOf(snapZoom(zoom));
-              if (currentIndex > 0) setZoom(ZOOM_PRESETS[currentIndex - 1]);
-            }}
+            onClick={handleZoomOut}
             disabled={zoom <= MIN_ZOOM}
             title={zoom <= MIN_ZOOM ? "これ以上縮小できません" : undefined}
             className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
@@ -513,12 +530,7 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
           <button
             type="button"
             aria-label="ズームイン"
-            onClick={() => {
-              const currentIndex = ZOOM_PRESETS.indexOf(snapZoom(zoom));
-              if (currentIndex < ZOOM_PRESETS.length - 1) {
-                setZoom(ZOOM_PRESETS[currentIndex + 1]);
-              }
-            }}
+            onClick={handleZoomIn}
             disabled={zoom >= MAX_ZOOM}
             title={zoom >= MAX_ZOOM ? "これ以上拡大できません" : undefined}
             className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"

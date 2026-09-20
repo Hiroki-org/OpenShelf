@@ -1,0 +1,9 @@
+🧹 [Extract zoom handler logic in pdf-viewer]
+
+🎯 What: Extracted inline deeply-nested conditional logic for zooming in and zooming out inside `apps/web/src/components/pdf-viewer.tsx` into dedicated `handleZoomIn` and `handleZoomOut` useCallback helper functions.
+
+💡 Why: Reduces nested complexity inside JSX event handlers, making the `PdfViewer` component easier to read and maintain. Extracting it to functional `setZoom` state updates also decouples the updates from the active `zoom` dependency.
+
+✅ Verification: Ran `pnpm --filter web run lint` and `pnpm --filter web test -- pdf-viewer --coverage`, verifying the extraction introduces no regressions and all tests pass.
+
+✨ Result: Improved component readability and separation of concerns by extracting the nested inline click handlers to named helper functions.
