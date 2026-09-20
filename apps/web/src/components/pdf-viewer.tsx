@@ -488,11 +488,12 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             aria-label={zoom <= MIN_ZOOM ? "ズームアウト (これ以上縮小できません)" : "ズームアウト"}
             title={zoom <= MIN_ZOOM ? "これ以上縮小できません" : "ズームアウト"}
             onClick={() => {
+              if (zoom <= MIN_ZOOM) return;
               const currentIndex = ZOOM_PRESETS.indexOf(snapZoom(zoom));
               if (currentIndex > 0) setZoom(ZOOM_PRESETS[currentIndex - 1]);
             }}
-            disabled={zoom <= MIN_ZOOM}
-            className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
+            aria-disabled={zoom <= MIN_ZOOM}
+            className="rounded border border-gray-300 px-2 py-1 text-xs aria-disabled:cursor-not-allowed aria-disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
           >
             <span aria-hidden="true">-</span>
           </button>
@@ -515,13 +516,14 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
             aria-label={zoom >= MAX_ZOOM ? "ズームイン (これ以上拡大できません)" : "ズームイン"}
             title={zoom >= MAX_ZOOM ? "これ以上拡大できません" : "ズームイン"}
             onClick={() => {
+              if (zoom >= MAX_ZOOM) return;
               const currentIndex = ZOOM_PRESETS.indexOf(snapZoom(zoom));
               if (currentIndex < ZOOM_PRESETS.length - 1) {
                 setZoom(ZOOM_PRESETS[currentIndex + 1]);
               }
             }}
-            disabled={zoom >= MAX_ZOOM}
-            className="rounded border border-gray-300 px-2 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
+            aria-disabled={zoom >= MAX_ZOOM}
+            className="rounded border border-gray-300 px-2 py-1 text-xs aria-disabled:cursor-not-allowed aria-disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900 dark:border-gray-600 dark:focus-visible:ring-gray-100 dark:focus-visible:ring-offset-gray-950"
           >
             <span aria-hidden="true">+</span>
           </button>
