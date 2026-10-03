@@ -1,0 +1,3 @@
+[[IgnoredVulns]]
+id = "CVE-2026-93687"
+reason = "No upstream fixed version is available for braces 3.0.3. This is a transitive development dependency via micromatch/fast-glob; monitor upstream for a patched release."
