@@ -29,8 +29,8 @@
     "wrangler": "^4.146.0"
   },
   "dependencies": {
-    "drizzle-orm": "^0.45.2",
-    "hono": "^4.13.7",
+    "drizzle-orm": "^0.45.3",
+    "hono": "^4.13.12",
     "p-map": "^7.0.5"
   }
 }
