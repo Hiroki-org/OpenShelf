@@ -19,6 +19,7 @@ type DocumentOptions = {
 type MockDocumentProps = {
   children?: ReactNode;
   file?: string;
+  suspense?: boolean;
   options?: DocumentOptions;
   onLoadSuccess?: (info: unknown) => void;
 };
@@ -178,6 +179,7 @@ describe("PdfViewer", () => {
     const [props] = mockDocument.mock.calls[0] as [MockDocumentProps];
 
     expect(props.file).toBe("https://example.com/paper.pdf");
+    expect(props.suspense).toBe(false);
     expect(props.options).toMatchObject({
       cMapPacked: true,
       cMapUrl: expect.stringContaining("/cmaps/"),
