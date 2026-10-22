@@ -604,6 +604,8 @@ export function PdfViewer({ fileUrl, onDownloadFallback }: PdfViewerProps) {
         <Document
           key={fileUrl}
           file={fileUrl}
+          // Preserve inline loading/error UI; React-PDF 11 enables Suspense by default.
+          suspense={false}
           options={options}
           onLoadSuccess={onDocumentLoadSuccess}
           onLoadError={onDocumentLoadError}
