@@ -26,7 +26,7 @@
     "jsdom": "^30.1.2",
     "postcss": "^8.5.29",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.12"
+    "vitest": "^5.0.5"
   },
   "optionalDependencies": {
     "lightningcss-darwin-arm64": "1.32.0",
