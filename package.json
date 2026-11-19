@@ -25,13 +25,15 @@
     "eslint": "^10.14.0",
     "jsdom": "^31.0.1",
     "postcss": "^8.5.32",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "typescript-eslint": "8.72.2",
     "typescript": "^6.0.3",
     "vitest": "^4.1.12"
   },
   "optionalDependencies": {
-    "lightningcss-darwin-arm64": "1.32.0",
-    "lightningcss-linux-x64-gnu": "1.32.0"
+    "lightningcss-darwin-arm64": "1.33.0",
+    "lightningcss-linux-x64-gnu": "1.33.0"
   },
   "overrides": {
     "axios": "^1.15.0",
